@@ -1,7 +1,6 @@
 import math
 
 from scipy.cluster.vq import kmeans
-import cvxpy as cp
 import numpy as np
 from sklearn.cluster import *
 from sklearn.decomposition import *
@@ -331,53 +330,6 @@ def nmfBeta_Own(data, k):
 
 
 
-def kmeansOwn(data, k):
-
-    d = 3
-    A = data
-    #B = np.ones((n,k))
-    m,n = data.shape
-    B = np.ones((n, k))
-
-    #m = 30
-    #n = 20
-    np.random.seed(1)
-    A = np.random.randn(m,n)
-    One = np.ones((k))
-
-    #F = cp.Variable((n, k), boolean=True)
-    #H = cp.Variable((n, k), boolean=True)
-
-    F = cp.Variable((n,k), integer=True)
-    #F = cp.Variable((n, k))
-    #H = cp.Variable((n, k))
-
-    #objective = cp.Minimize(cp.sum_squares(A - A @ F @ H.T))
-    objective = cp.Minimize(cp.sum_squares( A @ F ))
-    constraints = [ F @ One == 1]
-
-    prob = cp.Problem(objective)
-
-    prob.solve()
-
-def cvxTest():
-    m = 30
-    n = 20
-    np.random.seed(1)
-    A = np.random.randn(m, n)
-    b = np.random.randn(m)
-
-    # Construct the problem.
-    x = cp.Variable(n)
-    objective = cp.Minimize(cp.sum_squares(A @ x - b))
-    constraints = [0 <= x, x <= 1]
-    prob = cp.Problem(objective, constraints)
-
-    # The optimal objective value is returned by `prob.solve()`.
-    result = prob.solve()
-    # The optimal value for x is stored in `x.value`.
-    print(x.value)
-
 
 def nmf_c(X, k):
     lib = ctypes.cdll.LoadLibrary("./libnnlsLib.so")
@@ -466,16 +418,26 @@ def kMeansInit(A, k):
 # n is the number of features and m the number of data points
 def similarityMatrix(data):
 
+    print("similarityMatrix")
+
     n,m = data.shape
 
-    l = n*m
     A = np.zeros((m,m))
     eij = np.zeros((m, m))
+    #sigma = 1
     sigma = 1
+
+    print("n ", n, " m ", m)
+
+    data[0,:]
+
+    data[:, 2]
 
     for i in range(m):
         for j in range(m):
-            eij[i,j] = math.exp( np.linalg.norm(np.dot(data[:,i], data[:,j])  )**2 / sigma**2 )
+            eij[i,j] = math.exp( - np.linalg.norm( data[:, i] - data[:, j] )**2 / sigma**2 )
+            #eij[i,j] = math.exp( np.linalg.norm(np.dot(data[:,i], data[:,j])  )**2 / sigma**2 )
+            #eij[i,j] = math.exp( - np.linalg.norm( data[:, i] - data[:, j] ) ** 2 / sigma ** 2)
 
     for i in range(m):
         for j in range(m):
@@ -545,7 +507,7 @@ def symmetricNMF(data, k, bool_s_as_I=True):
             if (f_xnew - f_x) <= sigma * np.dot(delta_f_vec, x_new - x):
                 #print("breaked ", it)
                 break
-            elif alpha < 1e-50:
+            elif alpha < 1e-15: #1e-50
                 break
             #else:
                 #print("signma ", alpha)

@@ -6,6 +6,8 @@ import numpy as np
 from Reader import *
 from sklearn.decomposition import *
 from sklearn.discriminant_analysis import *
+from Utilities import *
+import scipy as sci
 
 import umap
 from sklearn.preprocessing import StandardScaler
@@ -16,19 +18,26 @@ def getTable_withClass():
 
     df = pd.read_csv('../../Data/data_sampled.csv')
 
+    print("shape before ", df.shape)
+    df = df.dropna()
+
     types = df.dtypes
+
+    types_set = set()
+    for t in types:
+        types_set.add(t)
+
+    types_set = np.unique(types)
+
     print("Types ")
-    print(types)
+    print(types_set)
 
-    print("tpyes s")
-    print(types[0])
-    print(type(types))
-    print(types['well'])
 
-    print("filter")
-    print( types.filter(items=['int64', 'float64']) )
+    #print("filter")
+    #print( types.filter(items=['int64', 'float64']) )
 
-    df2 = df.select_dtypes(include=['float', 'int'])
+    #df2 = df.select_dtypes(include=['float', 'int'])
+    df2 = df.select_dtypes(include=['float'])
     df2 = df2.join(df[['trial', 'plate', 'well']])
 
     conc_id_df = pd.read_csv('../../Data/treatments.csv', usecols=['trial', 'plate', 'well', 'treatment'])
@@ -49,13 +58,13 @@ def getTable_withClass():
     df2 = df2.join(conc_id_df.set_index(['trial', 'plate', 'well']),
                  on=['trial', 'plate', 'well'], how='inner')
 
-    print(df2.columns)
+    #print(df2.columns)
 
-    df2 = df2.drop(['trial', 'plate', 'well'], axis=1)
+    df2_ = df2.drop(['trial', 'plate', 'well'], axis=1)
 
 
 
-    return df2
+    return df2_, df2
 
 
 def getTable(numberOfSamples=0):
@@ -164,7 +173,55 @@ def plotUmap(df, title=""):
         embedding[:, 1])
     plt.title(title)
 
-def plotUmap(df, colors=[], title=""):
+def plotUmap(df, colors=[], title_="", labels=[]):
+
+    reducer = umap.UMAP()
+
+    # print("X ", X)
+    # print(X)
+
+    #scaled_penguin_data = StandardScaler().fit_transform(df)
+    embedding = reducer.fit_transform(df)
+    # print("embedding ", embedding.shape)
+    # print("Xd ", Xd.shape)
+
+    if len(colors) == 0:
+        colors = np.zeros( len(embedding[:,0]) )
+        colors.fill(6)
+
+
+    unique = getUnique(colors)
+    elements = []
+    for i in range(0, len(unique) ):
+        f = lambda t: t[2] == unique[i]
+        elements.append( list( filter(f, zip(embedding[:,0], embedding[:,1], colors) ) ) )
+
+
+
+    fig, ax = plt.subplots()
+    #plt.scatter(
+    #    embedding[:, 0],
+    #    embedding[:, 1], c=colors, label=lab)
+
+    for i in range(0, len(unique) ):
+        elx, ely, c = zip(*elements[i])
+
+        label = "Class " + str(c[0])
+
+        ax.scatter( elx, ely, 1+unique[i], label=label )
+
+
+    fig.suptitle(title_)
+    fig.set_size_inches(13, 13)
+
+    ax.grid(True)
+    #ax.legend(loc='upper right')
+    lgd = ax.legend(bbox_to_anchor=(1.1, 1.05))
+    ax.set_xlabel("x")
+    ax.set_ylabel("y")
+
+
+def writeUmap(df, colors=[], title_="", labels=[]):
 
     reducer = umap.UMAP()
 
@@ -176,15 +233,43 @@ def plotUmap(df, colors=[], title=""):
     # print("embedding ", embedding.shape)
     # print("Xd ", Xd.shape)
 
+    lab = np.array([1,2,3,4,5,6,7,8,9])
+
+    unique = getUnique(colors)
+    elements = []
+    for i in range(0, len(unique) ):
+        f = lambda t: t[2] == unique[i]
+        elements.append( list( filter(f, zip(embedding[:,0], embedding[:,1], colors) ) ) )
+
+
     if len(colors) == 0:
         colors = np.zeros( len(embedding[:,0]) )
         colors.fill(32)
 
-    plt.figure()
-    plt.scatter(
-        embedding[:, 0],
-        embedding[:, 1], c=colors)
-    plt.title(title)
+    fig, ax = plt.subplots()
+    fig.set_size_inches(13, 13)
+    #plt.scatter(
+    #    embedding[:, 0],
+    #    embedding[:, 1], c=colors, label=lab)
+
+    for i in range(0, len(unique) ):
+        elx, ely, c = zip(*elements[i])
+
+        label = "Class " + str(c[0])
+
+        ax.scatter( elx, ely, 1+unique[i], label=label )
+
+
+    fig.suptitle(title_)
+
+    ax.grid(True)
+    #lgd = ax.legend(loc='upper right', bbox_to_anchor=(1.1, 1.05))
+    lgd = ax.legend(bbox_to_anchor=(1.1, 1.05))
+    ax.set_xlabel("x")
+    ax.set_ylabel("y")
+
+    fig.savefig(title_.replace(" ", "-")+".eps", format='eps')
+
 
 def getPCA(X0):
     X = X0.drop('treatment', axis=1)
@@ -193,8 +278,9 @@ def getPCA(X0):
 
 def getLDA(X0):
     X = X0.drop('treatment', axis=1)
-    lda = LinearDiscriminantAnalysis()
-    return lda.fit_transform(X, X0["treatment"])
+    #lda = LinearDiscriminantAnalysis(solver='svd')
+    lda = LinearDiscriminantAnalysis(solver='svd')
+    return lda.fit_transform(X.to_numpy(), X0["treatment"])
 
 
 
@@ -307,3 +393,112 @@ def getMatrix(X):
     print(e)
 
 
+def St(X, t):
+    means = dict()
+
+    classes = np.unique(t)
+
+    for c in classes:
+        X_c = X[t == c]
+        means[c] = np.mean(X_c, axis=0)
+
+
+    res = np.zeros((X.shape[1], X.shape[1]))
+    #for i in range(0, X.shape[0]):
+
+
+    print("x ", X.iloc[2])
+    print("mean ", means[classes[0]] )
+
+    for i in range(0, X.shape[0]):
+        res = res + np.outer( (X.iloc[i] - means[t[i]] ), (X.iloc[i] - means[t[i]] ))
+
+
+    #res = res + np.dot( (X[i,:].to_numpy() - means[t[i]].to_numpy() ), (X[i,:].to_numpy() - means[t[i]].to_numpy() ).T )
+
+    return res*1/len(classes)
+
+
+
+def myCov(X):
+    means = np.mean(X, axis=0)
+
+
+class LDA:
+    def __init__(self):
+        self.Sw = None
+
+    def fit(self, X, t):
+        self.priors = dict()
+        self.P = dict()
+        self.means = dict()
+        self.nk = dict()
+
+        self.classes = np.unique(t)
+
+        self.m = np.mean(X, axis=0)
+
+        for c in self.classes:
+            X_c = X[t == c]
+            self.priors[c] = X_c.shape[0] / X.shape[0]
+            self.P[c] = X_c.shape[0] / X.shape[0]
+            self.means[c] = np.mean(X_c, axis=0)
+            self.nk[c] = X_c.shape[0]
+
+        self.Sw = np.zeros((X.shape[1], X.shape[1]))
+        self.Sb = np.zeros((X.shape[1], X.shape[1]))
+
+        print("sb ", self.Sb.shape)
+        print("sw ", self.Sw.shape)
+
+        Xn = X.to_numpy()
+        for c in self.classes:
+            X_c = Xn[ t == c]
+            #for x in X_c:
+            #    self.Sw = self.Sw + np.outer( (x - self.means[c]), (x - self.means[c]) )
+            self.Sw = self.Sw + np.cov(X_c, rowvar=False)
+        #self.Sw = self.Sw/len(self.classes)
+
+        for c in self.classes:
+            self.Sb = self.Sb + self.nk[c] * np.outer( (self.means[c] - self.m), (self.means[c]-self.m) )
+
+    def transform(self, X):
+
+        l,e = sci.linalg.eig(self.Sw)
+        print("sw l")
+        print(l)
+
+        l, e = sci.linalg.eig(self.Sb)
+        print("sb l")
+        print(l)
+
+        #eigenValues, eigenVectors = sci.linalg.eigh(self.Sb, self.Sw, left=False, right=True, homogeneous_eigvals=False)
+        eigenValues, eigenVectors = sci.linalg.eig(self.Sb, self.Sw)
+
+        idx = (eigenValues.real).argsort()[::-1]
+        eigenValues = eigenValues[idx]
+        eigenVectors = eigenVectors[:, idx].real
+
+        dims = eigenVectors.shape[1]
+
+
+        print("sb ", self.Sb)
+        print("sw ", self.Sw)
+
+        #for x in X.iloc():
+        #print("vr ", vr.shape)
+        #print("X ", X.iloc[2].shape)
+        #transformed = np.dot(eigenVectors, np.vstack(X.iloc[2]) )
+        
+        #res = X.apply( lambda x : np.dot(eigenVectors, np.vstack(x) ), axis=1 )
+        #res = X.apply(lambda x:  pd.Series( np.dot(eigenVectors, x) ), axis=1)
+        #for x in X.iloc():
+        #    res.append( np.dot(eigenVectors, np.vstack(x) ) )
+
+        #np.dot(vr, np.vstack(X.to_numpy()) )
+
+
+        print("eigenvalues")
+        print(eigenValues.real)
+
+        return X.to_numpy().dot(eigenVectors[:, 0:dims-1])

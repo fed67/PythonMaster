@@ -4,9 +4,12 @@
 # Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
 import math
 
+from sklearn.cross_decomposition import CCA
+
 from clusteringMetric import *
 from ClusteringBegin import *
 from ClusteringMain import *
+from Utilities import *
 
 from Reader import ReaderCSV, plotClass, splitForPlot
 import os
@@ -19,154 +22,131 @@ import pandas as pd
 import ctypes
 from numpy.ctypeslib import ndpointer
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+
+def MainDF():
+
+    dfc, df_withAll = getTable_withClass()
+    print("dfc shape ", dfc.shape)
+    #dfc['treatment']
+    #print("treatnebt ", dfc.dtypes )
+    #getMatrix(dfc)
+
+    #plotPCARatio(dfc)
+    #plotLDARatio(dfc)
 
 
-def printTet():
+    #plotUmap( getPCA(dfc), title_="PCA" )
+    #plotUmap(M_lda, title_="LDA Matrix")
+    #plotUmap(dfc.drop("treatment", axis=1), title_="Raw Data")
 
-    # n_samples = 1500
-    n_samples = 15
-    random_state = 170
-    # X, y = datasets.make_blobs(n_samples=n_samples, random_state=random_state)
-    # X, y = datasets.make_blobs([10,10,10], random_state=42)
+    #writeUmap(dfc.drop("treatment", axis=1), title_="Normal Matrix")
+    #writeUmap(M_lda, "Lda Matrix")
 
-    centers = [(5, 5), (10, 10), (15, 15)]
-    X, y = datasets.make_blobs(n_samples=n_samples, centers=centers, shuffle=False, random_state=42)
+    ind = 0
+    maps_ = dict()
+    for el in dfc["treatment"]:
+        if(el not in maps_):
+            maps_[el] = ind
+            ind = ind + 1
 
-
-    # arr, f = kmeans_(df3.to_numpy(), 4)
-    arr = kmeans_(X, 3)
-
-    print("ARR ", arr)
-    print("ARR ", arr.shape)
-
-    print("CVX")
-    # cvxTest()
-    # kmeansOwn(df3, 3)
-
-    c0 = []
-    c1 = []
-    c2 = []
-    for i in range(0, arr.shape[0]):
-        if arr[i] == 0:
-            c0.append(X[i, :])
-        elif arr[i] == 1:
-            c1.append(X[i, :])
-        elif arr[i] == 2:
-            c2.append(X[i, :])
-
-    c0 = np.array(c0)
-    c1 = np.array(c1)
-    c2 = np.array(c2)
-
-    print("X.shape ", X.shape)
-    #print("c0.shape ", c0.shape)
-    #print("co[0] ", c0[:, 0])
-    #print("co[1] ", c0[:, 1])
-
-    c1i = nmf(X, 3)
-    c2i = nmf_Own(X.T, 3)
-    #ci = nmfBeta_Own(X.T, 3)
-
-    c10 = c1i[0]
-    c11 = c1i[1]
-    c12 = c1i[2]
-
-    c20 = c2i[0]
-    c21 = c2i[1]
-    c22 = c2i[2]
-
-    printD(X)
-
-    fig, (ax1, ax2, ax3, ax4) = plt.subplots(4)
-
-    ax1.scatter(X[:, 0], X[:, 1])
-    ax1.set_title("orginal")
-    ax1.set_xlabel("x")
-    ax1.set_ylabel("y")
-
-    ax2.scatter(c0[:, 0], c0[:, 1])
-    ax2.scatter(c1[:, 0], c1[:, 1])
-    ax2.scatter(c2[:, 0], c2[:, 1])
-    ax2.set_title("KMeans")
-    ax2.set_xlabel("x")
-    ax2.set_ylabel("y")
-
-    ax3.scatter(c10[:, 0], c10[:, 1])
-    ax3.scatter(c11[:, 0], c11[:, 1])
-    #ax3.scatter(c12[:, 0], c12[:, 1])
-    ax3.set_title("NMF")
-    ax3.set_xlabel("x")
-    ax3.set_ylabel("y")
-
-    ax4.scatter(c20[:, 0], c20[:, 1])
-    ax4.scatter(c21[:, 0], c21[:, 1])
-    #ax4.scatter(c22[:, 0], c22[:, 1])
-    ax4.set_title("NMF Solve NNLS")
-
-    plt.tight_layout()
-    plt.savefig("test.svg")
-
-    # plt.scatter(X[:, 0], X[:, 1])
-    plt.show()
-
-
-def dataSample():
-    path = "../../Data/data_sampled.csv"
-    path = os.path.normpath(os.path.join(os.getcwd(), path))
-
-    print("path ", os.getcwdb())
-    print("path join ", path)
-
-    reader = ReaderCSV(path)
-
-    table = reader.getData()
-
-    print(table)
-
-    print(table[0:2])
-
-    df = table.sample(n=100)
+    y_given = stringColumnToIntClass(dfc, "treatment")["treatment"]
+    #print("number of classes ", ind)
 
 
 
-    arr = np.array([[1, 2, 3], [1, 22, -3], [-2, -3, 4], [44, -2, 1], [-2, 1, 4]])
+    #y = kmeans_(dfc.drop("treatment", axis=1), 9)
+    #writeUmap(dfc.drop("treatment", axis=1), y, "KMeans")
 
-    arr = arr.astype(float)
+    #y2 = kmeans_(M_lda, 9)
+    #writeUmap(dfc.drop("treatment", axis=1), y2, "K-Means with LDA Matrix")
 
-    print("df")
-    print(df)
+    #y3 = kmeans_(M_pca, 9)
+    #plotUmap(M_pca, y3, "KMeans with PCA Matrix")
 
-    df2 = df.select_dtypes(exclude=['string'])
+    #writeUmap(M_lda, y2, "KMeans with LDA Matrix")
 
-    # print(df2.to_numpy(dtype=float, copy=True))
+    #plotUmap(dfc.drop("treatment", axis=1), y_given, "Ground Truth")
+    #writeUmap(M_lda, y_given, "Predefined Classification")
 
-    print("types")
-    print(df2.dtypes)
+    #y2 = LDA_CLustering(dfc.drop("treatment", axis=1), dfc["treatment"] )
+    #print("lit ", type(y2[10]))
+    #y2 = list( map( lambda x: sum([ord(i) for i in list(x)]) , y2) )
+    #print(y2)
 
-    types = df2.dtypes
-    print(type(types))
+    df = stringColumnToIntClass(dfc, "treatment")
+    #scaler = StandardScaler()
+    #dfs = scaler.fit_transform(df.drop("treatment", axis=1))
 
-    set = {0, 1}
-    print("iteration ")
-    # for l in df2:
-    #    print(l)
-    #    #set.add(l)
 
-    df3 = df2.drop(labels=df2.columns[6:], axis=1)
-    print("df3 shape ", df3.to_numpy().shape)
-    #print(df3)
-    #print(df3.to_numpy())
+    print("Covariants")
+    print(np.cov(df.drop("treatment", axis=1), rowvar=False))
+    lda = LDA()
+    lda.fit(X=df.drop("treatment", axis=1), t=df["treatment"])
+    #tr = lda.transform(df.drop("treatment", axis=1))
 
-    ci = nmf(df3.to_numpy().T, 4)
+    #cca = FastICA(fun='exp')
+    #X_sk = cca.fit_transform(X=df.drop("treatment", axis=1).to_numpy(), y=df["treatment"])
 
-    ciO = nmf_Own(df3.to_numpy().T, 4)
-    #ciB = nmfBeta_Own(df3.to_numpy().T, 4)
+    lda = LinearDiscriminantAnalysis(solver='svd')
+    X_sk = lda.fit_transform(df.drop("treatment", axis=1), df["treatment"])
 
-    for i in ci:
-        print("shape ", i.shape)
+    #pca = PCA()
+    #pca = PCA(n_components=2)
+    #pca = PCA(copy=True, iterated_power='auto', n_components=0.9, random_state=None,
+    #    svd_solver='auto', tol=0.0, whiten=False)
+    #X_sk = pca.fit_transform(df.drop("treatment", axis=1) )
+
+    print("X.shape ", X_sk.shape)
+
+    A = similarityMatrix(df.drop("treatment", axis=1).to_numpy())
+    yN = symmetricNMF(A, 9)
+    print("yN ", yN)
+
+    #print("tr shape ", tr.shape)
+    #plotUmap( df.drop("treatment", axis=1), y_given, "LDA")
+    plotUmap(X_sk, yN, "Symmetric NMF")
+    #plotUmap(X_sk, df["treatment"], "PCA")
+
+    #plt.plot(np.cumsum(pca.explained_variance_ratio_))
+    #plt.title("PCA Commulative Variance")
+
+
+    #plotUmap(dfc.drop("treatment", axis=1), y2, "LDA")
+
+
+def runTestData():
+    X1 = [(4, 2), (2, 4), (2, 3), (3, 6), (4, 4)]
+    X2 = [(9, 10), (6, 8), (9, 5), (8, 7), (10, 8)]
+
+    X = [[], []]
+    for x0, x1 in X1:
+        X[0].append(x0)
+        X[1].append(x1)
+
+    for x0, x1 in X2:
+        X[0].append(x0)
+        X[1].append(x1)
+
+    y = np.array([0, 0, 0, 0, 0, 1, 1, 1, 1, 1])
+
+    X = pd.DataFrame(data=np.array(X).T, columns=["x", "y"])
+
+    lda = LDA()
+
+    lda.fit(X=X, t=y)
+    X_lda = lda.transform(X)
+
+    lda = LinearDiscriminantAnalysis(solver='svd')
+    X_sk= lda.fit_transform(X, y)
+
+
+    fig, ax = plt.subplots(3,1)
+
+    ax[0].scatter(X.to_numpy()[:,0], X.to_numpy()[:,1], c=y)
+
+    ax[1].scatter(X_lda[:, 0], X.to_numpy().shape[0]*[0], c=y)
+
+    ax[2].scatter(X_sk[:, 0], X.to_numpy().shape[0] * [0], c=y)
 
 
 def printD(data):
@@ -189,64 +169,12 @@ def printD(data):
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    print_hi('PyCharm')
 
     lib = ctypes.cdll.LoadLibrary("./libnnlsLib.so")
     fun = lib.test
     #f2 = lib.nnls_c
     #fun.argtypes(ctypes.POINTER(ctypes.c_double), ctypes.c_int)
     #fun.argtypes(ctypes.c_double, ctypes.c_int)
-
-    #test2 = lib.test2
-    #test2.argtypes = (ctypes.POINTER(ctypes.c_double), ctypes.c_int)
-    #test2( np.array([[1.0, 2.0, 5.0], [3.0, 4.0, 6.0]]).ctypes.data_as(ctypes.POINTER(ctypes.c_double)), 2, 3)
-
-    treat = ReaderCSV("../../Data/treatments.csv").getData()
-
-    data = ReaderCSV("../../Data/data_sampled.csv").getData()
-
-    data_cols = data.select_dtypes(include=[float]).columns
-
-    #print(treat)
-
-    print("2data.shape ", data.shape)
-    print("type ", type(data_cols) )
-    cols = data_cols.append( pd.Index(["trial", "plate", "well"]) )
-
-    Xd = data[ [data_cols[0], data_cols[5], data_cols[10], data_cols[15], data_cols[22], "trial", "plate", "well" ]].sample(10, random_state=1)
-    #Xd = data[cols].sample(500,  random_state=1)
-    y_df = Xd.merge(treat, on=["trial", "plate", "well"] )
-
-    #X = Xd[ [data_cols[0], data_cols[5], data_cols[10], data_cols[15]] ].sample(10)
-    #X = Xd[data_cols]
-    X = data[cols].sample(10)
-
-
-
-    classes = set({})
-    for i in treat["treatment"]:
-        classes.add(i)
-    print("classes ", classes)
-
-    class_list = list(classes)
-    y = []
-    for el in y_df["treatment"]:
-        y.append( class_list.index(el) )
-
-
-    n_samples = 30
-    random_state = 170
-    k = 3
-
-    centers = [(3, 3), (8, 8), (12, 12)]
-    #X, y = datasets.make_blobs(n_samples=n_samples, centers=centers, shuffle=False) #random_state=42
-    #X2, y2 = datasets.make_blobs(n_samples=10, centers=centers, shuffle=False)  # random_state=42
-
-    #X[:, 0] /= np.max(X[:, 0])
-    #X[:, 1] /= np.max(X[:, 1])
-
-
-
 
     #print(X2)
     #print("X2 shape ", X.shape)
@@ -271,87 +199,15 @@ if __name__ == '__main__':
     #ci4 = nmf_Own2(X.T, k)
     #ci5 = nmfBeta_Own(X.T, k)
 
-    #print("purity  nmf ", purity([1,2,3, 2, 2, 1 ], [ 1,2,3, 1,1,1 ]))
+    #runTestData()
 
-    #print("y  ", y)
-    #print("f  ", ci, " shape ", len(ci))
-    #print("f2 ", ci2, " shape ", len(ci2))
-    #print("f3 ", ci3)
-    #print("f4 ", ci4, " shape ", len(ci4))
+    MainDF()
 
-    #print("purity  nmf ", purity( ci, y ) )
-    #print("purity  nmf2 ", purity(ci2, y))
-    #print("purity  nmf_Own ", purity(ci3[k], y))
-    #print("purity  nmf_Own2 ", purity(ci4[k], y))
-    #print("purity  nmf_Own2 ", purity(ci5[k], y))
-
-    #print(treat)
-
-    #ci2_plt = splitForPlot(X, ci2)
-
-    #print(ci2)
-
-    ##
-
-    #kMeansInit(X.T, 3)
-
-    df = getTable(0)
-    #print("shape ", df.shape)
-
-    #getPCA()
-
-
-    dfc = getTable_withClass()
-    print("shape ", dfc.shape)
-    #dfc['treatment']
-    #print("treatnebt ", dfc.dtypes )
-    #getMatrix(dfc)
-
-    #plotPCARatio(dfc)
-    #plotLDARatio(dfc)
-
-    M_lda = getLDA(dfc)
-    M_pca = getPCA(dfc)
-
-    #plotUmap( getPCA(dfc), title="PCA" )
-    plotUmap(M_lda, title="LDA Matrix")
-    plotUmap(dfc.drop("treatment", axis=1), title="Normal Matrix")
-
-    ind = 0
-    maps_ = dict()
-    for el in dfc["treatment"]:
-        if(el not in maps_):
-            maps_[el] = ind
-            ind = ind + 1
-
-    y_given = dfc["treatment"].map(maps_)
-    print("number of classes ", ind)
-
-
-
-    y = kmeans_(dfc.drop("treatment", axis=1), 9)
-    plotUmap(dfc.drop("treatment", axis=1), y, "KMeans")
-
-    y2 = kmeans_(M_lda, 9)
-    plotUmap(dfc.drop("treatment", axis=1), y2, "KMeans with LDA Matrix")
-
-    y3 = kmeans_(M_pca, 9)
-    plotUmap(M_pca, y3, "KMeans with PCA Matrix")
-
-    plotUmap(M_lda, y2, "KMeans with LDA Matrix")
-
-    plotUmap(dfc.drop("treatment", axis=1), y_given, "Ground Truth")
-    plotUmap(M_lda, y_given, "Ground Truth")
-
-
-
-
-    y2 = LDA_CLustering(dfc.drop("treatment", axis=1), dfc["treatment"] )
-    #print("lit ", type(y2[10]))
-    y2 = list( map( lambda x: sum([ord(i) for i in list(x)]) , y2) )
-    #print(y2)
 
     #plotUmap(dfc.drop("treatment", axis=1), y2, "LDA")
+
+    #df2 = stringColumnToIntClass(stringColumnToIntClass(df_withAll, "plate"), "well")[["plate", "well"]]
+    #plotUmap(M_lda, kmeans_( df2, 9), "M_lda Plate" )
 
     #A = similarityMatrix(X.T)
     #print(A.shape)
