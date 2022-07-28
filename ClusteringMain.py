@@ -1,6 +1,7 @@
 import os
 
 import numpy as np
+import scipy.linalg
 
 from Reader import *
 from sklearn.decomposition import *
@@ -40,6 +41,9 @@ def getTable_withClass():
     df2 = df2.join(df[['trial', 'plate', 'well']])
 
     conc_id_df = pd.read_csv('../../Data/treatments.csv', usecols=['trial', 'plate', 'well', 'treatment'])
+
+    print("classes ", conc_id_df["treatment"].unique())
+    print("number of classes ", len(conc_id_df["treatment"].unique()) )
 
     #df2 = df.filter(regex="$_Prim").filter(regex="$_Cyto").filter(regex="$_Nucl")
 
@@ -501,3 +505,80 @@ class LDA:
         print(eigenValues.real)
 
         return X.to_numpy().dot(eigenVectors[:, 0:dims-1])
+
+
+class LDA_SVD:
+    def __init__(self):
+        self.Sw = None
+
+    def fit(self, X, t):
+        self.priors = dict()
+        self.P = dict()
+        self.means = dict()
+        self.nk = dict()
+
+        self.classes = np.unique(t)
+
+        self.m = np.mean(X, axis=0)
+
+        for c in self.classes:
+            X_c = X[t == c]
+            self.priors[c] = X_c.shape[0] / X.shape[0]
+            self.P[c] = X_c.shape[0] / X.shape[0]
+            self.means[c] = np.mean(X_c, axis=0)
+            self.nk[c] = X_c.shape[0]
+
+        self.Sw = np.zeros((X.shape[1], X.shape[1]))
+        self.Sb = np.zeros((X.shape[1], X.shape[1]))
+
+        print("sb ", self.Sb.shape)
+        print("sw ", self.Sw.shape)
+
+        Xn = X.to_numpy()
+        for c in self.classes:
+            X_c = Xn[t == c]
+            # for x in X_c:
+            #    self.Sw = self.Sw + np.outer( (x - self.means[c]), (x - self.means[c]) )
+            self.Sw = self.Sw + np.cov(X_c, rowvar=False)
+        # self.Sw = self.Sw/len(self.classes)
+
+        for c in self.classes:
+            self.Sb = self.Sb + self.nk[c] * np.outer((self.means[c] - self.m), (self.means[c] - self.m))
+
+        return self
+
+    def transform(self):
+
+        H = np.vstack((self.Sb.T, self.Sw.T))
+        print("rank H ", H.shape)
+        t = H.shape[1]
+
+        P, R_, Q = scipy.linalg.svd(H)
+
+        print("shape ", R_.shape)
+
+        U, Y, W = scipy.linalg.svd(P[0:self.classes.size, 0:t])
+
+        n,m = R_.shape
+        print(R_[0:(n-1), 0:(m-1)])
+
+        R = R_[0:t, 0:t]
+
+        print("Q.shape ", Q.shape)
+
+        # for x in X.iloc():
+        # print("vr ", vr.shape)
+        # print("X ", X.iloc[2].shape)
+        # transformed = np.dot(eigenVectors, np.vstack(X.iloc[2]) )
+
+        # res = X.apply( lambda x : np.dot(eigenVectors, np.vstack(x) ), axis=1 )
+        # res = X.apply(lambda x:  pd.Series( np.dot(eigenVectors, x) ), axis=1)
+        # for x in X.iloc():
+        #    res.append( np.dot(eigenVectors, np.vstack(x) ) )
+
+        # np.dot(vr, np.vstack(X.to_numpy()) )
+
+        print("eigenvalues")
+        #print(eigenValues.real)
+
+        #return X.to_numpy().dot(eigenVectors[:, 0:dims - 1])

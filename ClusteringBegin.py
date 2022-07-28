@@ -535,7 +535,11 @@ def symmetricNMF(data, k, bool_s_as_I=True):
     return ci
 
 
-def symmetricNMF2(data, k, useS=False):
+def symmetricNMF2(data, k, useS=True):
+    for row in np.nditer(data):
+        for c in np.nditer(row):
+            if c < 0:
+                raise Exception('Error one value is negative')
 
     A = data
     n,m = A.shape
@@ -543,7 +547,8 @@ def symmetricNMF2(data, k, useS=False):
 
     #H = np.ones( ( n,k) )
     H = np.random.random((n,k))
-    beta = 0.5
+    #beta = 0.5
+    beta = 0.25
 
     print("n ", n, " m ", m)
     Hnew = np.random.random((n, k))

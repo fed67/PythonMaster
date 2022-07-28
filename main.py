@@ -98,13 +98,28 @@ def MainDF():
 
     print("X.shape ", X_sk.shape)
 
+    cols = df.drop("treatment", axis=1).columns
+    df2 = df.drop("treatment", axis=1)
+    l = []
+    for col in df2:
+        #print(col)
+        l.append( (df2[col] >= 0).all() )
+
+    ind = np.array( cols[ l ] )
+    print("ind ", ind)
+
+    print("matrix")
+    print(df2.loc[:, ind].to_numpy().shape)
+    print("min ", df2.loc[:, ind].to_numpy().min())
+
     A = similarityMatrix(df.drop("treatment", axis=1).to_numpy())
-    yN = symmetricNMF(A, 9)
+    #yN = symmetricNMF2(A, 9)
+    yN = nmf( df2.loc[:, ind].to_numpy(), 9)
     print("yN ", yN)
 
     #print("tr shape ", tr.shape)
     #plotUmap( df.drop("treatment", axis=1), y_given, "LDA")
-    plotUmap(X_sk, yN, "Symmetric NMF")
+    plotUmap(X_sk, yN, "Sklearn NMF")
     #plotUmap(X_sk, df["treatment"], "PCA")
 
     #plt.plot(np.cumsum(pca.explained_variance_ratio_))
