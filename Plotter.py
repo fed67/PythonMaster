@@ -1,6 +1,8 @@
 from numpy.random import RandomState
 import matplotlib.pyplot as plt
 from sklearn.manifold import *
+import numpy as np
+from Utilities import *
 
 import umap
 from sklearn.preprocessing import StandardScaler
@@ -17,9 +19,27 @@ class Plotter:
             init="random",
             random_state=self.rng,
         )
-        S_t_sne = t_sne.fit_transform(A)
+        tsne = t_sne.fit_transform(A)
 
-        plt.plot(S_t_sne, y, "T-distributed Stochastic  \n Neighbor Embedding")
+        fig, ax = plt.subplots()
+        # plt.scatter(
+        #    embedding[:, 0],
+        #    embedding[:, 1], c=colors, label=lab)
+
+        #ax.plot(tsne, y)
+        print("tsne shape ", tsne.shape)
+
+        ax.scatter(tsne[:,0], tsne[:,1], y)
+
+        fig.suptitle("Tes Plot")
+        fig.set_size_inches(13, 13)
+
+        ax.grid(True)
+        # ax.legend(loc='upper right')
+        lgd = ax.legend(bbox_to_anchor=(1.1, 1.05))
+        ax.set_xlabel("x")
+        ax.set_ylabel("y")
+
 
     def multidimensional(self, A, y):
         md_scaling = MDS(
@@ -27,7 +47,24 @@ class Plotter:
         )
         S_scaling = md_scaling.fit_transform(A)
 
-        plt.plot(S_scaling, y, "Multidimensional scaling")
+        fig, ax = plt.subplots()
+        # plt.scatter(
+        #    embedding[:, 0],
+        #    embedding[:, 1], c=colors, label=lab)
+
+        # ax.plot(tsne, y)
+        print("multidimensional scaling shape ", S_scaling.shape)
+
+        ax.scatter(S_scaling[:, 0], S_scaling[:, 1], y)
+
+        fig.suptitle("Tes Plot")
+        fig.set_size_inches(13, 13)
+
+        ax.grid(True)
+        # ax.legend(loc='upper right')
+        lgd = ax.legend(bbox_to_anchor=(1.1, 1.05))
+        ax.set_xlabel("x")
+        ax.set_ylabel("y")
 
     def plotUmap(df, title=""):
 
@@ -136,3 +173,22 @@ class Plotter:
         ax.set_ylabel("y")
 
         fig.savefig(title_.replace(" ", "-") + ".eps", format='eps')
+
+    def scatter(self, x, y):
+        fig, ax = plt.subplots()
+        # plt.scatter(
+        #    embedding[:, 0],
+        #    embedding[:, 1], c=colors, label=lab)
+
+
+        ax.scatter(x, y, label="Test")
+
+        fig.suptitle("Tes Plot")
+        fig.set_size_inches(13, 13)
+
+        ax.grid(True)
+        # ax.legend(loc='upper right')
+        lgd = ax.legend(bbox_to_anchor=(1.1, 1.05))
+        ax.set_xlabel("x")
+        ax.set_ylabel("y")
+
