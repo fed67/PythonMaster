@@ -84,12 +84,9 @@ class Plotter:
             embedding[:, 1])
         plt.title(title)
 
-    def plotUmap(df, colors=[], title_="", labels=[]):
+    def plotUmap(df, colors=[], title_="", labels=[], write_to_svg=False):
 
         reducer = umap.UMAP()
-
-        # print("X ", X)
-        # print(X)
 
         # scaled_penguin_data = StandardScaler().fit_transform(df)
         embedding = reducer.fit_transform(df)
@@ -100,7 +97,7 @@ class Plotter:
             colors = np.zeros(len(embedding[:, 0]))
             colors.fill(6)
 
-        unique = getUnique(colors)
+        unique = get_unique(colors)
         elements = []
         for i in range(0, len(unique)):
             f = lambda t: t[2] == unique[i]
@@ -114,7 +111,10 @@ class Plotter:
         for i in range(0, len(unique)):
             elx, ely, c = zip(*elements[i])
 
-            label = "Class " + str(c[0])
+            if len(labels) == 0:
+                label = "Class " + str(c[0])
+            else:
+                label = labels[i]
 
             ax.scatter(elx, ely, 1 + unique[i], label=label)
 
@@ -126,6 +126,9 @@ class Plotter:
         lgd = ax.legend(bbox_to_anchor=(1.1, 1.05))
         ax.set_xlabel("x")
         ax.set_ylabel("y")
+
+        if write_to_svg:
+            fig.savefig(title_.replace(" ", "-") + ".eps", format='eps')
 
     def writeUmap(df, colors=[], title_="", labels=[]):
 
@@ -141,7 +144,7 @@ class Plotter:
 
         lab = np.array([1, 2, 3, 4, 5, 6, 7, 8, 9])
 
-        unique = getUnique(colors)
+        unique = get_unique(colors)
         elements = []
         for i in range(0, len(unique)):
             f = lambda t: t[2] == unique[i]

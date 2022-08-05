@@ -9,65 +9,10 @@ from sklearn.discriminant_analysis import *
 from Utilities import *
 import scipy as sci
 
+
 import umap
 from sklearn.preprocessing import StandardScaler
 
-def getTable_withClass():
-    path = "../../Data/data_sampled.csv"
-    path = os.path.normpath(os.path.join(os.getcwd(), path))
-
-    df = pd.read_csv('../../Data/data_sampled.csv')
-
-    print("shape before ", df.shape)
-    df = df.dropna()
-
-    types = df.dtypes
-
-    types_set = set()
-    for t in types:
-        types_set.add(t)
-
-    types_set = np.unique(types)
-
-    print("Types ")
-    print(types_set)
-
-
-    #print("filter")
-    #print( types.filter(items=['int64', 'float64']) )
-
-    #df2 = df.select_dtypes(include=['float', 'int'])
-    df2 = df.select_dtypes(include=['float'])
-    df2 = df2.join(df[['trial', 'plate', 'well']])
-
-    conc_id_df = pd.read_csv('../../Data/treatments.csv', usecols=['trial', 'plate', 'well', 'treatment'])
-
-    print("classes ", conc_id_df["treatment"].unique())
-    print("number of classes ", len(conc_id_df["treatment"].unique()) )
-
-    #df2 = df.filter(regex="$_Prim").filter(regex="$_Cyto").filter(regex="$_Nucl")
-
-    cols_bool = df.columns.str.contains("_Prim") | df.columns.str.contains("_Cyto") | df.columns.str.contains("_Nucl")
-    c2 = np.vectorize(lambda x: not x)(cols_bool)
-    #cols2 = df.columns.where(c2)
-
-    c3 = []
-    for i in range(0, c2.size):
-        if c2[i]:
-            c3.append(df.columns[i])
-
-    df2 = df[c3]
-
-    df2 = df2.join(conc_id_df.set_index(['trial', 'plate', 'well']),
-                 on=['trial', 'plate', 'well'], how='inner')
-
-    #print(df2.columns)
-
-    df2_ = df2.drop(['trial', 'plate', 'well'], axis=1)
-
-
-
-    return df2_, df2
 
 
 def getTable(numberOfSamples=0):
@@ -158,120 +103,7 @@ def filterDF(df):
 
     return table[c3]
 
-def plotUmap(df, title=""):
 
-    reducer = umap.UMAP()
-
-    # print("X ", X)
-    # print(X)
-
-    scaled_penguin_data = StandardScaler().fit_transform(df)
-    embedding = reducer.fit_transform(df)
-    # print("embedding ", embedding.shape)
-    # print("Xd ", Xd.shape)
-
-    plt.figure()
-    plt.scatter(
-        embedding[:, 0],
-        embedding[:, 1])
-    plt.title(title)
-
-def plotUmap(df, colors=[], title_="", labels=[]):
-
-    reducer = umap.UMAP()
-
-    # print("X ", X)
-    # print(X)
-
-    #scaled_penguin_data = StandardScaler().fit_transform(df)
-    embedding = reducer.fit_transform(df)
-    # print("embedding ", embedding.shape)
-    # print("Xd ", Xd.shape)
-
-    if len(colors) == 0:
-        colors = np.zeros( len(embedding[:,0]) )
-        colors.fill(6)
-
-
-    unique = getUnique(colors)
-    elements = []
-    for i in range(0, len(unique) ):
-        f = lambda t: t[2] == unique[i]
-        elements.append( list( filter(f, zip(embedding[:,0], embedding[:,1], colors) ) ) )
-
-
-
-    fig, ax = plt.subplots()
-    #plt.scatter(
-    #    embedding[:, 0],
-    #    embedding[:, 1], c=colors, label=lab)
-
-    for i in range(0, len(unique) ):
-        elx, ely, c = zip(*elements[i])
-
-        label = "Class " + str(c[0])
-
-        ax.scatter( elx, ely, 1+unique[i], label=label )
-
-
-    fig.suptitle(title_)
-    fig.set_size_inches(13, 13)
-
-    ax.grid(True)
-    #ax.legend(loc='upper right')
-    lgd = ax.legend(bbox_to_anchor=(1.1, 1.05))
-    ax.set_xlabel("x")
-    ax.set_ylabel("y")
-
-
-def writeUmap(df, colors=[], title_="", labels=[]):
-
-    reducer = umap.UMAP()
-
-    # print("X ", X)
-    # print(X)
-
-    scaled_penguin_data = StandardScaler().fit_transform(df)
-    embedding = reducer.fit_transform(df)
-    # print("embedding ", embedding.shape)
-    # print("Xd ", Xd.shape)
-
-    lab = np.array([1,2,3,4,5,6,7,8,9])
-
-    unique = getUnique(colors)
-    elements = []
-    for i in range(0, len(unique) ):
-        f = lambda t: t[2] == unique[i]
-        elements.append( list( filter(f, zip(embedding[:,0], embedding[:,1], colors) ) ) )
-
-
-    if len(colors) == 0:
-        colors = np.zeros( len(embedding[:,0]) )
-        colors.fill(32)
-
-    fig, ax = plt.subplots()
-    fig.set_size_inches(13, 13)
-    #plt.scatter(
-    #    embedding[:, 0],
-    #    embedding[:, 1], c=colors, label=lab)
-
-    for i in range(0, len(unique) ):
-        elx, ely, c = zip(*elements[i])
-
-        label = "Class " + str(c[0])
-
-        ax.scatter( elx, ely, 1+unique[i], label=label )
-
-
-    fig.suptitle(title_)
-
-    ax.grid(True)
-    #lgd = ax.legend(loc='upper right', bbox_to_anchor=(1.1, 1.05))
-    lgd = ax.legend(bbox_to_anchor=(1.1, 1.05))
-    ax.set_xlabel("x")
-    ax.set_ylabel("y")
-
-    fig.savefig(title_.replace(" ", "-")+".eps", format='eps')
 
 
 def getPCA(X0):
