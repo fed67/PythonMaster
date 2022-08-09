@@ -297,6 +297,8 @@ class LDA:
         for c in self.classes:
             self.Sb = self.Sb + self.nk[c] * np.outer( (self.means[c] - self.m), (self.means[c]-self.m) )
 
+
+
     def transform(self, X):
 
         l,e = sci.linalg.eig(self.Sw)
@@ -317,8 +319,8 @@ class LDA:
         dims = eigenVectors.shape[1]
 
 
-        print("sb ", self.Sb)
-        print("sw ", self.Sw)
+        #print("sb ", self.Sb)
+        #print("sw ", self.Sw)
 
         #for x in X.iloc():
         #print("vr ", vr.shape)
@@ -343,74 +345,421 @@ class LDA_SVD:
     def __init__(self):
         self.Sw = None
 
+    #input rows data, columns: features
     def fit(self, X, t):
         self.priors = dict()
-        self.P = dict()
+        self.p = dict()
         self.means = dict()
         self.nk = dict()
 
-        self.classes = np.unique(t)
+        self.Hw = np.array([])
+        self.Hb = np.array([])
 
-        self.m = np.mean(X, axis=0)
+        self.t = t
+
+        self.Centroid = []
+
+        #print("X.shape ", X.shape)
+
+        n,m = X.shape
+
+        self.classes = np.unique(t)
+        k = len(self.classes)
+
+        self.mean_g = np.mean(X, axis=0)
+
+        self.data = X
+
+        #print("mean ", self.mean_g.shape)
 
         for c in self.classes:
             X_c = X[t == c]
             self.priors[c] = X_c.shape[0] / X.shape[0]
-            self.P[c] = X_c.shape[0] / X.shape[0]
+            self.p[c] = X_c.shape[0]
             self.means[c] = np.mean(X_c, axis=0)
             self.nk[c] = X_c.shape[0]
+            self.Centroid.append(self.means[c])
 
+        self.Centroid = np.array(self.Centroid)
         self.Sw = np.zeros((X.shape[1], X.shape[1]))
         self.Sb = np.zeros((X.shape[1], X.shape[1]))
 
-        print("sb ", self.Sb.shape)
-        print("sw ", self.Sw.shape)
+        #print("sb ", self.Sb.shape)
+        #print("sw ", self.Sw.shape)
 
-        Xn = X.to_numpy()
+        self.Hb = []
+        self.Hw = []
+        self.Ht = []
+
+        Xn = X
         for c in self.classes:
             X_c = Xn[t == c]
-            # for x in X_c:
-            #    self.Sw = self.Sw + np.outer( (x - self.means[c]), (x - self.means[c]) )
-            self.Sw = self.Sw + np.cov(X_c, rowvar=False)
-        # self.Sw = self.Sw/len(self.classes)
+            nl,ml = X_c.shape
+            for x in X_c:
+                self.Sw = self.Sw + np.outer( (x - self.means[c]), (x - self.means[c]) )
+            #self.Sw = self.Sw + np.cov(X_c, rowvar=False)
 
+            if len(self.Hb) > 0:
+                v0 = np.array( np.sqrt(self.p[c]) * (self.means[c] - self.mean_g))
+                self.Hb = np.vstack( (self.Hb, v0))
+            else:
+                self.Hb = np.array( np.sqrt(self.p[c]) * (self.means[c] - self.mean_g))
+
+            if len(self.Hw) > 0:
+                v0 = np.array( X_c.T - np.outer(self.means[c], np.ones(X_c.shape[0])) )
+                self.Hw = np.hstack( (self.Hw, v0))
+            else:
+                self.Hw = np.array( X_c.T - np.outer(self.means[c], np.ones(X_c.shape[0])) )
+
+
+        self.Hb = self.Hb.T/np.sqrt(n)
+        self.Hw = self.Hw.T/np.sqrt(n)
+
+        #mi = np.array( list( map(lambda x: x[1], list(self.means)) ) )
         for c in self.classes:
-            self.Sb = self.Sb + self.nk[c] * np.outer((self.means[c] - self.m), (self.means[c] - self.m))
+            self.Sb = self.Sb + self.nk[c] * np.outer((self.means[c] - self.mean_g), (self.means[c] - self.mean_g))
+
+        self.Sb = 1.0/n * self.Sb
+        self.Sw = 1.0/n * self.Sw
+        self.St = np.zeros((m,m))
+
+        for x in self.data:
+            self.St = self.St +  np.outer( (x-self.mean_g), (x-self.mean_g) )
+        self.St = self.St/n
+
+
+        self.Ht = X.T - np.tile(self.mean_g, (n,1)).T
+        self.Ht = self.Ht/np.sqrt(n)
+
+        #print("Hb shape ", self.Hb.shape)
+        #print("Hw shape ", self.Hw.shape)
+        #print("Ht shape ", self.Ht.shape)
+
 
         return self
 
-    def transform(self):
+    def transform(self, X):
 
-        H = np.vstack((self.Sb.T, self.Sw.T))
-        print("rank H ", H.shape)
-        t = H.shape[1]
+        return X.dot(self.G)
 
-        P, R_, Q = scipy.linalg.svd(H)
 
-        print("shape ", R_.shape)
+    #solving the small sample size problem of LDA, Huang
+    def transform_NLDA(self, k):
+        #k = self.classes
+        #print("transform_NLDA ")
 
-        U, Y, W = scipy.linalg.svd(P[0:self.classes.size, 0:t])
+        l, e = scipy.linalg.eig(self.St, b=None, left=False, right=True)
 
-        n,m = R_.shape
-        print(R_[0:(n-1), 0:(m-1)])
+        print("l ", l.shape)
+        print("e ", e.shape)
 
-        R = R_[0:t, 0:t]
+        print("Sb.shape ", self.Sb.shape)
+        #print("Sw.shape ", self.Sw.shape)
 
+        U = []
+        for i in range(len(l)):
+            if abs(l[i]) > 1e-20:
+                U.append(e[:,i])
+        U = np.array(U).T
+
+        print("U.shape ", U.shape)
+
+        Sb_ = np.dot(U.T, np.dot(self.Sb, U))
+        Sw_ = np.dot(U.T, np.dot(self.Sw, U))
+
+
+        l, e = scipy.linalg.eig(Sw_)
+        Q = []
+        for i in range(len(l)):
+            if abs(l[i]) > 1e-20:
+                Q.append(e[:,i])
+        Q = np.array(Q).T
+
+        Sb__ = np.dot(Q.T, np.dot(Sb_, Q))
+        Sw__ = np.dot(Q.T, np.dot(Sw_, Q))
+
+        print("Sb__ shape ", Sb__.shape)
+
+        l, e = scipy.linalg.eig(Sb__)
+        V = []
+        for i in range(len(l)):
+            if abs(l[i]) > 1e-20:
+                V.append(e[:, i])
+        V = np.array(V).T
+
+        #V = e
+
+        #print("U.shape ", U1.shape)
+        #print("Q.shape ", Q.shape)
+        #print("V.shape ", V.shape)
+
+        self.G = np.dot(U, np.dot(Q, V))
+
+        print("G.shape ", self.G.shape)
+
+
+        df = self.data.copy()
+        #c = df.apply(lambda row: G.T.dot(row), axis=1)
+        #print("c shape ", c.shape)
+        #return np.dot( self.G.T, df.T ).T
+        return self
+
+
+    #Characterization of a Family of Algorithms for generalized, Jieping Ye
+    def transform_ULDA(self, k):
+
+
+        U, St, V = scipy.linalg.svd(self.Ht, full_matrices=False, compute_uv=True)
+        St = np.diag(St)
+
+        #print("Data ", self.data.shape)
+        #print("Ht ", self.Ht.shape)
+        #print("Hb ", self.Hb.shape)
+        #print("U ", U.shape)
+        #print("St ", St.shape)
+        #print("V ", V.shape)
+
+        B = np.dot( np.linalg.inv(St), np.dot(U.T, self.Hb) )
+
+        P, S, Q = np.linalg.svd(B, full_matrices=False, compute_uv=True)
+        S = np.diag(S)
+
+        q = np.linalg.matrix_rank(B)
+
+        X = np.dot(U, np.dot(np.linalg.inv(St), P) )
+
+        #print("X.shape ", X.shape)
+
+        self.G = X[:,0:q]
+
+        print("ULDA G.shape ", self.G.shape)
+
+        #print("X ", X)
+        #print("Q ", Q)
+        #print("B Rank ", np.linalg.matrix_rank(B))
+
+
+        #return self.data.dot(eigenVectors[:, 0:dims - 1])
+        #return np.dot(G.T, self.data.T).T
+        return self
+
+#after Beck et al
+    def classicLDA(self, k):
+
+        #print("Sw ", self.Sw)
+        #print("Sb ", self.Sb)
+
+        np.linalg.inv(self.Sw)
+
+        # eigenValues, eigenVectors = sci.linalg.eigh(self.Sb, self.Sw, left=False, right=True, homogeneous_eigvals=False)
+        #eigenValues, eigenVectors = sci.linalg.eig(self.Sb, self.Sw)
+        #eigenValues, eigenVectors = sci.linalg.eig(np.dot(np.linalg.inv(self.Sb), self.Sw))
+        eigenValues, eigenVectors = sci.linalg.eig(np.dot(np.linalg.inv(self.Sw), self.Sb))
+
+        idx = (eigenValues.real).argsort()[::-1]
+        eigenValues = eigenValues[idx]
+        eigenVectors = eigenVectors[:, idx].real
+
+        dims = eigenVectors.shape[1]
+
+        self.G = eigenVectors[:, 0:min(dims - 1, k)]
+
+        print("Classic G.shape ", self.G.shape)
+
+        #return self.data.dot(eigenVectors[:, 0:dims - 1])
+        return self
+
+    #after LDA/QR: an efficient and effective...., Jieping Ye and Li
+    def transform_GLDA(self, k):
+
+        V, S, U = np.linalg.svd(self.Sw, full_matrices=False, compute_uv=True)
+
+        S = np.diag(S)
+
+        np.linalg.inv(S)
+        Sw_Inv = np.dot(V, np.dot(np.linalg.inv(S), U.T))
+
+        #eigenValues, eigenVectors = sci.linalg.eig(self.Sb, self.Sw)
+        eigenValues, eigenVectors = sci.linalg.eig(np.dot(Sw_Inv, self.Sb))
+        #eigenValues, eigenVectors = sci.linalg.eig(np.dot( np.linalg.inv(self.Sw), self.Sb))
+
+        idx = (eigenValues.real).argsort()[::-1]
+        eigenValues = eigenValues[idx]
+        eigenVectors = eigenVectors[:, idx].real
+
+        dims = eigenVectors.shape[1]
+
+        #print("sb ", self.Sb)
+        #print("sw ", self.Sw)
+
+        t = np.linalg.matrix_rank(self.data)
+        #self.G = eigenVectors[:, 0:min(dims - 1, k)]
+        self.G = eigenVectors[:, 0:t]
+
+        print("GLDA G.shape ", self.G.shape)
+
+
+        return self
+
+    # an efficient and effective dimension reduction... Jieping Ye, Qi Li
+    def LDA_QR(self, k):
+
+        Q,R = np.linalg.qr(self.Hb, mode="reduced")
+
+        print("Hb.shape ", self.Hb.shape)
         print("Q.shape ", Q.shape)
+        print("R.shape ", R.shape)
 
-        # for x in X.iloc():
-        # print("vr ", vr.shape)
-        # print("X ", X.iloc[2].shape)
-        # transformed = np.dot(eigenVectors, np.vstack(X.iloc[2]) )
+        Sb_ = np.dot(Q.T, np.dot(self.Sb, Q))
+        Sw_ = np.dot(Q.T, np.dot(self.Sw, Q))
 
-        # res = X.apply( lambda x : np.dot(eigenVectors, np.vstack(x) ), axis=1 )
-        # res = X.apply(lambda x:  pd.Series( np.dot(eigenVectors, x) ), axis=1)
-        # for x in X.iloc():
-        #    res.append( np.dot(eigenVectors, np.vstack(x) ) )
+        #print("Sb_.shape ", Sb_.shape)
+        #print("Sw_.shape ", Sw_.shape)
 
-        # np.dot(vr, np.vstack(X.to_numpy()) )
+        np.linalg.inv(Sb_)
+        np.linalg.inv(Sw_)
 
-        print("eigenvalues")
-        #print(eigenValues.real)
+        M = np.dot( np.linalg.inv(Sb_), Sw_)
+        print("M ", M.shape)
 
-        #return X.to_numpy().dot(eigenVectors[:, 0:dims - 1])
+        eigenValues, eigenVectors = sci.linalg.eig(M)
+
+        print("eigenvalues bef ", eigenValues)
+        print("are complex ", np.iscomplex(eigenValues) )
+
+        idx = (eigenValues.real).argsort()[::-1]
+        eigenValues = eigenValues[idx]
+        eigenVectors = eigenVectors[:, idx].real
+
+        print("eigenvalues ", eigenValues)
+
+        #dims = eigenVectors.shape[1]
+
+        t = Q.shape[1]
+        #self.G = np.dot(Q, eigenVectors[:, 0: min(dims - 1, k)] )
+        self.G = np.dot(Q, eigenVectors)
+        #self.G = eigenVectors[:, 0:t]
+
+        print("QR G.shape ", self.G.shape)
+
+        #return self.data.dot(eigenVectors[:, 0:dims - 1])
+        return self
+
+
+    def LDA_QR2(self, k):
+
+
+
+        Q,R = np.linalg.qr(self.Centroid, mode="complete")
+
+        print("Hb.shape ", self.Centroid.shape)
+        print("Hb.shape ", self.Hb.shape)
+        print("Q.shape ", Q.shape)
+        print("R.shape ", R.shape)
+
+        Q = R.T
+
+        Y = np.dot(self.Sb.T, Q)
+        Z = np.dot(self.Sw.T, Q)
+
+        B = np.dot(Y.T, Y)
+        T = np.dot(Z.T, Z)
+
+        M = np.dot( np.linalg.inv(T), B)
+        print("M ", M.shape)
+
+        eigenValues, eigenVectors = sci.linalg.eig(M)
+
+        print("eigenvalues bef ", eigenValues)
+        print("are complex ", np.iscomplex(eigenValues) )
+
+        idx = (eigenValues.real).argsort()[::-1]
+        eigenValues = eigenValues[idx]
+        eigenVectors = eigenVectors[:, idx].real
+
+        print("eigenvalues ", eigenValues)
+
+        #dims = eigenVectors.shape[1]
+
+        t = Q.shape[1]
+        #self.G = np.dot(Q, eigenVectors[:, 0: min(dims - 1, k)] )
+        self.G = np.dot(Q, eigenVectors[:, 0:t])
+
+        print("QR G.shape ", self.G.shape)
+
+        #return self.data.dot(eigenVectors[:, 0:dims - 1])
+        return self
+
+
+    def LDA_Kernel(self, k):
+
+        n, m = self.data.shape
+
+
+
+        def K0(x1, x2):
+            return np.exp(- np.linalg.norm(x1-x2)**2/1)
+
+
+        Kx = []
+        ni = []
+        Xn = self.data
+        for c in self.classes:
+            X_c = Xn[self.t == c]
+            nl, ml = X_c.shape
+            Kx.append( np.zeros((n,nl)) )
+            for i in range(n):
+                for j in range(nl):
+                    Kx[c][i,j] = Kx[c][i,j] + K0(Xn[i,:], X_c[j,:])
+            ni.append(self.nk[c])
+
+        l = len(self.classes)
+        K = np.zeros((n,n) )
+
+        for i in range(n):
+            for j in range(n):
+                K[i,j] = K0(Xn[i, :], Xn[j, :])
+
+        M = np.zeros((n,n))
+        for i in range(l):
+            v = 1/ni[i]*np.dot(Kx[i], np.ones(ni[i])) - 1/n*np.dot(K, np.ones(n))
+            M = M + ni[i]*np.outer(v,v)
+
+        N = np.zeros((n, n))
+        for i in range(l):
+            N = N + np.dot(K[i], K[i].T) - 1/ni[i]*( np.dot( K[i], np.dot(np.ones(ni[i]), np.dot(np.ones(ni[i]), np.dot(np.ones(K[i].T)) ) )  ) )
+
+            # self.Sw = self.Sw + np.cov(X_c, rowvar=False)
+
+
+
+
+        # mi = np.array( list( map(lambda x: x[1], list(self.means)) ) )
+        for c in self.classes:
+            self.Sb = self.Sb + self.nk[c] * np.outer((self.means[c] - self.mean_g), (self.means[c] - self.mean_g))
+
+        Sb = 1.0 / n * self.Sb
+        Sw = 1.0 / n * self.Sw
+        St = np.zeros((m, m))
+
+        for x in self.data:
+            self.St = self.St + np.outer((x - self.mean_g), (x - self.mean_g))
+        self.St = self.St / n
+
+        np.linalg.inv(self.Sw)
+
+        # eigenValues, eigenVectors = sci.linalg.eigh(self.Sb, self.Sw, left=False, right=True, homogeneous_eigvals=False)
+        #eigenValues, eigenVectors = sci.linalg.eig(self.Sb, self.Sw)
+        #eigenValues, eigenVectors = sci.linalg.eig(np.dot(np.linalg.inv(self.Sb), self.Sw))
+        eigenValues, eigenVectors = sci.linalg.eig(np.dot(np.linalg.inv(self.Sw), self.Sb))
+
+        idx = (eigenValues.real).argsort()[::-1]
+        eigenValues = eigenValues[idx]
+        eigenVectors = eigenVectors[:, idx].real
+
+        dims = eigenVectors.shape[1]
+
+        self.G = eigenVectors[:, 0:min(dims - 1, k)]
+
+        #return self.data.dot(eigenVectors[:, 0:dims - 1])
+        return self

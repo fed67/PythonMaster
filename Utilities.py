@@ -41,10 +41,13 @@ def get_table_with_merged_treatment(dataPath='../../Data/test_data/data_sampled_
     return df
 
 def get_table_with_class(dataPath='../../Data/data_sampled.csv', treatmentPath='../../Data/treatments.csv') -> [pd.DataFrame, pd.DataFrame]:
+    print("\nget_table_with_class")
     path = "../../Data/data_sampled.csv"
     path = os.path.normpath(os.path.join(os.getcwd(), path))
 
     df = pd.read_csv(dataPath)
+
+    remove_prim_cyto_nucl = False
 
     print("shape before ", df.shape)
     df = df.dropna()
@@ -68,12 +71,20 @@ def get_table_with_class(dataPath='../../Data/data_sampled.csv', treatmentPath='
     print("classes ", conc_id_df["treatment"].unique())
     print("number of classes ", len(conc_id_df["treatment"].unique()))
 
-    # df2 = df.filter(regex="$_Prim").filter(regex="$_Cyto").filter(regex="$_Nucl")
-    # remove columns containing regular expression  *_Prim, *_Cyto, *_Nucl
+    #df = df.replace([np.inf, -np.inf], np.nan).dropna(axis=1)#drop columns containing Inf, -Inf, NaN
+    df = df.replace([np.inf, -np.inf], np.nan).dropna(axis=0)  # drop rows containing Inf, -Inf, NaN
+    #df.replace([np.inf, -np.inf], np.nan, inplace=True)
 
-    cols_bool = df.columns.str.contains("_Prim") | df.columns.str.contains("_Cyto") | df.columns.str.contains("_Nucl")
+
+    # df2 = df.filter(regex="$_Prim").filter(regex="$_Cyto").filter(regex="$_Nucl")
+    if remove_prim_cyto_nucl:
+        # remove columns containing regular expression  *_Prim, *_Cyto, *_Nucl
+        cols_bool = df.columns.str.contains("_Prim") | df.columns.str.contains("_Cyto") | df.columns.str.contains("_Nucl")
+    else:
+        #df.columns.str is of type Pandas.Series.str
+        cols_bool = df.columns.str.fullmatch('(field)|(object_id)|(concentration)|(unit)|(conc_id)|(class)|(class_label)')
     c2 = np.vectorize(lambda x: not x)(cols_bool)
-    # cols2 = df.columns.where(c2)
+    #cols2 = df.columns.where(c2)
 
     c3 = []
     for i in range(0, c2.size):
@@ -88,5 +99,7 @@ def get_table_with_class(dataPath='../../Data/data_sampled.csv', treatmentPath='
     # print(df2.columns)
 
     df2_ = df2.drop(['trial', 'plate', 'well'], axis=1)
+
+    print("shape final ", df2_.shape)
 
     return df2_, df2
