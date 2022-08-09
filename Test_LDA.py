@@ -77,11 +77,10 @@ class LDA_TestClass(unittest.TestCase):
         model = lda.fit(X_train, y_train)
         x_sk = model.transform(X_test)
 
-
         Plotter().plotUmap(x_sk, y_test, "Sklearn LDA-SVD, Data Split in Train and Test set", inv_map)
         plt.show()
 
-    def test_LDA_Sklearn_train(self):
+    def test_LDA_Sklearn_Sample_train(self):
         dfc, _ = get_table_with_class(dataPath='../../Data/data_sampled.csv')
 
         dfc, inv_map = string_column_to_int_class(dfc, "treatment")
@@ -94,8 +93,23 @@ class LDA_TestClass(unittest.TestCase):
         model = lda.fit(X_train, y_train)
         x_sk = model.transform(X_train)
 
-
         Plotter().plotUmap(x_sk, y_train, "Sklearn LDA-SVD, data not split, Only Train data", inv_map)
+        plt.show()
+
+    def test_LDA_Sklearn_Sample_test(self):
+        dfc, _ = get_table_with_class(dataPath='../../Data/data_sampled.csv')
+
+        dfc, inv_map = string_column_to_int_class(dfc, "treatment")
+        X = dfc.drop("treatment", axis=1)
+        Y = dfc["treatment"]
+
+        X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=0.20, random_state=42)
+
+        lda = LinearDiscriminantAnalysis(solver='svd')
+        model = lda.fit(X_test, y_test)
+        x_sk = model.transform(X_test)
+
+        Plotter().plotUmap(x_sk, y_test, "Sklearn LDA-SVD, data not split, Only test data", inv_map)
         plt.show()
 
 
