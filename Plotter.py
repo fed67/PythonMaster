@@ -123,6 +123,7 @@ class Plotter:
                 print("i ", i, " labes ", len(labels))
                 label = labels[i]
 
+            print("unique[i] ", unique[i],)
             ax.scatter(elx, ely, 1 + unique[i], label=label)
 
         fig.suptitle(title_)

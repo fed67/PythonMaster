@@ -1,5 +1,7 @@
 import unittest
 
+from sklearn.model_selection import train_test_split
+
 from Plotter import Plotter
 from ClusteringFunctions import *
 from DimensionReduction import *
@@ -52,28 +54,66 @@ class LDA_TestClass(unittest.TestCase):
         lda = LinearDiscriminantAnalysis(solver='svd')
         x_sk = lda.fit_transform(df.drop("treatment", axis=1), df["treatment"])
 
-        y2 = kmeans_(x_sk, 9)
+        #y2 = kmeans_(x_sk, 9)
 
-        Plotter().plotUmap(x_sk, y2, "LDA-Sklearn", inv_map)
+        Plotter().plotUmap(x_sk, y_given, "LDA-Sklearn", inv_map)
 
         plt.show()
 
         self.assertEqual(True, True)
 
 
+    def test_LDA_Sklearn_Sample_split(self):
+        dfc, _ = get_table_with_class(dataPath='../../Data/data_sampled.csv')
+
+        dfc, inv_map = string_column_to_int_class(dfc, "treatment")
+        X = dfc.drop("treatment", axis=1)
+        Y = dfc["treatment"]
+
+        X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=0.20, random_state=42)
+
+
+        lda = LinearDiscriminantAnalysis(solver='svd')
+        model = lda.fit(X_train, y_train)
+        x_sk = model.transform(X_test)
+
+
+        Plotter().plotUmap(x_sk, y_test, "Sklearn LDA-SVD, Data Split in Train and Test set", inv_map)
+        plt.show()
+
+    def test_LDA_Sklearn_train(self):
+        dfc, _ = get_table_with_class(dataPath='../../Data/data_sampled.csv')
+
+        dfc, inv_map = string_column_to_int_class(dfc, "treatment")
+        X = dfc.drop("treatment", axis=1)
+        Y = dfc["treatment"]
+
+        X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=0.20, random_state=42)
+
+        lda = LinearDiscriminantAnalysis(solver='svd')
+        model = lda.fit(X_train, y_train)
+        x_sk = model.transform(X_train)
+
+
+        Plotter().plotUmap(x_sk, y_train, "Sklearn LDA-SVD, data not split, Only Train data", inv_map)
+        plt.show()
+
+
+
     def test_LDA_SVD(self):
         dfc, _ = get_table_with_class()
-        print("dfc shape ", dfc.shape)
 
-        print("dfc shape ")
-        df, inv_map = string_column_to_int_class(dfc, "treatment")
-        y_given = df["treatment"]
+        dfc, inv_map = string_column_to_int_class(dfc, "treatment")
+        Y = dfc["treatment"]
+        X = dfc.drop("treatment", axis=1)
+
+        X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=0.20, random_state=42)
 
         lda = LDA_SVD()
-        #x_sk = lda.fit(df.drop("treatment", axis=1).to_numpy(), df["treatment"]).transform_GLDA(8)
-        x_sk = lda.fit(df.drop("treatment", axis=1).to_numpy(), df["treatment"]).LDA_QR(8)
+        # x_sk = lda.fit(df.drop("treatment", axis=1).to_numpy(), df["treatment"]).transform_GLDA(8)
+        # x_sk = lda.fit(df.drop("treatment", axis=1).to_numpy(), df["treatment"]).LDA_QR(8)
 
-        #y2 = kmeans_(X_sk, 9)
+        # y2 = kmeans_(X_sk, 9)
         print("x_sk ", x_sk.shape)
 
         Plotter().plotUmap(x_sk, y_given, "LDA-NLDA", inv_map)
