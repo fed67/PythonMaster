@@ -45,7 +45,7 @@ def get_table_with_class2(df, treatmentPath='../../Data/treatments.csv') -> [pd.
 
     remove_prim_cyto_nucl = False
 
-    print("shape before ", df.shape)
+    print("shape initial data ", df.shape)
     df = df.dropna()
 
     types = df.dtypes
@@ -56,8 +56,8 @@ def get_table_with_class2(df, treatmentPath='../../Data/treatments.csv') -> [pd.
 
     types_set = np.unique(types)
 
-    print("Types ")
-    print(types_set)
+    #print("Types ")
+    #print(types_set)
 
     df2 = df.select_dtypes(include=['float'])
     df2 = df2.join(df[['trial', 'plate', 'well']])
@@ -65,7 +65,7 @@ def get_table_with_class2(df, treatmentPath='../../Data/treatments.csv') -> [pd.
     conc_id_df = pd.read_csv(treatmentPath, usecols=['trial', 'plate', 'well', 'treatment'])
 
     print("classes ", conc_id_df["treatment"].unique())
-    print("number of classes ", len(conc_id_df["treatment"].unique()))
+    #print("number of classes ", len(conc_id_df["treatment"].unique()))
 
     #df = df.replace([np.inf, -np.inf], np.nan).dropna(axis=1)#drop columns containing Inf, -Inf, NaN
     df = df.replace([np.inf, -np.inf], np.nan).dropna(axis=0)  # drop rows containing Inf, -Inf, NaN
@@ -96,7 +96,7 @@ def get_table_with_class2(df, treatmentPath='../../Data/treatments.csv') -> [pd.
 
     df2_ = df2.drop(['trial', 'plate', 'well'], axis=1)
 
-    print("shape final ", df2_.shape)
+    #print("shape final ", df2_.shape)
 
     return df2_, df2
 
@@ -104,29 +104,26 @@ def get_table_with_class2(df, treatmentPath='../../Data/treatments.csv') -> [pd.
 def compute_mean_of_group_size_on_group_well_plate(df, group_size):
     col = [df['plate'].unique(), df['well'].unique()]
 
-    df0 = pd.DataFrame(data=None, columns=df.columns)
-    df0 = df0.drop(["plate", "well", "trial"], axis=1)
+    if 'treatment' not in df:
+        raise Exception("Error given dataframe must have a treatment column")
 
-    def f(series):
-        if (series.dtype == np.dtype(float) or series.dtype == np.dtype(int)):
-            return np.mean(series)
-        else:
-            return series.iloc[0]
+    df0 = pd.DataFrame(data=None, columns=df.columns)
+    df0 = df0.drop(["plate", "well", "trial"], axis=1) #remove these, the set must only contain treatment
 
     for r, t in itertools.product(col[0], col[1]):
 
-        dfi0 = df.query("plate == @r & well == @t ").copy()
+        dfi0 = df.query("plate == @r & well == @t ").copy() #select the group with the given well and plate combination
 
         if dfi0["treatment"].unique().size > 1:
-            raise Exception("errer teatment must only contain one unique value")
+            raise Exception("Error treatment must only contain one unique value")
 
         dfi = dfi0.drop(["trial", "plate", "well", "treatment"], axis=1)
 
         dfi.loc[:, "indexx"] = np.arange(0, dfi.shape[0], 1)
 
-        d = dfi.groupby(dfi["indexx"] // group_size).agg("mean")
+        d = dfi.groupby(dfi["indexx"] // group_size).agg("mean") #merge every group_size - th element
         d["treatment"] = [dfi0["treatment"].unique()[0]] * d.shape[0]
-        df0 = pd.concat([df0, d])
+        df0 = pd.concat([df0, d.drop("indexx", axis=1)]) #add group to dataframe and drop indexx column
 
     return df0
 

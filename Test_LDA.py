@@ -192,7 +192,13 @@ class LDA_TestClass(unittest.TestCase):
         #d_max = d0.append(d1).append(d2)
 
         _, dfc = get_table_with_class2(d2)
-        dfc = compute_mean_of_group_size_on_group_well_plate(dfc, 20)
+
+        print("size treatement ", dfc.groupby(['plate', 'well', 'treatment']).ngroups)
+        print("size treatement ", dfc.groupby(['plate', 'well']).ngroups)
+
+        print("dfc shape before ", dfc.shape)
+        dfc = compute_mean_of_group_size_on_group_well_plate(dfc, 25)
+        print("dfc shape after ", dfc.shape)
 
         dfc, inv_map = string_column_to_int_class(dfc, "treatment")
         X = dfc.drop("treatment", axis=1)
@@ -217,7 +223,7 @@ class LDA_TestClass(unittest.TestCase):
         x_test = lda.fit_transform(X_test, y_test)
 
         Plotter().plotUmap_multiple([x_sk, x_train, x_test] , [y_test, y_train, y_test] ,
-                                    ["LDA Merge 20 samples in well+plate, Sample Split in Train and Test set - AC_train: {0} -  AC_test {1}".format(AC_train, AC_test), "LDA-SVD, Only Train data", "LDA-SVD, Only Test data"],
+                                    ["LDA Merge 25 samples in well+plate, Sample Split in Train and Test set - AC_train: {0} -  AC_test {1}".format(AC_train, AC_test), "LDA-SVD, Only Train data", "LDA-SVD, Only Test data"],
                                     [inv_map]*3)
         plt.show()
 
@@ -229,7 +235,7 @@ class LDA_TestClass(unittest.TestCase):
         d_max = d0.append(d1)
 
         _, dfc = get_table_with_class2(d_max)
-        dfc = compute_mean_of_group_size_on_group_well_plate(dfc, 20)
+        dfc = compute_mean_of_group_size_on_group_well_plate(dfc, 25)
 
         dfc, inv_map = string_column_to_int_class(dfc, "treatment")
         X = dfc.drop("treatment", axis=1)
@@ -254,7 +260,7 @@ class LDA_TestClass(unittest.TestCase):
         x_test = lda.fit_transform(X_test, y_test)
 
         Plotter().plotUmap_multiple([x_sk, x_train, x_test] , [y_test, y_train, y_test] ,
-                                    ["LDA Merge 20 samples in well+plate, Data-Max Split in Train and Test set - AC_train: {0} -  AC_test {1}".format(AC_train, AC_test), "LDA-SVD, Only Train data", "LDA-SVD, Only Test data"],
+                                    ["LDA Merge 25 samples in well+plate, Data-Max Split in Train and Test set - AC_train: {0} -  AC_test {1}".format(AC_train, AC_test), "LDA-SVD, Only Train data", "LDA-SVD, Only Test data"],
                                     [inv_map]*3)
         plt.show()
 
