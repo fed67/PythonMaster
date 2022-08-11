@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 import os
+import itertools
 
 
 def string_column_to_int_class(df, col):
@@ -98,6 +99,36 @@ def get_table_with_class2(df, treatmentPath='../../Data/treatments.csv') -> [pd.
     print("shape final ", df2_.shape)
 
     return df2_, df2
+
+
+def compute_mean_of_group_size_on_group_well_plate(df, group_size):
+    col = [df['plate'].unique(), df['well'].unique()]
+
+    df0 = pd.DataFrame(data=None, columns=df.columns)
+    df0 = df0.drop(["plate", "well", "trial"], axis=1)
+
+    def f(series):
+        if (series.dtype == np.dtype(float) or series.dtype == np.dtype(int)):
+            return np.mean(series)
+        else:
+            return series.iloc[0]
+
+    for r, t in itertools.product(col[0], col[1]):
+
+        dfi0 = df.query("plate == @r & well == @t ").copy()
+
+        if dfi0["treatment"].unique().size > 1:
+            raise Exception("errer teatment must only contain one unique value")
+
+        dfi = dfi0.drop(["trial", "plate", "well", "treatment"], axis=1)
+
+        dfi.loc[:, "indexx"] = np.arange(0, dfi.shape[0], 1)
+
+        d = dfi.groupby(dfi["indexx"] // group_size).agg("mean")
+        d["treatment"] = [dfi0["treatment"].unique()[0]] * d.shape[0]
+        df0 = pd.concat([df0, d])
+
+    return df0
 
 
 def get_table_with_class(dataPath='../../Data/data_sampled.csv', treatmentPath='../../Data/treatments.csv') -> [pd.DataFrame, pd.DataFrame]:
