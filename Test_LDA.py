@@ -1,5 +1,6 @@
 import unittest
 
+import numpy as np
 from sklearn.model_selection import train_test_split
 
 from Plotter import Plotter
@@ -16,6 +17,52 @@ import matplotlib.pyplot as plt
 class LDA_TestClass(unittest.TestCase):
     def test_something(self):
         self.assertEqual(True, True)  # add assertion here
+
+    def test_SQL_TEST(self):
+
+        data = {'G': ["g0", "g0", "g0", "g1", "g1", "g2", "g2", "g2", "g2", "g2", "g2"],
+                'Age'  :[20, 21, 19, 18, 19, 30, 31, 32, 33, 34, 35]}
+        df = pd.DataFrame(data)
+
+        col = df['G'].unique()
+        print("col ", col)
+
+        def own_mean(series):
+            #if isinstance(series[0], str):
+            #    return series[0]
+            #else:
+                np.mean(series)
+
+        df0 = pd.DataFrame(data=None, columns=df.columns)
+
+        print(df0)
+
+        for i in col:
+            dfi = df[ df["G"] == i].copy()
+
+            #print("dfi shape ", dfi.shape)
+
+            dfi.loc[:, "indexx"] = np.arange(0, dfi.shape[0], 1)
+
+            #print("dfi ", dfi)
+            #print("dfi ", dfi.dtypes )
+            print("head")
+            print(dfi.groupby( dfi["indexx"]//2 ).head(3))
+
+            d2 = dfi["G"]
+
+            print("data")
+            #d = dfi.drop('G').groupby( "index"/2 ).agg( "mean"  )
+            d = dfi.groupby( dfi["indexx"] // 2 ).agg( own_mean )
+            print(d)
+
+            df0 = pd.concat([df0, d])
+
+        print("original")
+        print(df)
+
+        print("modified")
+        print(df0)
 
     # use data_sampled.csv as training and test data set
     def testvalidateself(self):
@@ -62,6 +109,97 @@ class LDA_TestClass(unittest.TestCase):
 
         self.assertEqual(True, True)
 
+    def test_Data_Sample444(self):
+
+        d0 = pd.read_csv("../../Data/test_data/data_sampled_10_concentration_=_0.0_rstate_83.csv")
+        d1 = pd.read_csv(
+            "../../Data/test_data/data_sampled_80_concentration_!_0.0_concentration_median_treatment_rstate_60.csv")
+        d2 = pd.read_csv("../../Data/data_sampled.csv")
+
+        _, dfc = get_table_with_class2(d2)
+
+        print("ell")
+        print(dfc.groupby(dfc["well"]).count() )
+
+        print(dfc[dfc["well"] == "G009"]["plate"])
+
+
+
+    def test_LDA_Sklearn_Sample_split_mean(self):
+
+        #d0 = pd.read_csv("../../Data/test_data/data_sampled_10_concentration_=_0.0_rstate_83.csv")
+        #d1 = pd.read_csv("../../Data/test_data/data_sampled_80_concentration_!_0.0_concentration_median_treatment_rstate_60.csv")
+        d2 = pd.read_csv("../../Data/data_sampled.csv")
+        #d_max = d0.append(d1).append(d2)
+
+        dfc, _ = get_table_with_class2(d2)
+
+        dfc, inv_map = string_column_to_int_class(dfc, "treatment")
+        X = dfc.drop("treatment", axis=1)
+        Y = dfc["treatment"]
+
+        print("X.shape ", X.shape)
+
+        X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=0.20, random_state=42)
+
+
+        lda = LinearDiscriminantAnalysis(solver='svd')
+        #model = lda.fit(X_train, y_train)
+        model = lda.fit(X_train, y_train)
+        x_sk = model.transform(X_test)
+
+        AC_train = lda.score(X_train, y_train)
+        print(f'{AC_train=}')
+        AC_test = lda.score(X_test, y_test)
+        print(f'{AC_test=}')
+
+        x_train = lda.fit_transform(X_train, y_train)
+        x_test = lda.fit_transform(X_test, y_test)
+
+        Plotter().plotUmap_multiple([x_sk, x_train, x_test] , [y_test, y_train, y_test] ,
+                                    ["LDA-SVD, Data-Sample Split in Train and Test set - AC_train: {0} -  AC_test {1}".format(AC_train, AC_test), "LDA-SVD, Only Train data", "LDA-SVD, Only Test data"],
+                                    [inv_map]*3)
+        plt.show()
+
+    def test_LDA_Sklearn_Max_split_mean(self):
+
+        d0 = pd.read_csv("../../Data/test_data/data_sampled_10_concentration_=_0.0_rstate_83.csv")
+        d1 = pd.read_csv(
+            "../../Data/test_data/data_sampled_80_concentration_!_0.0_concentration_median_treatment_rstate_60.csv")
+        #d2 = pd.read_csv("../../Data/data_sampled.csv")
+        d_max = d0.append(d1)
+
+        dfc, _ = get_table_with_class2(d_max)
+
+        dfc, inv_map = string_column_to_int_class(dfc, "treatment")
+        X = dfc.drop("treatment", axis=1)
+        Y = dfc["treatment"]
+
+        print("X.shape ", X.shape)
+
+        X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=0.20, random_state=42)
+
+        lda = LinearDiscriminantAnalysis(solver='svd')
+        # model = lda.fit(X_train, y_train)
+        model = lda.fit(X_train, y_train)
+        x_sk = model.transform(X_test)
+
+        AC_train = lda.score(X_train, y_train)
+        print(f'{AC_train=}')
+        AC_test = lda.score(X_test, y_test)
+        print(f'{AC_test=}')
+
+        x_train = lda.fit_transform(X_train, y_train)
+        x_test = lda.fit_transform(X_test, y_test)
+
+        Plotter().plotUmap_multiple([x_sk, x_train, x_test], [y_test, y_train, y_test],
+                                    [
+                                        "LDA-SVD, Data-Max Split in Train and Test set - AC_train: {0} -  AC_test {1}".format(
+                                            AC_train, AC_test), "Sklearn LDA-SVD, Only Train data",
+                                        "LDA-SVD, Only Test data"],
+                                    [inv_map] * 3)
+        plt.show()
+
 
     def test_LDA_Sklearn_Sample_split(self):
         dfc, _ = get_table_with_class(dataPath='../../Data/data_sampled.csv')
@@ -93,7 +231,7 @@ class LDA_TestClass(unittest.TestCase):
         model = lda.fit(X_train, y_train)
         x_sk = model.transform(X_train)
 
-        Plotter().plotUmap(x_sk, y_train, "Sklearn LDA-SVD, data not split, Only Train data", inv_map)
+        Plotter().plotUmap(x_sk, y_train, "Sklearn LDA-SVD, Only Train data", inv_map)
         plt.show()
 
     def test_LDA_Sklearn_Sample_test(self):
