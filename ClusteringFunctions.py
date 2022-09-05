@@ -46,7 +46,8 @@ def nmf(data, k):
     #    ci[i] = np.array(ci[i])
     #    print("shape ", ci[i].shape)
 
-    print("Error MAtrix ", (data - W.dot(H) ).sum())
+    #print("Error MAtrix ", (data - W.dot(H) ).sum())
+    print("error ", np.linalg.norm( data - np.dot(W, H)))
 
     return ci
 
@@ -77,7 +78,8 @@ def nmf2(data, k):
         #print("ind ", ind)
         #data[i, :]
 
-    print("Error MAtrix ", (data - W.dot(H)).sum())
+    #print("Error MAtrix ", (data - W.dot(H)).sum())
+    print("error ", np.linalg.norm(data - np.dot(W, H)))
 
     return ci
 
@@ -141,15 +143,16 @@ def nmf_Own(data, k):
         ind = np.argmax(H[i,:])
         ci.append(ind)
 
-    print("Error Matrix ", (data - W.dot(H.T)).sum())
+    #print("Error Matrix ", (data - W.dot(H.T)).sum())
+    print("error ", np.linalg.norm(data - np.dot(W, H)))
 
-    return ci
+    return ci, H, W
 
 
 
 #shape m x n, m: features and n are the data
 def nmf_Own2(data, k, beta, eta):
-    print("nmf_own")
+    print("NMF Sparse")
     m,n = data.shape
     #beta = 0.5
     #beta = 0
@@ -161,7 +164,7 @@ def nmf_Own2(data, k, beta, eta):
     #eta = 15
 
     print("Eta ", eta )
-    print("ETA ", type(data))
+    #print("ETA ", type(data))
 
     A = data
 
@@ -180,7 +183,7 @@ def nmf_Own2(data, k, beta, eta):
     W = kMeansInit(A, k)
 
     #W = kMeansInit(A, k)
-    print("W ", W)
+    #print("W ", W)
 
     # H = np.random.randn(n, k)
     H = np.random.randn(n, k)
@@ -188,7 +191,7 @@ def nmf_Own2(data, k, beta, eta):
     Aw = np.append(A, np.zeros((1, n)), axis=0)
     Ah = np.append(A.T, np.zeros((k, m)), axis=0)
 
-    for it in range(150):
+    for it in range(200):
 
         AT = A.T
         #print("A ", A.shape)
@@ -223,8 +226,8 @@ def nmf_Own2(data, k, beta, eta):
 
 
     #print("A ", A)
-    print("W ", W)
-    print("H ", H)
+    print("W ", W.shape)
+    print("H ", H.shape)
 
     ci = [ ]
     for i in range(0, data.shape[1]):
@@ -234,8 +237,9 @@ def nmf_Own2(data, k, beta, eta):
 
 
     #print("Error Matrix ", (data - W.dot(H.T)).sum())
+    print("error ", np.linalg.norm(data - np.dot(W, H)))
 
-    return [ci, W]
+    return ci, W, H
 
 
 def nmfBeta_Own(data, k):
@@ -305,7 +309,7 @@ def nmfBeta_Own(data, k):
 
     print("Run for end")
     print("A ", A.shape)
-    print("W ", Wv)
+    print("W ", Wv.shape)
     print("H ", Hv.shape)
 
     ci = [[] for i in range(k)]
@@ -316,9 +320,9 @@ def nmfBeta_Own(data, k):
     for i in range(len(ci)):
         ci[i] = np.array(ci[i])
 
-    print("c0 ", ci[0].shape)
-    print("c1 ", ci[1].shape)
-    print("c2 ", ci[2].shape)
+    #print("c0 ", ci[0].shape)
+    #print("c1 ", ci[1].shape)
+    #print("c2 ", ci[2].shape)
 
 
 
@@ -429,9 +433,6 @@ def similarityMatrix(data):
 
     print("n ", n, " m ", m)
 
-    data[0,:]
-
-    data[:, 2]
 
     for i in range(m):
         for j in range(m):
@@ -546,7 +547,7 @@ def symmetricNMF2(data, k, useS=True):
     #print("A ", A)
 
     #H = np.ones( ( n,k) )
-    H = np.random.random((n,k))
+    H = np.random.random((n,k))*np.max( np.max(A) )
     #beta = 0.5
     beta = 0.25
 
@@ -555,7 +556,7 @@ def symmetricNMF2(data, k, useS=True):
 
     H = np.dot(A, np.dot(H, np.linalg.inv(np.dot(H.T, H))))
 
-    for it in range(0, 500):
+    for it in range(0, 100):
 
         wh = np.dot(A,H)
         hhh = np.dot(H, np.dot(H.T, H) )
@@ -587,6 +588,21 @@ def symmetricNMF2(data, k, useS=True):
 
 
     return  ci
+
+
+def computeSquareMatrix(A):
+    return A*A
+
+def computeColumnScale(A):
+
+    An = A.copy()
+
+    for i in range(A.shape[0]):
+        m = np.min(A[i,:])
+        if m < 0:
+            An[i,:] = An[i,:]+np.abs(m)
+
+    return An
 
 def LDA_CLustering(data, y):
 

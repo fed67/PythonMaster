@@ -870,6 +870,58 @@ class LDA_TestClass(unittest.TestCase):
                         X.shape[0], X.shape[1] ), wrap=True, horizontalalignment='center',
                     fontweight='bold')
 
+    def test_LDA_Sklearn_Sample_test(self):
+        dfc, _ = get_table_with_class(dataPath='../../Data/data_sampled.csv')
+
+        dfc, inv_map = string_column_to_int_class(dfc, "treatment")
+        X = dfc.drop("treatment", axis=1)
+        Y = dfc["treatment"]
+
+        X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=0.20, random_state=42)
+
+        lda = LinearDiscriminantAnalysis(solver='svd')
+        model = lda.fit(X_test, y_test)
+        x_sk = model.transform(X_test)
+
+        Plotter().plotUmap(x_sk, y_test, "Sklearn LDA-SVD, data not split, Only test data", inv_map)
+        plt.show()
+
+    def test_LDA_Sklearn_Sample_all(self):
+        dfc, _ = get_table_with_class(dataPath='../../Data/data_sampled.csv')
+
+        dfc, inv_map = string_column_to_int_class(dfc, "treatment")
+        X = dfc.drop("treatment", axis=1)
+        Y = dfc["treatment"]
+
+        X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=0.20, random_state=42)
+
+        lda = LinearDiscriminantAnalysis(solver='svd')
+        model = lda.fit(X, Y)
+        x_sk = model.transform(X)
+
+        Plotter().plotUmap(x_sk, Y, "Sklearn LDA-SVD, data not split, Only test data", inv_map)
+        plt.show()
+
+
+
+    def test_LDA_SVD(self):
+        dfc, _ = get_table_with_class()
+
+        dfc, inv_map = string_column_to_int_class(dfc, "treatment")
+        Y = dfc["treatment"]
+        X = dfc.drop("treatment", axis=1)
+
+        X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=0.20, random_state=42)
+
+        lda = LDA_SVD()
+        # x_sk = lda.fit(df.drop("treatment", axis=1).to_numpy(), df["treatment"]).transform_GLDA(8)
+        # x_sk = lda.fit(df.drop("treatment", axis=1).to_numpy(), df["treatment"]).LDA_QR(8)
+
+        # y2 = kmeans_(X_sk, 9)
+        print("x_sk ", x_sk.shape)
+
+        Plotter().plotUmap(x_sk, y_given, "LDA-NLDA", inv_map)
+
         plt.show()
 
 

@@ -373,3 +373,65 @@ class Plotter:
             res[color[i]][1].append(X[i,1])
 
         return res
+
+    def plotHeatmap(cls, X, title=""):
+
+        fig, ax = plt.subplots(nrows=1, ncols=5)
+        #im = ax.imshow(X)
+
+        print("type ", type(X))
+        print("shape ", X.shape)
+
+        im = [1,3,4,5]
+        #a = np.random.random((16, 16))
+        im0 = ax[0].imshow(X, cmap='Reds', interpolation='nearest')
+        ax[0].set_ylim(0, 500)
+
+        im1 = ax[1].imshow(X, cmap='Reds', interpolation='nearest')
+        ax[1].set_ylim(500, 1000)
+
+        im2 = ax[2].imshow(X, cmap='Reds', interpolation='nearest')
+        ax[2].set_ylim(1000, 1500)
+
+        im3 = ax[3].imshow(X, cmap='Reds', interpolation='nearest')
+        ax[3].set_ylim(1500, 2000)
+
+        im3 = ax[3].imshow(X, cmap='Reds', interpolation='nearest')
+        ax[3].set_ylim(1500, 2000)
+
+        im4 = ax[4].imshow(X, cmap='Reds', interpolation='nearest')
+        ax[4].set_ylim(2000, 2400)
+
+        for i in range(5):
+            ax[i].set_ylabel("x - class id")
+            ax[i].set_xlabel("y - data point id")
+
+        fig.subplots_adjust(bottom=0.1, top=0.9, left=0.05, right=0.9,
+                            wspace=0.02, hspace=0.02)
+
+        c = X.flatten()
+        c.sort()
+
+        c = c[0::50]
+
+
+
+        # Create colorbar
+        xx = "YlGn"
+        #for i in im:
+        #cbar = plt.colorbar(im0)
+        #cax = plt.axes(([0.85, 0.1, 0.075, 0.8]))
+        cb_ax = fig.add_axes([0.93, 0.1, 0.02, 0.8])
+        cbar = fig.colorbar(im0, cax=cb_ax)
+        #cbar.ax.set_ylabel("cbarlabel", rotation=-90, va="bottom")
+
+        fig.suptitle(title)
+
+        #fig.tight_layout()
+        #plt.show()
+
+        #ax.set_title("Harvest of local farmers (in tons/year)")
+        #fig.tight_layout()
+
+        #cbar = ax.figure.colorbar(im, ax=ax, **cbar_kw)
+        #cbar.ax.set_ylabel(cbarlabel, rotation=-90, va="bottom")
