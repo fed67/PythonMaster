@@ -34,14 +34,24 @@ def get_unique(v):
 
     return list(output)
 
-def get_table_with_merged_treatment(dataPath='../../Data/test_data/data_sampled_10_concentration_=_0.0_rstate_83.csv'):
+def pruneDF_treatment_trail_plate_well(df):
 
-    df = pd.read_csv(dataPath)
+    if 'trial' in df:
+        df = df.drop('trial', axis=1)
+
+    if 'plate' in df:
+        df = df.drop('plate', axis=1)
+
+    if 'well' in df:
+        df = df.drop('well', axis=1)
+
+    y = df['treatment'].copy().tolist()
+    X = df.drop('treatment', axis=1).copy()
 
 
-    return df
+    return X, y
 
-def get_table_with_class2(df, treatmentPath='../../Data/treatments.csv') -> [pd.DataFrame, pd.DataFrame]:
+def get_table_with_class2(df, treatmentPath_str='../../Data/treatments.csv') -> [pd.DataFrame, pd.DataFrame]:
 
     remove_prim_cyto_nucl = False
 
@@ -62,7 +72,7 @@ def get_table_with_class2(df, treatmentPath='../../Data/treatments.csv') -> [pd.
     df2 = df.select_dtypes(include=['float'])
     df2 = df2.join(df[['trial', 'plate', 'well']])
 
-    conc_id_df = pd.read_csv(treatmentPath, usecols=['trial', 'plate', 'well', 'treatment'])
+    conc_id_df = pd.read_csv(treatmentPath_str, usecols=['trial', 'plate', 'well', 'treatment'])
 
     print("classes ", conc_id_df["treatment"].unique())
     #print("number of classes ", len(conc_id_df["treatment"].unique()))
@@ -114,6 +124,9 @@ def compute_mean_of_group_size_on_group_well_plate(df, group_size):
 
         dfi0 = df.query("plate == @r & well == @t ").copy() #select the group with the given well and plate combination
 
+        if dfi0.shape[0] == 0:
+            continue
+
         if dfi0["treatment"].unique().size > 1:
             raise Exception("Error treatment must only contain one unique value")
 
@@ -123,6 +136,115 @@ def compute_mean_of_group_size_on_group_well_plate(df, group_size):
 
         d = dfi.groupby(dfi["indexx"] // group_size).agg("mean") #merge every group_size - th element
         d["treatment"] = [dfi0["treatment"].unique()[0]] * d.shape[0]
+
+        #if dfi0['trial'].unique().size > 1:
+        #    d["trial"] = dfi0['trial'].unique()[0]
+        #    print("WARNING MORE than one trial values setting first trial value")
+        #else:
+        #    d["trial"] = dfi0['trial'].unique()[0]
+
+        df0 = pd.concat([df0, d.drop("indexx", axis=1)]) #add group to dataframe and drop indexx column
+
+    return df0
+
+def compute_mean_of_group_size_on_treatment(df, group_size):
+
+
+    if 'treatment' not in df:
+        raise Exception("Error given dataframe must have a treatment column")
+
+    col = df['treatment'].unique()
+
+    df0 = pd.DataFrame(data=None, columns=df.columns)
+    df0 = df0.drop(["plate", "well", "trial"], axis=1) #remove these, the set must only contain treatment
+
+    for treatment_ in col:
+
+        dfi0 = df.query("treatment == @treatment_ ").copy() #select the group with the given well and plate combination
+
+        if dfi0["treatment"].unique().size > 1:
+            raise Exception("Error treatment must only contain one unique value")
+
+        dfi = dfi0.drop(["trial", "plate", "well", "treatment"], axis=1)
+
+        dfi.loc[:, "indexx"] = np.arange(0, dfi.shape[0], 1)
+
+        d = dfi.groupby(dfi["indexx"] // group_size).agg("mean") #merge every group_size - th element
+        d["treatment"] = [treatment_] * d.shape[0]
+
+        df0 = pd.concat([df0, d.drop("indexx", axis=1)]) #add group to dataframe and drop indexx column
+
+    return df0
+
+def compute_mean_of_group_size_on_group_well_plate_trial(df, group_size):
+    col = [df['plate'].unique(), df['well'].unique(), df['trial'].unique()]
+
+    if 'treatment' not in df:
+        raise Exception("Error given dataframe must have a treatment column")
+
+    df0 = pd.DataFrame(data=None, columns=df.columns)
+    df0 = df0.drop(["plate", "well", "trial"], axis=1) #remove these, the set must only contain treatment
+
+
+    for r, t, tr in itertools.product(col[0], col[1], col[2]):
+
+        dfi0 = df.query("plate == @r & well == @t & trial ==@tr ").copy() #select the group with the given well and plate combination
+
+        if dfi0.shape[0] == 0:
+            continue
+
+        if dfi0["treatment"].unique().size > 1:
+            raise Exception("Error treatment must only contain one unique value")
+
+        dfi = dfi0.drop(["trial", "plate", "well", "treatment"], axis=1)
+
+        dfi.loc[:, "indexx"] = np.arange(0, dfi.shape[0], 1)
+
+        d = dfi.groupby(dfi["indexx"] // group_size).agg("mean") #merge every group_size - th element
+        d["treatment"] = [dfi0["treatment"].unique()[0]] * d.shape[0]
+
+        if dfi0['trial'].unique().size > 1:
+            d["trial"] = dfi0['trial'].unique()[0]
+            print("WARNING MORE than one trial values setting first trial value")
+        else:
+            d["trial"] = dfi0['trial'].unique()[0]
+
+        df0 = pd.concat([df0, d.drop("indexx", axis=1)]) #add group to dataframe and drop indexx column
+
+    return df0
+
+def compute_mean_of_group_size_on_treatment_trial(df, group_size):
+
+
+    if 'treatment' not in df:
+        raise Exception("Error given dataframe must have a treatment column")
+
+    col = [df['treatment'].unique(), df['trial'].unique()]
+
+    df0 = pd.DataFrame(data=None, columns=df.columns)
+    df0 = df0.drop(["plate", "well", "trial"], axis=1) #remove these, the set must only contain treatment
+
+    for treatment_, tr in itertools.product(col[0], col[1]):
+
+        dfi0 = df.query("treatment == @treatment_ & trial == @tr").copy() #select the group with the given well and plate combination
+        #dfi0 = df.query("treatment == @treatment_").copy()
+
+        if dfi0["treatment"].unique().size > 1:
+            raise Exception("Error treatment must only contain one unique value")
+
+        dfi = dfi0.drop(["trial", "plate", "well", "treatment"], axis=1)
+
+        dfi.loc[:, "indexx"] = np.arange(0, dfi.shape[0], 1)
+
+        d = dfi.groupby(dfi["indexx"] // group_size).agg("mean") #merge every group_size - th element
+        d["treatment"] = [treatment_] * d.shape[0]
+
+        if dfi0['trial'].unique().size > 1:
+            d["trial"] = dfi0['trial'].unique()[0]
+            print("WARNING MORE than one trial values setting first trial value")
+        else:
+            d["trial"] = dfi0['trial'].unique()[0]
+
         df0 = pd.concat([df0, d.drop("indexx", axis=1)]) #add group to dataframe and drop indexx column
 
     return df0

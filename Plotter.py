@@ -16,7 +16,7 @@ class Plotter:
             n_components=2,
             learning_rate="auto",
             perplexity=30,
-            n_iter=250,
+            n_iter=500,
             init="random",
             random_state=rng,
         )
@@ -45,7 +45,7 @@ class Plotter:
     def multidimensional(cls, A, y):
         rng = RandomState(0)
         md_scaling = MDS(
-            n_components=2, max_iter=50, n_init=4, random_state=rng
+            n_components=2, max_iter=500, n_init=4, random_state=rng
         )
         S_scaling = md_scaling.fit_transform(A)
 
@@ -120,7 +120,7 @@ class Plotter:
             if len(labels) == 0:
                 label = "Class " + str(c[0])
             else:
-                print("i ", i, " labes ", len(labels))
+                print("i ", i, " labels ", len(labels))
                 label = labels[i]
 
             print("unique[i] ", unique[i],)
@@ -138,7 +138,7 @@ class Plotter:
         if write_to_svg:
             fig.savefig(title_.replace(" ", "-") + ".eps", format='eps')
 
-    def plotUmap_multiple(cls, dfs, colors_=[], title_=[], labels_=[], title_fig="", write_to_svg=False):
+    def plotUmap_multiple(cls, dfs, colors_=[], title_=[], labels_=[], title_fig="", title_file=""):
 
         import math
 
@@ -150,7 +150,7 @@ class Plotter:
         labels = []
         for i in range(len(dfs)):
             try:
-                df = dfs[i]
+                df = StandardScaler().fit_transform(dfs[i])
                 embedding_l.append(reducer.fit_transform(df))
                 titles.append(title_[i])
                 colors.append(colors_[i])
@@ -172,7 +172,7 @@ class Plotter:
             colors = np.zeros(len(embedding_l[0][:, 0]))
             colors.fill(6)
 
-        fig, ax = plt.subplots(d, d)
+        fig, ax = plt.subplots(min(d,2), d, figsize=(20, 10))
 
         i0 = 0
         j0 = 0
@@ -216,12 +216,14 @@ class Plotter:
 
 
         fig.suptitle(title_fig)
-        fig.set_size_inches(13, 13)
+        #fig.set_size_inches(13, 63)
 
 
 
-        if write_to_svg:
-            fig.savefig(title_.replace(" ", "-") + ".eps", format='eps')
+        if title_file != "":
+            #fig.savefig(title_.replace(" ", "-") + ".eps", format='eps')
+            fig.savefig(title_file + ".eps", format='eps')
+
 
 
 
@@ -290,3 +292,84 @@ class Plotter:
         ax.set_xlabel("x")
         ax.set_ylabel("y")
 
+    def plot_unsupervised_umap_tsne_mds(cls, df, color, titles=[], label=[], title_fig="", write_to_svg=False):
+
+        import math
+
+        reducer = umap.UMAP()
+
+        embedding_l = []
+
+        embedding_l.append(reducer.fit_transform(df))
+
+        t_sne = TSNE(
+            n_components=2,
+            learning_rate="auto",
+            perplexity=30,
+            n_iter=250,
+            init="random",
+        )
+        embedding_l.append(t_sne.fit_transform(df))
+
+        md_scaling = MDS(
+            n_components=2, max_iter=50, n_init=4)
+        embedding_l.append(md_scaling.fit_transform(df))
+
+
+
+        if len(color) == 0:
+            colors = np.zeros(len(embedding_l[0][:, 0]))
+            colors.fill(6)
+
+        fig, ax = plt.subplots(3,1)
+
+
+        for kk in range(len(embedding_l)):
+            embedding = embedding_l[kk]
+            unique = get_unique(colors[kk])
+
+            elements = []
+            for i in range(0, len(unique)):
+                f = lambda t: t[2] == unique[i]
+                elements.append(list(filter(f, zip(embedding[:, 0], embedding[:, 1], colors[kk]))))
+
+
+            # plt.scatter(
+            #    embedding[:, 0],
+            #    embedding[:, 1], c=colors, label=lab)
+
+            for i in range(0, len(unique)):
+                elx, ely, c = zip(*elements[i])
+
+                if len(label) == 0:
+                    label = "Class " + str(c[0])
+
+
+                ax[kk].scatter(elx, ely, 1 + unique[i], label=label)
+
+                ax[kk].grid(True)
+                # ax.legend(loc='upper right')
+                lgd = ax[kk].legend(bbox_to_anchor=(1.1, 1.05))
+                ax[kk].set_xlabel("x")
+                ax[kk].set_ylabel("y")
+                ax[kk].set_title(titles[kk])
+
+        fig.suptitle(title_fig)
+        fig.set_size_inches(23, 75)
+
+
+        if write_to_svg:
+            fig.savefig(titles.replace(" ", "-") + ".eps", format='eps')
+
+    def mapToColor(cls, X, color):
+
+        res = dict()
+
+        for c in get_unique(color):
+            res[c] = ([],[])
+
+        for i in range(len(color)):
+            res[color[i]][0].append(X[i,0])
+            res[color[i]][1].append(X[i,1])
+
+        return res
