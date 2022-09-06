@@ -89,8 +89,8 @@ class Plotter:
     def plotUmap(cls, df, colors=[], title_="", labels=[], write_to_svg=False):
 
         print("plot umap")
-        print("sf.shape ", df.shape)
-        print("labels ", labels)
+        #print("sf.shape ", df.shape)
+        #print("labels ", labels)
 
         reducer = umap.UMAP()
 

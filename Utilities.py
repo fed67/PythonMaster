@@ -45,7 +45,7 @@ def pruneDF_treatment_trail_plate_well(df):
     if 'well' in df:
         df = df.drop('well', axis=1)
 
-    y = df['treatment'].copy().tolist()
+    y = np.array(df['treatment'].copy().tolist())
     X = df.drop('treatment', axis=1).copy()
 
 
