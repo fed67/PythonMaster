@@ -124,7 +124,7 @@ class Plotter:
                 label = labels[i]
 
             print("unique[i] ", unique[i],)
-            ax.scatter(elx, ely, 1 + unique[i], label=label)
+            ax.scatter(elx, ely, 1 + unique[i], label=label, alpha=0.7)
 
         fig.suptitle(title_)
         fig.set_size_inches(13, 13)
@@ -136,7 +136,8 @@ class Plotter:
         ax.set_ylabel("y")
 
         if write_to_svg:
-            fig.savefig(title_.replace(" ", "-") + ".eps", format='eps')
+            #fig.savefig(title_.replace(" ", "-") + ".eps", format='eps')
+            fig.savefig(title_.replace(" ", "-") + ".png", format='png')
 
     def plotUmap_multiple(cls, dfs, colors_=[], title_=[], labels_=[], title_fig="", title_file=""):
 
@@ -222,7 +223,8 @@ class Plotter:
 
         if title_file != "":
             #fig.savefig(title_.replace(" ", "-") + ".eps", format='eps')
-            fig.savefig(title_file + ".eps", format='eps')
+            #fig.savefig(title_file + ".eps", format='eps')
+            fig.savefig(title_file + ".png", format='png')
 
 
 
