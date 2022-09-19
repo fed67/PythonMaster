@@ -173,7 +173,8 @@ class Plotter:
             colors = np.zeros(len(embedding_l[0][:, 0]))
             colors.fill(6)
 
-        fig, ax = plt.subplots(min(d,2), d, figsize=(20, 10))
+        fig, ax = plt.subplots(max(d,2), d, figsize=(20, 10))
+        print("d ", d)
 
         i0 = 0
         j0 = 0
@@ -276,14 +277,22 @@ class Plotter:
 
         fig.savefig(title_.replace(" ", "-") + ".eps", format='eps')
 
-    def scatter(cls, x, y):
+    def scatter(cls, df, colors, title, label):
         fig, ax = plt.subplots()
         # plt.scatter(
         #    embedding[:, 0],
         #    embedding[:, 1], c=colors, label=lab)
 
+        unique = get_unique(colors)
+        print("unique ", unique)
+        elements = []
+        for i in range(0, len(unique)):
+            f = lambda t: t[2] == unique[i]
+            elements.append(list(filter(f, zip(df[:, 0], df[:, 1], colors))))
 
-        ax.scatter(x, y, label="Test")
+        for i in range(0, len(unique)):
+            elx, ely, c = zip(*elements[i])
+            ax.scatter(elx, ely, unique[i], label=label[i])
 
         fig.suptitle("Tes Plot")
         fig.set_size_inches(13, 13)
@@ -293,6 +302,96 @@ class Plotter:
         lgd = ax.legend(bbox_to_anchor=(1.1, 1.05))
         ax.set_xlabel("x")
         ax.set_ylabel("y")
+        ax.set_title(title)
+
+    def plotScatter_multiple(cls, dfs, colors_=[], title_=[], labels_=[], title_fig="", title_file=""):
+
+        import math
+        embedding_l = []
+        titles = []
+        colors = []
+        labels = []
+        for i in range(len(dfs)):
+            try:
+                df = dfs[i]
+                embedding_l.append(df)
+                titles.append(title_[i])
+                colors.append(colors_[i])
+                labels.append(labels_[i])
+                #print("append ", i)
+            except Exception as ex:
+                #print("not append ", i)
+                print(ex)
+
+        # print("embedding ", embedding.shape)
+        # print("Xd ", Xd.shape)
+
+        d = math.ceil( np.sqrt(len(embedding_l)) )
+
+        print("length ", len(embedding_l) )
+        print("dimension d ", d)
+
+        if len(colors) == 0:
+            colors = np.zeros(len(embedding_l[0][:, 0]))
+            colors.fill(6)
+
+        zeilen = max(d,2)
+        spalten = math.ceil( len(embedding_l)/zeilen )
+
+        fig, ax = plt.subplots(zeilen, spalten, figsize=(20, 10))
+        print("d ", d)
+
+        i0 = 0
+        j0 = 0
+
+
+        for kk in range(len(embedding_l)):
+            embedding = embedding_l[kk]
+            unique = get_unique(colors[kk])
+
+            elements = []
+            for i in range(0, len(unique)):
+                f = lambda t: t[2] == unique[i]
+                elements.append(list(filter(f, zip(embedding[:, 0], embedding[:, 1], colors[kk]))))
+
+
+            # plt.scatter(
+            #    embedding[:, 0],
+            #    embedding[:, 1], c=colors, label=lab)
+
+            for i in range(0, len(unique)):
+                elx, ely, c = zip(*elements[i])
+
+                if len(labels) == 0:
+                    label = "Class " + str(c[0])
+                else:
+                    label = labels[kk][i]
+
+                ax[i0,j0].scatter(elx, ely, 1 + unique[i], label=label)
+
+                ax[i0,j0].grid(True)
+                # ax.legend(loc='upper right')
+                lgd = ax[i0,j0].legend(bbox_to_anchor=(1.1, 1.05))
+                ax[i0,j0].set_xlabel("x")
+                ax[i0,j0].set_ylabel("y")
+                ax[i0,j0].set_title(titles[kk])
+
+            j0 = j0 + 1
+            if j0 == d:
+                i0 = i0+1
+                j0 = 0
+
+
+        fig.suptitle(title_fig)
+        #fig.set_size_inches(13, 63)
+
+
+
+        if title_file != "":
+            #fig.savefig(title_.replace(" ", "-") + ".eps", format='eps')
+            #fig.savefig(title_file + ".eps", format='eps')
+            fig.savefig(title_file + ".png", format='png')
+
 
     def plot_unsupervised_umap_tsne_mds(cls, df, color, titles=[], label=[], title_fig="", write_to_svg=False):
 

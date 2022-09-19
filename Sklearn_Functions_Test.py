@@ -18,6 +18,8 @@ class ICA_TestClass(unittest.TestCase):
 
     def setUp(self):
 
+        self.method = LinearDiscriminantAnalysis()
+
         self.treatment = "one_padded_zero_treatments.csv"
         #self.data_name = "sample_050922_140344_n_1000.csv"
         #self.data_name = "sample_050922_154331_n_10000.csv"
@@ -37,10 +39,10 @@ class ICA_TestClass(unittest.TestCase):
 
         self.test_PCA_Sklearn_MaxLarge_selfclassify()
         self.test_PCA_Sklearn_MaxLarge_split_train_test()
-        self.test_PCA_Sklearn_MaxLarge_split_treatment_random()
-        self.test_PCA_Sklearn_MaxLarge_split_plate_well_split_random()
+        #self.test_PCA_Sklearn_MaxLarge_split_treatment_random()
+        #self.test_PCA_Sklearn_MaxLarge_split_plate_well_split_random()
         self.test_PCA_Sklearn_MaxLarge_split_treatment_split_trainV1V2V3_testV4()
-        self.test_PCA_Sklearn_MaxLarge_split_plate_well_split_trainV1V2V3_testV4()
+        #self.test_PCA_Sklearn_MaxLarge_split_plate_well_split_trainV1V2V3_testV4()
 
 
     def test_PCA_Sklearn_MaxLarge_split_plate_well_split_trainV1V2V3_testV4(self):
