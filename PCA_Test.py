@@ -14,6 +14,8 @@ from Utilities import *
 import matplotlib.pyplot as plt
 from sklearn.kernel_approximation import *
 
+from KernelAlgorithms import *
+
 
 class LDA_TestClass(unittest.TestCase):
     def test_something(self):
@@ -23,12 +25,12 @@ class LDA_TestClass(unittest.TestCase):
 
 
         self.treatment = "one_padded_zero_treatments.csv"
-        #self.data_name = "sample_050922_140344_n_1000.csv"
+        self.data_name = "sample_050922_140344_n_1000.csv"
         #self.data_name = "sample_050922_154331_n_10000.csv"
         #self.data_name = "sample_060922_114801_n_20000.csv"
         #self.data_name = "sample_060922_115535_n_50000.csv"
 
-        self.data_name = "sample_130922_105630_n_40000_median.csv"
+        #self.data_name = "sample_130922_105630_n_40000_median.csv"
 
         self.path = "../../Data/kardio_data/"
 
@@ -167,7 +169,7 @@ class LDA_TestClass(unittest.TestCase):
         #group_size = 25
         #for group_size, file_name in zip( [10, 15, 25], ["Result-MaxLARGE-Merge-{0}-10Samples".format(variant[variant_num]), "Result-MaxLARGE-Merge-{0}-15Samples".format(variant[variant_num]), "Result-MaxLARGE-Merge-{0}-25Samples".format(variant[variant_num])]):
         for kern in kernel:
-           pca = KernelPCA( n_components=self.newDim, kernel=kern)
+           pca = KernelPCA( n_components=self.newDim, kernel=kern, eigen_solver="randomized")
            for group_size in [self.group_size]:
 
                 _, dfc = get_table_with_class2(df_data, self.path+self.treatment)
@@ -186,7 +188,7 @@ class LDA_TestClass(unittest.TestCase):
 
                 #AC_train = pca.score(X, y)
 
-
+                #Plotter().plotUmap(x_sk, y, "PCA Kernel {3} - Dimension {2} - Merge {0} samples {1}".format(group_size, variant[ variant_num], self.newDim, kern), inv_map, self.writeToSVG)
                 #Plotter().plotUmap_multiple([x_sk, x_train, x_test] , [y_test, y_train, y_test] ,
                 #                            ["LDA Merge {0} samples {1}, Data-Max Split in Train and Test set".format(group_size, variant[variant_num]), "LDA-SVD, Only Train data, Group=[V1, V2, V3]", "LDA-SVD, Only Test data , Group=[V4]"],
                 #                            [inv_map]*3, title_file=file_name)
@@ -211,14 +213,14 @@ class LDA_TestClass(unittest.TestCase):
         #for group_size, file_name in zip( [10, 15, 25], ["Result-MaxLARGE-Merge-{0}-10Samples".format(variant[variant_num]), "Result-MaxLARGE-Merge-{0}-15Samples".format(variant[variant_num]), "Result-MaxLARGE-Merge-{0}-25Samples".format(variant[variant_num])]):
         X_list = []
         titles = []
-        for dim in [2, 4,  8, 9, 10, 11, 15, 20]:
-        #for kern in kernel:
+        #for dim in [2, 4,  8, 9, 10, 11, 15, 20]:
+        for kern in kernel:
            #kern = "sigmoid"
            #kern = "rbf"
-           kern = "cosine"
+           #kern = "cosine"
            print("kern ", kern)
-           #dim = 9
-           pca = KernelPCA( n_components=dim, kernel=kern)
+           dim = 13
+           pca = KernelPCA( n_components=dim, kernel=kern, eigen_solver="arpack")
            for group_size in [self.group_size]:
 
                 _, dfc = get_table_with_class2(df_data, self.path+self.treatment)
@@ -245,6 +247,7 @@ class LDA_TestClass(unittest.TestCase):
         print(len(X_list))
         y * len(X_list)
         Plotter().plotUmap_multiple(X_list , [y]*len(X_list), titles, [inv_map]*len(X_list))
+        #Plotter().plotScatter_multiple(X_list, [y] * len(X_list), titles, [inv_map] * len(X_list))
                 #Plotter().plotUmap(x_sk, y, "PCA Kernel {3} - Dimension {2} - Merge {0} samples {1}".format(group_size, variant[variant_num], dim, kern), inv_map, self.writeToSVG)
         plt.figtext(0.5, 0.01, "Dimension of train data: rows: {0}; features: {1}\n sample: {2}".format(X.shape[0], X.shape[1], self.data_name), wrap=True, horizontalalignment='center', fontweight='bold')
         plt.show()
@@ -347,5 +350,49 @@ class LDA_TestClass(unittest.TestCase):
                     fontweight='bold')
 
         plt.show()
+
+    def test_MY_Kernel_PCA(self):
+
+        df_data = pd.read_csv(self.path + self.data_name)
+
+        dfc, _ = get_table_with_class2(df_data, self.path+self.treatment)
+
+        dfc, inv_map = string_column_to_int_class(dfc, "treatment")
+        X, y = pruneDF_treatment_trail_plate_well(dfc)
+
+        print("X.shape ", X.shape)
+        print("y.shape ", y.shape)
+
+        embedding = SpectralEmbedding(n_components=9)
+        Xr = []
+
+        for i in [0.0001, 0.1, 1, 10, 1000]:
+
+            #X_sk = self.lda.fit_transform(X)
+            #X_sk = embedding.fit_transform(X)
+            pca = KernelPCA(n_components=2, kernel="rbf")
+            #X_sk = pca.fit_transform(X.to_numpy())
+
+            pca = KernelAlgorithms(2, "cos")
+            pca.gamma = 1
+            X_sk = pca.kernelPCA(X.to_numpy(), 2)
+            Xr.append(X_sk)
+
+            print("X_sk.shape ", X_sk.shape)
+            #print("X_sk ", X_sk)
+
+        #Plotter().plotUmap(X_sk, y, "PCA Dimension {0}- same Train and Test data ".format(self.newDim), inv_map, self.writeToSVG)
+
+        #Plotter().scatter(X_sk, y, "PCA Dimension {0}- same Train and Test data ".format(self.newDim), inv_map)
+        Plotter().plotScatter_multiple(Xr, [y]*len(Xr), ["PCA Dimension {0}- same Train and Test data ".format(self.newDim)]*len(Xr), [inv_map]*len(Xr))
+
+
+        plt.figtext(0.5, 0.01,
+                    "Dimension of data table: rows: {0}; features: {1}\n".format(
+                        X.shape[0], X.shape[1]), wrap=True, horizontalalignment='center',
+                    fontweight='bold')
+
+        plt.show()
+
 if __name__ == '__main__':
     unittest.main()

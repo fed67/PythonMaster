@@ -24,16 +24,19 @@ class LDA3_TestClass(unittest.TestCase):
 
         #kk = KDA(kernel="sigmoid")
 
-        #self.lda = KDA(kernel="sigmoid")
-        self.lda = KDA(kernel="sigmoid", n_components=2)
+        #self.lda = LinearDiscriminantAnalysis(solver='svd')
+
+        #self.lda = KDA(kernel="linear")
+        self.lda = KDA(kernel="sigmoid")
+        #self.lda = KDA(kernel="sigmoid", n_components=3)
         #self.lda = KLMNN()
 
 
         self.treatment = "one_padded_zero_treatments.csv"
         #self.data_name = "sample_050922_140344_n_1000.csv"
-        #self.data_name = "sample_050922_154331_n_10000.csv"
+        self.data_name = "sample_050922_154331_n_10000.csv"
         #self.data_name = "sample_060922_114801_n_20000.csv"
-        self.data_name = "sample_060922_115535_n_50000.csv"
+        #self.data_name = "sample_060922_115535_n_50000.csv"
 
         #self.data_name = "sample_130922_105529_n_10000_median.csv"
         #self.data_name = "sample_130922_105630_n_40000_median.csv"
@@ -98,20 +101,32 @@ class LDA3_TestClass(unittest.TestCase):
                 df_test = compute_mean_of_group_size_on_treatment_trial(dfc.loc[dfc["trial"].isin(['V4'])], group_size)
                 X_test, y_test = pruneDF_treatment_trail_plate_well(df_test)
 
-
+            print("X_train ", X_train)
 
             #lda = LinearDiscriminantAnalysis(solver='svd')
             model = self.lda.fit(X_train, y_train)
             #model = lda.fit(X, Y )
             x_sk = model.transform(X_test)
+            x_sk = self.lda.fit_transform(X_train, y_train)
 
             print("X_train shape ", X_train.shape)
             print("X_sk shape ", x_sk.shape)
+            print("X_sk ", x_sk)
 
             #AC_train = self.lda.score(X_train, y_train)
             #print(f'{AC_train=}')
             #AC_test = self.lda.score(X_test, y_test)
             #print(f'{AC_test=}')
+            print("Rows ", x_sk[0, :])
+            print("Rows ", x_sk[1, :])
+            print("Rows ", x_sk[2, :])
+
+            reducer = umap.UMAP()
+            scaled_penguin_data = StandardScaler().fit_transform(x_sk)
+            embedding = reducer.fit_transform(x_sk)
+            print("embedding ", embedding)
+
+            print("all same ", np.all(x_sk == x_sk[0]) )
 
             x_train = self.lda.fit_transform(X_train, y_train)
             x_test = self.lda.fit_transform(X_test, y_test)
@@ -120,11 +135,23 @@ class LDA3_TestClass(unittest.TestCase):
             #Plotter().plotUmap_multiple([x_sk, x_train, x_test] , [y_test, y_train, y_test] ,
             #                            ["LDA Merge {0} samples {1}, {2} Split in Train and Test set".format(group_size, variant[variant_num], self.data_name), "LDA-SVD, Only Train data, Group=[V1, V2, V3]", "LDA-SVD, Only Test data , Group=[V4]"],
             #                            [inv_map]*3)
-            #Plotter().plotUmap(x_sk, y_test, "LDA Merge {0} samples {1}, {2} Split in Train (V1, V2, V3) and Test (V4) set".format(group_size, variant[variant_num], self.data_name), inv_map, self.writeToSVG)
-            Plotter().scatter(x_sk, y_test,
-                               "LDA Merge {0} samples {1}, {2} Split in Train (V1, V2, V3) and Test (V4) set".format(
-                                   group_size, variant[variant_num], self.data_name), inv_map)
+            Plotter().plotUmap(x_sk, y_test, "LDA Merge {0} samples {1}, {2} Split in Train (V1, V2, V3) and Test (V4) set".format(group_size, variant[variant_num], self.data_name), inv_map, self.writeToSVG)
+            #Plotter().scatter(x_sk, y_test,
+            #                   "LDA Merge {0} samples {1}, {2} Split in Train (V1, V2, V3) and Test (V4) set".format(
+            #                       group_size, variant[variant_num], self.data_name), inv_map)
             plt.figtext(0.5, 0.01, "Dimension of train data: rows: {0}; features: {1}, Dimension of test data: rows: {2}; features: {3} \n".format(X_train.shape[0], X_train.shape[1], X_test.shape[0], X_test.shape[1]), wrap=True, horizontalalignment='center', fontweight='bold')
+        plt.show()
+
+    def test_Scatter(self):
+
+        d = { 'x':[1,2,3,4,5,6,7,8], 'y':[1, 2, 10, 6, 12, 18, 11, 9]}
+        df = pd.DataFrame(data=d)
+        y = np.array([0, 0, 0, 1, 0, 1, 1, 1])
+        m = {0 : "m", 1 : "one", 2:"two"}
+        Plotter().scatter(df.to_numpy(), y, "vv", m)
+    #                   "LDA Merge {0} samples {1}, {2} Split in Train (V1, V2, V3) and Test (V4) set".format(
+    #                       group_size, variant[variant_num], self.data_name), inv_map)
+
         plt.show()
 
     def test_Kernel_LDA_Sklearn_MaxLarge_split_treatment_kernels(self):
@@ -143,8 +170,8 @@ class LDA3_TestClass(unittest.TestCase):
         titles = []
         Xs = []
         for kern in kernels:
-            #lda = KDA(kernel=kern)
-            lda = KANMM(kernel=kern)
+            lda = KDA(kernel=kern)
+            #lda = KANMM(kernel=kern)
             #titles.append("Kernel LDA, Kernel {1} Split  {0}  Split in Train and Test set".format(self.group_size, kern))
             titles.append("KANMM, Kernel {1} Split  {0}  Split in Train and Test set".format(self.group_size, kern))
             for group_size in [self.group_size]:
