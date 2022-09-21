@@ -34,12 +34,12 @@ class LDA3_TestClass(unittest.TestCase):
 
         self.treatment = "one_padded_zero_treatments.csv"
         #self.data_name = "sample_050922_140344_n_1000.csv"
-        self.data_name = "sample_050922_154331_n_10000.csv"
+        #self.data_name = "sample_050922_154331_n_10000.csv"
         #self.data_name = "sample_060922_114801_n_20000.csv"
         #self.data_name = "sample_060922_115535_n_50000.csv"
 
         #self.data_name = "sample_130922_105529_n_10000_median.csv"
-        #self.data_name = "sample_130922_105630_n_40000_median.csv"
+        self.data_name = "sample_130922_105630_n_40000_median.csv"
 
         self.path = "../../Data/kardio_data/"
 
@@ -157,6 +157,7 @@ class LDA3_TestClass(unittest.TestCase):
     def test_Kernel_LDA_Sklearn_MaxLarge_split_treatment_kernels(self):
 
         df_data = pd.read_csv(self.path + self.data_name)
+        print("name ", self.data_name)
 
         variant = [ "in groupBy treatment", "in groupBy treatment+trial"]
         variant_num = 0
@@ -169,11 +170,13 @@ class LDA3_TestClass(unittest.TestCase):
 
         titles = []
         Xs = []
+        dim = 2
         for kern in kernels:
+            #lda = KDA(kernel=kern, n_components=2)
             lda = KDA(kernel=kern)
             #lda = KANMM(kernel=kern)
             #titles.append("Kernel LDA, Kernel {1} Split  {0}  Split in Train and Test set".format(self.group_size, kern))
-            titles.append("KANMM, Kernel {1} Split  {0}  Split in Train and Test set".format(self.group_size, kern))
+            titles.append("UMAP - Kernel LDA, Kernel {1} Split  {0}".format(self.group_size, kern))
             for group_size in [self.group_size]:
 
                 _, dfc = get_table_with_class2(df_data, self.path+self.treatment)
@@ -211,6 +214,7 @@ class LDA3_TestClass(unittest.TestCase):
                 #model = lda.fit(X, Y )
                 x_sk = model.transform(X_test)
                 Xs.append(x_sk)
+                print("shape ", x_sk.shape)
 
                 #AC_train = self.lda.score(X_train, y_train)
                 #print(f'{AC_train=}')
@@ -222,6 +226,7 @@ class LDA3_TestClass(unittest.TestCase):
 
 
         Plotter().plotUmap_multiple(Xs, [y_test]*len(Xs) , titles, [inv_map]*len(Xs) )
+        #Plotter().plotScatter_multiple(Xs, [y_test] * len(Xs), titles, [inv_map] * len(Xs))
             #Plotter().plotUmap(x_sk, y_test, "LDA Merge {0} samples {1}, {2} Split in Train (V1, V2, V3) and Test (V4) set".format(group_size, variant[variant_num], self.data_name), inv_map, self.writeToSVG)
         plt.figtext(0.5, 0.01, "Dimension of train data: rows: {0}; features: {1}, Dimension of test data: rows: {2}; features: {3} \n data {4}".format(X_train.shape[0], X_train.shape[1], X_test.shape[0], X_test.shape[1], self.data_name), wrap=True, horizontalalignment='center', fontweight='bold')
         plt.show()
@@ -574,6 +579,73 @@ class LDA3_TestClass(unittest.TestCase):
                     fontweight='bold')
         plt.show()
 
+
+    def test_UMAP_MaxLarge_split_treatment(self):
+
+        df_data = pd.read_csv(self.path + self.data_name)
+        print("name ", self.data_name)
+
+        variant = [ "in groupBy treatment", "in groupBy treatment+trial"]
+        variant_num = 0
+        kernels = ["linear", "poly", "rbf", "sigmoid", "cosine" ]
+        #kernels = ["linear"]
+
+
+        #group_size = 25
+        #for group_size, file_name in zip( [10, 15, 25], ["Result-MaxLARGE-Merge-{0}-10Samples".format(variant[variant_num]), "Result-MaxLARGE-Merge-{0}-15Samples".format(variant[variant_num]), "Result-MaxLARGE-Merge-{0}-25Samples".format(variant[variant_num])]):
+
+        titles = []
+        Xs = []
+        dim = 2
+        #lda = KDA(kernel=kern, n_components=2)
+        #lda = KANMM(kernel=kern)
+        #titles.append("Kernel LDA, Kernel {1} Split  {0}  Split in Train and Test set".format(self.group_size, kern))
+        titles.append("UMAP - Train Data Split {0}".format(self.group_size))
+        titles.append("UMAP - Test Data Split {0}".format(self.group_size))
+        group_size = self.group_size
+
+        _, dfc = get_table_with_class2(df_data, self.path+self.treatment)
+
+        dfc, inv_map = string_column_to_int_class(dfc, "treatment")
+        # X = dfc.drop("treatment", axis=1)
+
+        #X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=0.20, random_state=42)
+
+        X_train = []
+        X_test = []
+
+        if variant_num == 0:
+            #df_train = compute_mean_of_group_size_on_treatment(dfc.loc[dfc["trial"].isin(['V1', 'V2', 'V3'])], group_size)
+            df_train = compute_mean_of_group_size_on_treatment(dfc.loc[dfc["trial"].isin(['V1', 'V2', 'V3'])], group_size)
+            X_train, y_train = pruneDF_treatment_trail_plate_well(df_train)
+
+            #df_test = compute_mean_of_group_size_on_treatment(dfc.loc[dfc["trial"] == 'V4'], group_size)
+            df_test = compute_mean_of_group_size_on_treatment(dfc.loc[dfc["trial"].isin(['V4'])], group_size)
+
+            X_test, y_test = pruneDF_treatment_trail_plate_well(df_test)
+
+            Plotter().plotUmap(X_train, y_train, "UMAP train data - Split {0} - Sample {1}".format(group_size, self.data_name), inv_map)
+            Plotter().plotUmap(X_test, y_test, "UMAP test data - Split {0} - Sample {1}".format(group_size, self.data_name), inv_map)
+
+
+        else:
+            #dfc = compute_mean_of_group_size_on_treatment_trial(dfc, group_size )
+            df_train = compute_mean_of_group_size_on_treatment_trial(dfc.loc[dfc["trial"].isin(['V1', 'V2', 'V3'])], group_size)
+            #X_train, y_train = pruneDF_treatment_trail_plate_well(dfc.loc[dfc["trial"].isin(['V1', 'V2', 'V3'])])
+            X_train, y_train = pruneDF_treatment_trail_plate_well(df_train)
+
+            #df_test = compute_mean_of_group_size_on_treatment_trial(dfc.loc[dfc["trial"] == 'V4'], group_size)
+            df_test = compute_mean_of_group_size_on_treatment_trial(dfc.loc[dfc["trial"].isin(['V4'])], group_size)
+            X_test, y_test = pruneDF_treatment_trail_plate_well(df_test)
+
+
+        print("X train")
+
+        #Plotter().plotUmap_multiple([X_train, X_test], [y_train, y_test] , titles, [inv_map, inv_map] )
+        #Plotter().plotScatter_multiple(Xs, [y_test] * len(Xs), titles, [inv_map] * len(Xs))
+        #Plotter().plotUmap(x_sk, y_test, "LDA Merge {0} samples {1}, {2} Split in Train (V1, V2, V3) and Test (V4) set".format(group_size, variant[variant_num], self.data_name), inv_map, self.writeToSVG)
+        plt.figtext(0.5, 0.01, "Dimension of train data: rows: {0}; features: {1}, Dimension of test data: rows: {2}; features: {3} \n data {4}".format(X_train.shape[0], X_train.shape[1], X_test.shape[0], X_test.shape[1], self.data_name), wrap=True, horizontalalignment='center', fontweight='bold')
+        plt.show()
 
 
 

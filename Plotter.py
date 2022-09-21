@@ -350,8 +350,8 @@ class Plotter:
             colors = np.zeros(len(embedding_l[0][:, 0]))
             colors.fill(6)
 
-        zeilen = max(d, 2)
-        spalten = math.ceil(len(embedding_l) / zeilen)
+        spalten = max(d, 2)
+        zeilen = math.ceil(len(embedding_l) / spalten)
         print("zeilen ", zeilen)
         print("spalten ", spalten)
         print("len(embedding_l)  ", len(embedding_l) )
@@ -384,7 +384,7 @@ class Plotter:
                 else:
                     label = labels[kk][i]
 
-                ax[i0, j0].scatter(elx, ely, 1 + unique[i], label=label, alpha=0.4)
+                ax[i0, j0].scatter(elx, ely, 1 + unique[i], label=label, alpha=0.6)
 
                 ax[i0, j0].grid(True)
                 # ax.legend(loc='upper right')

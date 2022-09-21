@@ -25,12 +25,12 @@ class LDA_TestClass(unittest.TestCase):
 
 
         self.treatment = "one_padded_zero_treatments.csv"
-        self.data_name = "sample_050922_140344_n_1000.csv"
+        #self.data_name = "sample_050922_140344_n_1000.csv"
         #self.data_name = "sample_050922_154331_n_10000.csv"
         #self.data_name = "sample_060922_114801_n_20000.csv"
         #self.data_name = "sample_060922_115535_n_50000.csv"
 
-        #self.data_name = "sample_130922_105630_n_40000_median.csv"
+        self.data_name = "sample_130922_105630_n_40000_median.csv"
 
         self.path = "../../Data/kardio_data/"
 
@@ -216,11 +216,12 @@ class LDA_TestClass(unittest.TestCase):
         #for dim in [2, 4,  8, 9, 10, 11, 15, 20]:
         for kern in kernel:
            #kern = "sigmoid"
+           #kern = "poly"
            #kern = "rbf"
            #kern = "cosine"
-           print("kern ", kern)
-           dim = 13
-           pca = KernelPCA( n_components=dim, kernel=kern, eigen_solver="arpack")
+           #print("kern ", kern)
+           dim = 2
+           pca = KernelPCA( n_components=dim, kernel=kern, eigen_solver="randomized")
            for group_size in [self.group_size]:
 
                 _, dfc = get_table_with_class2(df_data, self.path+self.treatment)
@@ -246,10 +247,10 @@ class LDA_TestClass(unittest.TestCase):
 
         print(len(X_list))
         y * len(X_list)
-        Plotter().plotUmap_multiple(X_list , [y]*len(X_list), titles, [inv_map]*len(X_list))
-        #Plotter().plotScatter_multiple(X_list, [y] * len(X_list), titles, [inv_map] * len(X_list))
+        #Plotter().plotUmap_multiple(X_list , [y]*len(X_list), titles, [inv_map]*len(X_list))
+        Plotter().plotScatter_multiple(X_list, [y] * len(X_list), titles, [inv_map] * len(X_list))
                 #Plotter().plotUmap(x_sk, y, "PCA Kernel {3} - Dimension {2} - Merge {0} samples {1}".format(group_size, variant[variant_num], dim, kern), inv_map, self.writeToSVG)
-        plt.figtext(0.5, 0.01, "Dimension of train data: rows: {0}; features: {1}\n sample: {2}".format(X.shape[0], X.shape[1], self.data_name), wrap=True, horizontalalignment='center', fontweight='bold')
+        plt.figtext(0.5, 0.01, "Scatter Plot\nDimension of train data: rows: {0}; features: {1}\n sample: {2}".format(X.shape[0], X.shape[1], self.data_name), wrap=True, horizontalalignment='center', fontweight='bold')
         plt.show()
 
 
@@ -365,17 +366,20 @@ class LDA_TestClass(unittest.TestCase):
 
         embedding = SpectralEmbedding(n_components=9)
         Xr = []
+        dim = 2
 
-        for i in [0.0001, 0.1, 1, 10, 1000]:
+        for i in [0.001, 0.1, 1, 10, 1000]:
 
             #X_sk = self.lda.fit_transform(X)
             #X_sk = embedding.fit_transform(X)
-            pca = KernelPCA(n_components=2, kernel="rbf")
-            #X_sk = pca.fit_transform(X.to_numpy())
+            pca = KernelPCA(n_components=dim, kernel="cosine", coef0=i)
+            X_sk = pca.fit_transform(X.to_numpy())
 
-            pca = KernelAlgorithms(2, "cos")
-            pca.gamma = 1
-            X_sk = pca.kernelPCA(X.to_numpy(), 2)
+
+            pca = KernelAlgorithms(dim, "linear")
+            #pca.gamma = i
+            #pca.c0 = i
+            #X_sk = pca.kernelPCA(X.to_numpy(),dim)
             Xr.append(X_sk)
 
             print("X_sk.shape ", X_sk.shape)
@@ -384,7 +388,7 @@ class LDA_TestClass(unittest.TestCase):
         #Plotter().plotUmap(X_sk, y, "PCA Dimension {0}- same Train and Test data ".format(self.newDim), inv_map, self.writeToSVG)
 
         #Plotter().scatter(X_sk, y, "PCA Dimension {0}- same Train and Test data ".format(self.newDim), inv_map)
-        Plotter().plotScatter_multiple(Xr, [y]*len(Xr), ["PCA Dimension {0}- same Train and Test data ".format(self.newDim)]*len(Xr), [inv_map]*len(Xr))
+        Plotter().plotScatter_multiple(Xr, [y]*len(Xr), ["PCA Dimension {0}- same Train and Test data ".format(dim)]*len(Xr), [inv_map]*len(Xr))
 
 
         plt.figtext(0.5, 0.01,
