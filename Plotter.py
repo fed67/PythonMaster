@@ -178,7 +178,10 @@ class Plotter:
             colors = np.zeros(len(embedding_l[0][:, 0]))
             colors.fill(6)
 
-        fig, ax = plt.subplots(max(d, 2), d, figsize=(20, 10))
+        spalten = max(d, 2)
+        zeilen = math.ceil(len(embedding_l) / spalten)
+
+        fig, ax = plt.subplots(zeilen, spalten, figsize=(20, 10))
         print("d ", d)
 
         i0 = 0
@@ -205,17 +208,25 @@ class Plotter:
                 else:
                     label = labels[kk][i]
 
-                ax[i0, j0].scatter(elx, ely, 1 + unique[i], label=label)
-
-                ax[i0, j0].grid(True)
-                # ax.legend(loc='upper right')
-                lgd = ax[i0, j0].legend(bbox_to_anchor=(1.1, 1.05))
-                ax[i0, j0].set_xlabel("x")
-                ax[i0, j0].set_ylabel("y")
-                ax[i0, j0].set_title(titles[kk])
+                if (zeilen > 1):
+                    ax[i0, j0].scatter(elx, ely, 1 + unique[i], label=label, alpha=0.6)
+                    ax[i0, j0].grid(True)
+                    # ax.legend(loc='upper right')
+                    lgd = ax[i0, j0].legend(bbox_to_anchor=(1.1, 1.05))
+                    ax[i0, j0].set_xlabel("x")
+                    ax[i0, j0].set_ylabel("y")
+                    ax[i0, j0].set_title(titles[kk])
+                else:
+                    ax[j0].scatter(elx, ely, 1 + unique[i], label=label, alpha=0.6)
+                    ax[j0].grid(True)
+                    # ax.legend(loc='upper right')
+                    lgd = ax[j0].legend(bbox_to_anchor=(1.1, 1.05))
+                    ax[j0].set_xlabel("x")
+                    ax[j0].set_ylabel("y")
+                    ax[j0].set_title(titles[kk])
 
             j0 = j0 + 1
-            if j0 == d:
+            if j0 == spalten:
                 i0 = i0 + 1
                 j0 = 0
 
@@ -306,7 +317,7 @@ class Plotter:
             #print("elx ", elx)
             #print("ely ", ely)
 
-        fig.suptitle("dsfsdf")
+        fig.suptitle(title)
         fig.set_size_inches(13, 13)
 
         ax.grid(True)
@@ -384,14 +395,22 @@ class Plotter:
                 else:
                     label = labels[kk][i]
 
-                ax[i0, j0].scatter(elx, ely, 1 + unique[i], label=label, alpha=0.6)
-
-                ax[i0, j0].grid(True)
-                # ax.legend(loc='upper right')
-                lgd = ax[i0, j0].legend(bbox_to_anchor=(1.1, 1.05))
-                ax[i0, j0].set_xlabel("x")
-                ax[i0, j0].set_ylabel("y")
-                ax[i0, j0].set_title(titles[kk])
+                if(zeilen > 1):
+                    ax[i0, j0].scatter(elx, ely, 1 + unique[i], label=label, alpha=0.6)
+                    ax[i0, j0].grid(True)
+                    # ax.legend(loc='upper right')
+                    lgd = ax[i0, j0].legend(bbox_to_anchor=(1.1, 1.05))
+                    ax[i0, j0].set_xlabel("x")
+                    ax[i0, j0].set_ylabel("y")
+                    ax[i0, j0].set_title(titles[kk])
+                else:
+                    ax[j0].scatter(elx, ely, 1 + unique[i], label=label, alpha=0.6)
+                    ax[j0].grid(True)
+                    # ax.legend(loc='upper right')
+                    lgd = ax[j0].legend(bbox_to_anchor=(1.1, 1.05))
+                    ax[j0].set_xlabel("x")
+                    ax[j0].set_ylabel("y")
+                    ax[j0].set_title(titles[kk])
 
             j0 = j0 + 1
             if j0 == spalten:

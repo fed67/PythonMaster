@@ -313,3 +313,12 @@ def get_table_with_class(dataPath='../../Data/data_sampled.csv', treatmentPath='
     print("shape final ", df2_.shape)
 
     return df2_, df2
+
+def score_classification(y, ground_truth):
+
+    if len(y) != len(ground_truth):
+        raise Exception("Error arrays have different size")
+
+    l = zip(y, ground_truth)
+
+    return sum(map( lambda x : x(0)==x(1) , l))/len(l)
