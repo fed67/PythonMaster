@@ -108,8 +108,15 @@ class DICA:
         print("Xt shaoe ", Xt.shape)
         X = Xt.T
 
-        km = self.K(X,y)
-        lm = self.K(X, y)
+        classes = np.unique(y)
+        X_s = []
+        for c in classes:
+            X_s.append(X[:, y == c ])
+
+        X_s = np.array(X_s)
+
+        km = self.K(X_s,y)
+        lm = self.L(X_s, y)
 
         return self
 
