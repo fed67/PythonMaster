@@ -36,6 +36,8 @@ class DICA:
                 if xi.shape[0] != xj.shape[0]:
                     raise Exception("Error feature dimension must be equal")
 
+        print("X_S ", X_s)
+
         nd = {}
         n_all = 0
         for i in range(len(X_s)):
@@ -50,8 +52,8 @@ class DICA:
             nd[i] = nj_
 
 
-        K = np.zeros((n, n))
-        cl = np.vectorize(nd.get)(nd)
+        K = np.zeros((n_all, n_all))
+        cl = np.vectorize(nd.get)(np.array(range(len(X_s))))
 
         print("cl ", cl)
         print("nd ", nd)
@@ -68,37 +70,42 @@ class DICA:
 
         return K
 
-    def L(self, X, y):
+    def L(self, X_s):
 
-        classes = np.unique(y)
-        nj = {}
-        for c in classes:
-            #nj_ = len(list(filter(lambda x: x, y == c)))
-            #print("c ", c)
-            nj_ = y[y == c].size
+        for xi in X_s:
+            for xj in X_s:
+                if xi.shape[0] != xj.shape[0]:
+                    raise Exception("Error feature dimension must be equal")
 
-            #print("nj ", nj_)
+        nd = {}
+        n_all = 0
+        for i in range(len(X_s)):
+            # nj_ = len(list(filter(lambda x: x, y == c)))
+            # print("c ", c)
+            m, n = X_s[i].shape
+            nj_ = n
+            n_all += n
 
-            nj[c] = nj_
+            # print("nj ", nj_)
 
-        m, n = X.shape
-        L = np.zeros((n, n))
+            nd[i] = nj_
 
-        cl = np.vectorize(nj.get)(classes)
+        L = np.zeros((n_all, n_all))
 
-        print("classes ", classes)
+        cl = np.vectorize(nd.get)(np.array(range(len(X_s))))
+
         print("cl ", cl)
-        print("nj ", nj)
+        print("nd ", nd)
 
-        for l in range(classes.shape[0]):
-            for k in classes:
+        for l in range(len(X_s)):
+            for k in range(len(X_s)):
 
-                for i in range(nj[l]):
-                    for j in range(nj[k]):
+                for i in range(nd[l]):
+                    for j in range(nd[k]):
                         if l == k:
-                            L[np.sum(cl[0:l]) + i, np.sum(cl[0:k]) + j] = (classes.size-1)/( classes.size**2 * nj[k])
+                            L[np.sum(cl[0:l]) + i, np.sum(cl[0:k]) + j] = (len(X_s)-1)/( len(X_s)**2 * nd[k])
                         else:
-                            L[np.sum(cl[0:l]) + i, np.sum(cl[0:k]) + j] = (classes.size - 1) / (classes.size ** 2 * nj[k])
+                            L[np.sum(cl[0:l]) + i, np.sum(cl[0:k]) + j] = (len(X_s) - 1) / (len(X_s) ** 2 * nd[k])
 
         return L
 
@@ -115,8 +122,8 @@ class DICA:
 
         X_s = np.array(X_s)
 
-        km = self.K(X_s,y)
-        lm = self.L(X_s, y)
+        km = self.K(X_s)
+        lm = self.L(X_s)
 
         return self
 
