@@ -2,6 +2,7 @@ import unittest
 
 import numpy as np
 import pandas as pd
+from sklearn.datasets import load_digits
 from sklearn.model_selection import train_test_split
 
 import Utilities
@@ -20,8 +21,8 @@ from DomainGeneralization import *
 
 
 def test_Kernel_LDA_Sklearn_MaxLarge_split_treatment_kernels():
-    # data_name = "sample_130922_105630_n_40000_median.csv"
-    data_name = "sample_130922_105529_n_10000_median.csv"
+    data_name = "sample_130922_105630_n_40000_median.csv"
+    #data_name = "sample_130922_105529_n_10000_median.csv"
     treatment = "one_padded_zero_treatments.csv"
     path = "../../Data/kardio_data/"
 
@@ -40,14 +41,19 @@ def test_Kernel_LDA_Sklearn_MaxLarge_split_treatment_kernels():
 
     titles = []
     Xs = []
+    y= []
     dim = 2
-    for kern in kernels:
-        lda = KDA(kernel=kern, n_components=2)
+    kern = "poly"
+    #for kern in kernels:
+    #for kern in ["poly"]:
+    for degree in [3, 5, 8]:
+        #lda = KDA(kernel=kern, n_components=2)
+        lda = MyKerneLDA(kernel=kern, n_components=None, degree=degree)
         # lda = KDA(kernel=kern)
 
         # lda = KANMM(kernel=kern)
         # titles.append("Kernel LDA, Kernel {1} Split  {0}  Split in Train and Test set".format(self.group_size, kern))
-        titles.append("UMAP - Kernel LDA, Kernel {1} Split  {0}".format(group_size, kern))
+
         for group_size in [group_size]:
 
             _, dfc = get_table_with_class2(df_data, path + treatment)
@@ -81,29 +87,36 @@ def test_Kernel_LDA_Sklearn_MaxLarge_split_treatment_kernels():
 
             print("before fit")
             # lda = LinearDiscriminantAnalysis(solver='svd')
-            model = lda.fit(X_train, y_train)
+            model = lda.fit(X_train.to_numpy(), y_train)
             # model = lda.fit(X, Y )
-            x_sk = model.transform(X_test)
-            # y_sk = model.predict(X_test)
+            x_sk = model.transform(X_test.to_numpy())
+            y_sk = model.predict(X_test.to_numpy())
+            Xs.append(x_sk)
             Xs.append(x_sk)
             print("shape ", x_sk.shape)
 
+            y.append(y_test)
+            y.append(y_sk)
+
+            titles.append("UMAP - Kernel LDA, Kernel {1} - degree {2} Split  {0}".format(group_size, kern, degree))
+            titles.append("UMAP - Kernel LDA Prediction, Kernel {1} - degree {2} Split  {0}".format(group_size, kern, degree))
+
             # score_classification(y_sk, y_test)
 
-            # AC_train = self.lda.score(X_train, y_train)
+            AC_train = lda.score(X_train.to_numpy(), y_train)
             # print(f'{AC_train=}')
-            # AC_test = self.lda.score(X_test, y_test)
+            AC_test = lda.score(X_test.to_numpy(), y_test)
             # print(f'{AC_test=}')
 
-            x_train = lda.fit_transform(X_train, y_train)
-            x_test = lda.fit_transform(X_test, y_test)
+            #x_train = lda.fit_transform(X_train, y_train)
+            #x_test = lda.fit_transform(X_test, y_test)
 
-    Plotter().plotUmap_multiple(Xs, [y_test] * len(Xs), titles, [inv_map] * len(Xs))
-    # Plotter().plotScatter_multiple(Xs, [y_test] * len(Xs), titles, [inv_map] * len(Xs))
+    #Plotter().plotUmap_multiple([x_sk, x_sk], [y_test, y_sk], titles, [inv_map] * 2)
+    Plotter().plotScatter_multiple(Xs, y, titles, [inv_map] * len(Xs))
     # Plotter().plotUmap(x_sk, y_test, "LDA Merge {0} samples {1}, {2} Split in Train (V1, V2, V3) and Test (V4) set".format(group_size, variant[variant_num], self.data_name), inv_map, self.writeToSVG)
     plt.figtext(0.5, 0.01,
-                "Dimension of train data: rows: {0}; features: {1}, Dimension of test data: rows: {2}; features: {3} \n data {4}".format(
-                    X_train.shape[0], X_train.shape[1], X_test.shape[0], X_test.shape[1], data_name), wrap=True,
+                "Dimension of train data: rows: {0}; features: {1}, Dimension of test data: rows: {2}; features: {3} \n data {4}\n AC_train {5} AC_Test {6}".format(
+                    X_train.shape[0], X_train.shape[1], X_test.shape[0], X_test.shape[1], data_name, AC_train, AC_test), wrap=True,
                 horizontalalignment='center', fontweight='bold')
     plt.show()
 
@@ -196,7 +209,8 @@ def test_KernelPCA_Sklearn_split_treatment_dimension():
 def test_LDA_Sklearn_split_treatment_dimension():
     cwd = os.getcwd()
     print("Current working directory: {0}".format(cwd))
-    data_name = "sample_130922_105529_n_10000_median.csv"
+    #data_name = "sample_130922_105529_n_10000_median.csv"
+    data_name = "sample_130922_105630_n_40000_median.csv"
     treatment = "one_padded_zero_treatments.csv"
     path = "../../Data/kardio_data/"
 
@@ -215,14 +229,15 @@ def test_LDA_Sklearn_split_treatment_dimension():
     y = []
     degree = 3
     dim = 2
-    kern = "cosine"
+    kern = "poly"
 
     #for dim in [2, 4, 5, 6, 7, 8]:
     #for dim in [2]:
     #for kern in kernel:
-    for gamma in [0.1, 0.5, 1, 1.5, 2, 5]:
+    #for gamma in [0.1, 0.5, 1, 1.5, 2, 5]:
+    for degree in [2,3,5,7,8,9]:
         #lda = MyKerneLDA(n_components=200, kernel=kern, degree=dim)
-        lda = MyKerneLDA(n_components=200, kernel=kern, gamma=gamma)
+        lda = MyKerneLDA(n_components=None, kernel=kern, degree=degree)
         #lda = KDA(200, kernel=kern)
 
         #lda.f = lda.f_linear
@@ -265,8 +280,8 @@ def test_LDA_Sklearn_split_treatment_dimension():
             X_list.append(x_sk)
             #y.append(model.predict(X_test.to_numpy()))
             y.append(y_test)
-            #titles.append("LDA - Degree {1} - Train Merge {0} - Kernel {2}\n score {3} ".format(group_size, dim, kern, lda.score(X_train.to_numpy(), y_train)))
-            titles.append("LDA - Gamma {1} - Test Merge {0} - Kernel {2}\n score {3} ".format(group_size, gamma, kern, lda.score(X_test.to_numpy(),y_test)))
+            titles.append("K-LDA - Degree {1} - Train Merge {0} - Kernel {2}\n score {3} ".format(group_size, degree, kern, lda.score(X_train.to_numpy(), y_train)))
+            #titles.append("K-LDA - Gamma {1} - Test Merge {0} - Kernel {2}\n score {3} ".format(group_size, gamma, kern, lda.score(X_test.to_numpy(),y_test)))
             print("x_sk shape ", x_sk.shape)
 
             #X_list.append(x_sk)
@@ -312,7 +327,7 @@ def test_LDA_Sklearn_split_treatment_dimension():
     # Plotter().scatter(X_list[0], y, titles[0], inv_map)
     #Plotter().plotScatter_multiple(X_list, y, titles, [inv_map] * len(X_list))
     # Plotter().plotUmap(x_sk, y, "PCA Kernel {3} - Dimension {2} - Merge {0} samples {1}".format(group_size, variant[variant_num], dim, kern), inv_map, self.writeToSVG)
-    # plt.figtext(0.5, 0.01, "Scatter Plot\nDimension of train data: rows: {0}; features: {1}\n sample: {2}".format(X_train.shape[0], X_test.shape[1], data_name), wrap=True, horizontalalignment='center', fontweight='bold')
+    plt.figtext(0.5, 0.01, "Scatter Plot\nDimension of train data: rows: {0}; features: {1}\n sample: {2}".format(X_train.shape[0], X_test.shape[1], data_name), wrap=True, horizontalalignment='center', fontweight='bold')
     plt.show()
 
 
@@ -363,9 +378,7 @@ def test_kernel():
     # Plotter().plotUmap_multiple(X_list , [y_test]*len(X_list), titles, [inv_map]*len(X_list))
     # Plotter().scatter(X_list[0], y, titles[0], inv_map)
     # Plotter().plotScatter_multiple(X_list, y, titles, [inv_map] * len(X_list))
-    Plotter().plotUmap(X_list[0], yt,
-                   "Test Kernel LDA",
-                   inv_map)
+    #Plotter().plotUmap(X_list[0], yt, "Test Kernel LDA", inv_map)
     # plt.figtext(0.5, 0.01, "Scatter Plot\nDimension of train data: rows: {0}; features: {1}\n sample: {2}".format(X_train.shape[0], X_test.shape[1], data_name), wrap=True, horizontalalignment='center', fontweight='bold')
     plt.show()
 
@@ -373,7 +386,8 @@ def test_kernel():
 def test_iris():
     from sklearn.datasets import load_iris
 
-    data = load_iris()
+    #data = load_iris()
+    data = load_digits()
 
     indxA = np.arange(150)
     indx = np.random.choice(indxA, 10)
@@ -383,38 +397,57 @@ def test_iris():
 
     X = data.data
     y = data.target
+    y_max = np.max(np.unique(y))
+    print("y_max ", y_max )
 
 
 
     print("x shape ", X.shape)
 
     lda2 = LinearDiscriminantAnalysis()
+    res = []
+    res_y = []
+    titles = []
+    for kernel in ["linear", "poly", "gauss"]:
+        lda = SCA(n_components=2, kernel=kernel)
+        #lda.f = lda.f_gauss
+        lda.gamma = 1
 
-    lda = DICA(n_components=2, kernel="gauss")
-    #lda.f = lda.f_gauss
-    lda.gamma = 1
+        model = lda.fitDICA([X.T], y)
+        x_sk = model.transformDICA(X.T)
+        res.append(x_sk)
+        res_y.append(y)
+        titles.append("SCA - {0} ".format(kernel))
 
-    model = lda.fitDICA(X, y)
-    x_sk = model.transformDICA(X).T
+        #model.computeClassifier(X, y)
+        #yp = lda.predict(X)
+        yp = y
 
-    #model.computeClassifier(X, y)
-    #yp = lda.predict(X)
-    yp = y
+        print("iscomplex ", np.iscomplex(x_sk).any())
 
-    x_sk2 = lda2.fit_transform(X,y)
-    print("x_sk ", x_sk.shape)
-    print("x_sk2 ", x_sk2.shape)
+        #x_sk2 = lda2.fit_transform(X.T,y)
+        print("x_sk ", x_sk.shape)
+        #print("x_sk2 ", x_sk2.shape)
+        print("X.shape ", X.shape)
 
     #print("score ", lda.score(y, yp))
 
+    res.append(X)
+    res_y.append(y)
+    titles.append("Original Data")
+    map = {}
+    for i in range(20):
+        map[i] = str(i)
+
     #Plotter().plotUmap_multiple([x_sk, x_sk2, X], [y]*3, ["Kernel LDA", "LDA", "Iris"], [{0:"0", 1:"1", 2:"2"}]*3)
-    #Plotter().plotScatter_multiple([x_sk, x_sk, x_sk2], [y, yp, y] , ["Kernel LDA", "Kernel LDA predict", "LDA"], [{0: "0", 1: "1", 2: "2"}] * 3)
-    #plt.show()
+    #Plotter().plotScatter_multiple([x_sk, x_sk, x_sk2], [y, yp, y] , ["SCA", "Kernel LDA predict", "LDA"], [{0: "0", 1: "1", 2: "2"}] * 3)
+    Plotter().plotScatter_multiple(res, res_y, titles, [map] * len(res))
+    plt.show()
 
 
 if __name__ == '__main__':
     #test_LDA_Sklearn_split_treatment_dimension()
-    # test_Kernel_LDA_Sklearn_MaxLarge_split_treatment_kernels()
+    #test_Kernel_LDA_Sklearn_MaxLarge_split_treatment_kernels()
 
     #test_KernelPCA_Sklearn_split_treatment_dimension()
     #test_LDA_Sklearn_split_treatment_dimension_single()

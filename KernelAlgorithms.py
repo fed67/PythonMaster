@@ -130,6 +130,7 @@ class KernelAlgorithms:
 
 
         print("n ", n, " m ", m)
+        print("y ", y.shape)
 
         M_i = {}
         nj_c = {}
@@ -141,7 +142,7 @@ class KernelAlgorithms:
             nj_c[c] = nj_
             #print("nj ", nj)
 
-            Xk = X[:, y == c, ]
+            Xk = X[:, y == c]
             #print("Xk ", Xk.shape)
             for j in range(n):
                 for k in range(nj_c[c]):

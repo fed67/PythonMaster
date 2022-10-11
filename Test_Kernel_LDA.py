@@ -121,21 +121,21 @@ class LDA3_TestClass(unittest.TestCase):
             print("Rows ", x_sk[1, :])
             print("Rows ", x_sk[2, :])
 
-            reducer = umap.UMAP()
+            #reducer = umap.UMAP()
             scaled_penguin_data = StandardScaler().fit_transform(x_sk)
-            embedding = reducer.fit_transform(x_sk)
-            print("embedding ", embedding)
+            #embedding = reducer.fit_transform(x_sk)
+            #print("embedding ", embedding)
 
-            print("all same ", np.all(x_sk == x_sk[0]) )
+            #print("all same ", np.all(x_sk == x_sk[0]) )
 
             x_train = self.lda.fit_transform(X_train, y_train)
             x_test = self.lda.fit_transform(X_test, y_test)
 
 
-            #Plotter().plotUmap_multiple([x_sk, x_train, x_test] , [y_test, y_train, y_test] ,
-            #                            ["LDA Merge {0} samples {1}, {2} Split in Train and Test set".format(group_size, variant[variant_num], self.data_name), "LDA-SVD, Only Train data, Group=[V1, V2, V3]", "LDA-SVD, Only Test data , Group=[V4]"],
-            #                            [inv_map]*3)
-            Plotter().plotUmap(x_sk, y_test, "LDA Merge {0} samples {1}, {2} Split in Train (V1, V2, V3) and Test (V4) set".format(group_size, variant[variant_num], self.data_name), inv_map, self.writeToSVG)
+            Plotter().plotUmap_multiple([x_sk, x_train, x_test] , [y_test, y_train, y_test] ,
+                                        ["LDA Merge {0} samples {1}, {2} Split in Train and Test set".format(group_size, variant[variant_num], self.data_name), "LDA-SVD, Only Train data, Group=[V1, V2, V3]", "LDA-SVD, Only Test data , Group=[V4]"],
+                                        [inv_map]*3)
+            #Plotter().plotUmap(x_sk, y_test, "LDA Merge {0} samples {1}, {2} Split in Train (V1, V2, V3) and Test (V4) set".format(group_size, variant[variant_num], self.data_name), inv_map, self.writeToSVG)
             #Plotter().scatter(x_sk, y_test,
             #                   "LDA Merge {0} samples {1}, {2} Split in Train (V1, V2, V3) and Test (V4) set".format(
             #                       group_size, variant[variant_num], self.data_name), inv_map)
