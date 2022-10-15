@@ -386,8 +386,8 @@ def test_kernel():
 def test_iris():
     from sklearn.datasets import load_iris
 
-    #data = load_iris()
-    data = load_digits()
+    data = load_iris()
+    #data = load_digits()
 
     indxA = np.arange(150)
     indx = np.random.choice(indxA, 10)
@@ -399,6 +399,8 @@ def test_iris():
     y = data.target
     y_max = np.max(np.unique(y))
     print("y_max ", y_max )
+    dataSetName = "iris"
+
 
 
 
@@ -408,7 +410,9 @@ def test_iris():
     res = []
     res_y = []
     titles = []
-    for kernel in ["linear", "poly", "gauss"]:
+    for kernel in ["linear"]: # "poly", "gauss"
+    #kernel = "gauss"
+    #for gamma in [0.01, 0.02, 0.05, 1, 1.4, 2]:
         lda = SCA(n_components=2, kernel=kernel)
         #lda.f = lda.f_gauss
         lda.gamma = 1
@@ -417,7 +421,7 @@ def test_iris():
         x_sk = model.transformDICA(X.T)
         res.append(x_sk)
         res_y.append(y)
-        titles.append("SCA - {0} ".format(kernel))
+        titles.append("SCA - {0} - {1} ".format(kernel, dataSetName))
 
         #model.computeClassifier(X, y)
         #yp = lda.predict(X)
@@ -441,8 +445,8 @@ def test_iris():
 
     #Plotter().plotUmap_multiple([x_sk, x_sk2, X], [y]*3, ["Kernel LDA", "LDA", "Iris"], [{0:"0", 1:"1", 2:"2"}]*3)
     #Plotter().plotScatter_multiple([x_sk, x_sk, x_sk2], [y, yp, y] , ["SCA", "Kernel LDA predict", "LDA"], [{0: "0", 1: "1", 2: "2"}] * 3)
-    Plotter().plotScatter_multiple(res, res_y, titles, [map] * len(res))
-    plt.show()
+    #Plotter().plotScatter_multiple(res, res_y, titles, [map] * len(res))
+    #plt.show()
 
 
 if __name__ == '__main__':

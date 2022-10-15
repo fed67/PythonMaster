@@ -3,6 +3,8 @@ import pandas as pd
 import os
 import itertools
 
+from sklearn.preprocessing import StandardScaler
+
 
 def string_column_to_int_class(df, col):
     index = 0
@@ -48,6 +50,9 @@ def pruneDF_treatment_trail_plate_well(df):
     y = np.array(df['treatment'].copy().tolist())
     X = df.drop('treatment', axis=1).copy()
 
+    #scaler = StandardScaler()
+    #X = scaler.fit_transform(X)
+    X = X.to_numpy()
 
     return X, y
 
@@ -173,6 +178,7 @@ def compute_mean_of_group_size_on_treatment(df, group_size):
         d["treatment"] = [treatment_] * d.shape[0]
 
         df0 = pd.concat([df0, d.drop("indexx", axis=1)]) #add group to dataframe and drop indexx column
+
 
     return df0
 

@@ -377,40 +377,49 @@ class Plotter:
             embedding = embedding_l[kk]
             unique = get_unique(colors[kk])
             print("i0 ", i0, " j0 ", j0)
+            #print("embedding ", embedding)
+            #print("colors ", colors[kk])
+            print("embedding.shape ", embedding.shape)
 
             elements = []
             for i in range(0, len(unique)):
                 f = lambda t: t[2] == unique[i]
-                elements.append(list(filter(f, zip(embedding[:, 0], embedding[:, 1], colors[kk]))))
+                elm = list(filter(f, zip(embedding[:, 0], embedding[:, 1], colors[kk])))
+                if len(elm) > 0:
+                    elements.append(elm)
+                else:
+                    elements.append([])
 
             # plt.scatter(
             #    embedding[:, 0],
             #    embedding[:, 1], c=colors, label=lab)
 
             for i in range(0, len(unique)):
-                elx, ely, c = zip(*elements[i])
 
-                if len(labels) == 0:
-                    label = "Class " + str(c[0])
-                else:
-                    label = labels[kk][i]
+                if len(elements[i]) > 0:
+                    elx, ely, c = zip(*elements[i])
 
-                if(zeilen > 1):
-                    ax[i0, j0].scatter(elx, ely, 1 + unique[i], label=label, alpha=0.6)
-                    ax[i0, j0].grid(True)
-                    # ax.legend(loc='upper right')
-                    lgd = ax[i0, j0].legend(bbox_to_anchor=(1.1, 1.05))
-                    ax[i0, j0].set_xlabel("x")
-                    ax[i0, j0].set_ylabel("y")
-                    ax[i0, j0].set_title(titles[kk])
-                else:
-                    ax[j0].scatter(elx, ely, 1 + unique[i], label=label, alpha=0.6)
-                    ax[j0].grid(True)
-                    # ax.legend(loc='upper right')
-                    lgd = ax[j0].legend(bbox_to_anchor=(1.1, 1.05))
-                    ax[j0].set_xlabel("x")
-                    ax[j0].set_ylabel("y")
-                    ax[j0].set_title(titles[kk])
+                    if len(labels) == 0:
+                        label = "Class " + str(c[0])
+                    else:
+                        label = labels[kk][i]
+
+                    if(zeilen > 1):
+                        ax[i0, j0].scatter(elx, ely, 1 + unique[i], label=label, alpha=0.6)
+                        ax[i0, j0].grid(True)
+                        # ax.legend(loc='upper right')
+                        lgd = ax[i0, j0].legend(bbox_to_anchor=(1.1, 1.05))
+                        ax[i0, j0].set_xlabel("x")
+                        ax[i0, j0].set_ylabel("y")
+                        ax[i0, j0].set_title(titles[kk])
+                    else:
+                        ax[j0].scatter(elx, ely, 1 + unique[i], label=label, alpha=0.6)
+                        ax[j0].grid(True)
+                        # ax.legend(loc='upper right')
+                        lgd = ax[j0].legend(bbox_to_anchor=(1.1, 1.05))
+                        ax[j0].set_xlabel("x")
+                        ax[j0].set_ylabel("y")
+                        ax[j0].set_title(titles[kk])
 
             j0 = j0 + 1
             if j0 == spalten:
