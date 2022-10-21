@@ -50,9 +50,18 @@ def pruneDF_treatment_trail_plate_well(df):
     y = np.array(df['treatment'].copy().tolist())
     X = df.drop('treatment', axis=1).copy()
 
+    X_new = X.copy()
+    for col in X:
+        if X[col].dtype not in [ float, int, np.compat.long ]:
+            print("error x not int float long")
+            print(X[col])
+
+        if X[col].dtype == int or X[col].dtype == np.compat.long:
+            X_new[col] = X_new[col].astype(float)
+
     #scaler = StandardScaler()
     #X = scaler.fit_transform(X)
-    X = X.to_numpy()
+    X = X_new.to_numpy()
 
     return X, y
 

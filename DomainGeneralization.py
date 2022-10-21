@@ -10,7 +10,7 @@ class SCA:
         return self.gamma*np.dot(x.T,y)
 
     def f_gauss(self, x, y):
-        return np.exp(-np.linalg.norm(x-y,2)**2/self.gamma)
+        return np.exp(-np.linalg.norm(x-y,2)**2*self.gamma)
 
     def f_sigmoid(self, x : np.ndarray, y : np.ndarray):
         return np.tanh(self.gamma*x.T.dot(y) + self.c0)
@@ -22,18 +22,22 @@ class SCA:
         return np.power(np.dot(x.T, y), self.degree, dtype=float)
 
     def f_rbf(self, x : np.ndarray, y : np.ndarray):
-        #return np.exp(-self.gamma*np.linalg.norm(x-y,2)**2)
-        return np.exp(-self.gamma * (x - y).dot(x-y) )
+        return np.exp(-np.linalg.norm(x-y, ord=2)**2 / self.gamma**2 )
+        #return np.exp(-self.gamma * (x - y).dot(x-y) )
 
-    def __init__(self, n_components, kernel, gamma : float =1.0):
+    def __init__(self, n_components, kernel, gamma : float =1.0, degree : float =1.0, delta : float = 0.5, beta : float = 0.5):
         sw = {"linear": self.f_linear, "poly": self.f_poly, "gauss": self.f_gauss, "sigmoid": self.f_sigmoid, "cosine": self.f_cos, "rbf": self.f_rbf}
         self.n_components = n_components
         self.k = sw[kernel]
         self.kernel_str = kernel
 
         self.c0 = float(0)
-        self.degree = float(3)
+        self.degree = degree
         self.gamma = gamma
+
+        self.remove_inf = False
+        self.delta = delta
+        self.beta = beta
 
 
     def kernel(self, xk, xj):
@@ -162,10 +166,10 @@ class SCA:
                 for i in range(nd[li]):
                     for j in range(nd[k]):
                         if li == k:
-                            L[np.sum(cl[0:li]) + i, np.sum(cl[0:k]) + j] = (m-1)/( m**2 * nd[k]**2)
+                            L[np.sum(cl[0:li]) + i, np.sum(cl[0:k]) + j] = (float(m)-1.0)/( float(m)**2 * float(nd[k])**2)
                         else:
 
-                            L[np.sum(cl[0:li]) + i, np.sum(cl[0:k]) + j] = 1.0/(m ** 2 * nd[k] * nd[li])
+                            L[np.sum(cl[0:li]) + i, np.sum(cl[0:k]) + j] = 1.0/(float(m) ** 2 * float(nd[k]) * float(nd[li]) )
 
         return L
 
@@ -276,11 +280,19 @@ class SCA:
         #print("lm ", lm)
         #print("pm ", pm)
 
-        In = np.ones(n)
+        In = np.ones(n)/float(n)
         K_center = km - In.dot(km) - km.dot(In) + In.dot(km).dot(In)
 
-        A = (1-beta)/n / K_center.dot(K_center) + beta*pm
-        B = delta*K_center.dot(lm).dot(K_center) + K_center + qm
+        self.beta = float(self.beta)
+        self.delta = float(self.delta)
+        print("beta ", self.beta, " f")
+        print(type(self.beta))
+
+        (1.0 - self.beta)
+        (1.0 - self.beta) / float(n)
+
+        A = (1.0-self.beta)/float(n) / K_center.dot(K_center) + self.beta*pm
+        B = self.delta*K_center.dot(lm).dot(K_center) + K_center + qm
 
         #A = A.astype(dtype=np.longdouble)
         #B = B.astype(dtype=np.longdouble)
@@ -290,9 +302,13 @@ class SCA:
         #print("B ", B)
 
         eigenValues, eigenVectors = scipy.linalg.eig(A, B)
-        print("Eigenvector.shape ", eigenVectors.shape)
 
-        realV = eigenValues.imag == 0
+
+        if self.remove_inf:
+            realV = np.logical_and( eigenValues.imag == 0, eigenValues.real != np.inf)
+        else:
+            realV = eigenValues.imag == 0
+
         eigenValues = eigenValues[realV]
         eigenVectors = eigenVectors[:, realV]
 
@@ -301,10 +317,15 @@ class SCA:
         idx = (eigenValues).argsort()[::-1]
         eigenValues = eigenValues[idx]
 
-        eigenVectors = eigenVectors[idx].real
+        eigenVectors = eigenVectors[:, idx].real
+
+        print("eigenValues ", eigenValues[0:5], " remove inf ", self.remove_inf)
 
         ncp = min( components, eigenValues.size )
         #print("num cps ", ncp)
+
+        print("real Eigenvector.shape ", eigenVectors.shape)
+        #print("real Eigenvector ", eigenVectors[:, 0:ncp])
 
         self.B_star = eigenVectors[:, 0:ncp].real
         self.Delta = np.diag(eigenValues[0:ncp].real)
@@ -312,7 +333,7 @@ class SCA:
         #print("K ", km)
 
         #print("eigenValues ", eigenValues[0:4])
-        print("eigenValues ", eigenValues )
+        #print("eigenValues ", eigenValues )
         #print("B* ", self.B_star)
         #print("Delta ", self.Delta)
         print("det(A) ", np.linalg.det(A), " dtype ", A.dtype)
@@ -322,6 +343,7 @@ class SCA:
         print("det(L) ", np.linalg.det(lm), " dtype ", lm.dtype)
         print("det(P) ", np.linalg.det(pm), " dtype ", pm.dtype)
         print("det(Q) ", np.linalg.det(qm), " dtype ", qm.dtype)
+        print("ncp ", ncp)
 
         #self.Zt = km.T.dot(self.B_star).dot( np.linalg.inv(self.Delta)**(0.5))
 
@@ -354,3 +376,20 @@ class SCA:
             raise Exception("Error result is complex")
 
         return Zt.real
+
+    def transformDICA_list(self, Su):
+
+        Z = []
+        for X in Su:
+            km = self.kernel(self.X, X)
+            Zt = km.T.dot(self.B_star).dot(np.linalg.inv(self.Delta) ** (0.5))
+
+            if np.iscomplex(Zt).any():
+                raise Exception("Error result is complex")
+            Z.append(Zt)
+
+        X = Z[0]
+        for z in Z[1:]:
+            X = np.vstack((X, z))
+
+        return X

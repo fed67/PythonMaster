@@ -448,6 +448,82 @@ def test_iris():
     #Plotter().plotScatter_multiple(res, res_y, titles, [map] * len(res))
     #plt.show()
 
+from DataSets import *
+def testGauss():
+
+    data = Gaussian(n=100)
+    #data = load_iris()
+    #data = load_digits()
+
+    X = data.data
+    y = data.target
+
+    print("data.data ", len(data.data))
+
+    for x in data.data:
+        print("variance ", np.var(x, axis=0))
+
+    y0 = y[0]
+    for yi in y[1:]:
+        y0 = np.hstack((y0, yi))
+
+    dataSetName = "Gauss"
+
+    #scaler = StandardScaler()
+    #scaler = scaler.fit(X)
+
+    #X = scaler.transform(X)
+
+    #index = np.arange(stop=X.shape[0], dtype=int)
+    #np.random.shuffle( index )
+
+    #gamma = 0.1
+    gamma = 0.02
+    degree = 5
+    kernel = "rbf"
+
+    res = []
+    res_y = []
+    titles = []
+    for kernel in [ "poly", "gauss", "cosine"]:
+    #for gamma in [0.1, 0.3, 2]:
+        lda = SCA(n_components=2, kernel=kernel, gamma=gamma, degree=degree)
+        lda.remove_inf = True
+        #lda.f = lda.f_gauss
+        lda.gamma = 0.2
+
+        #model = lda.fitDICA([X0, X1], [y0, y1])
+        #model = lda.fitDICA([X0.T], [y0])
+        #x_sk = model.transformDICA(X2)
+
+        model = lda.fitDICA(X, y)
+        x_sk = model.transformDICA_list(X)
+        print("x_sk.shape ", x_sk.shape)
+
+        res.append(x_sk)
+        res_y.append(y0)
+        titles.append("Scatter Plot - SCA - {0}  ".format(kernel))
+
+        #model.computeClassifier(X, y)
+        #yp = lda.predict(X)
+
+        #print("iscomplex ", np.iscomplex(x_sk).any())
+
+
+    #print("score ", lda.score(y, yp))
+
+    res.append(data.X)
+    res_y.append(data.y)
+    titles.append("Original Data")
+    map = {}
+    for i in range(20):
+        map[i] = str(i)
+
+    #Plotter().plotUmap_multiple([x_sk, x_sk2, X], [y]*3, ["Kernel LDA", "LDA", "Iris"], [{0:"0", 1:"1", 2:"2"}]*3)
+    #Plotter().plotScatter_multiple([x_sk, x_sk, x_sk2], [y, yp, y] , ["SCA", "Kernel LDA predict", "LDA"], [{0: "0", 1: "1", 2: "2"}] * 3)
+    Plotter().plotScatter_multiple(res, res_y, titles, [map] * len(res))
+    plt.show()
+
 
 if __name__ == '__main__':
     #test_LDA_Sklearn_split_treatment_dimension()
@@ -458,4 +534,4 @@ if __name__ == '__main__':
 
     #test_kernel()
 
-    test_iris()
+    testGauss()

@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 from sklearn.manifold import *
 import numpy as np
 from Utilities import *
+from matplotlib.colors import ListedColormap, BoundaryNorm
 
 import umap
 from sklearn.preprocessing import StandardScaler
@@ -367,6 +368,8 @@ class Plotter:
         print("spalten ", spalten)
         print("len(embedding_l)  ", len(embedding_l) )
 
+
+
         fig, ax = plt.subplots(zeilen, spalten, figsize=(20, 10))
         print("d ", d)
 
@@ -376,10 +379,10 @@ class Plotter:
         for kk in range(len(embedding_l)):
             embedding = embedding_l[kk]
             unique = get_unique(colors[kk])
-            print("i0 ", i0, " j0 ", j0)
+            #print("i0 ", i0, " j0 ", j0)
             #print("embedding ", embedding)
             #print("colors ", colors[kk])
-            print("embedding.shape ", embedding.shape)
+            #print("embedding.shape ", embedding.shape)
 
             elements = []
             for i in range(0, len(unique)):
@@ -396,16 +399,25 @@ class Plotter:
 
             for i in range(0, len(unique)):
 
+                #print("c ", (1 + unique[i]))
+                #print("label ", labels[kk])
+
                 if len(elements[i]) > 0:
                     elx, ely, c = zip(*elements[i])
+
+                    #cmap = ListedColormap(['r', 'g', 'b', 'c', "forestgreen", "seagreen", "teal", "navy"] )
+                    #print("c ", c)
+                    #https://matplotlib.org/stable/gallery/color/named_colors.html
+                    myColors = ['r', 'g', 'b', 'c', "olive", "gold", "teal", "darkviolet", 'pink', 'grey']
+
 
                     if len(labels) == 0:
                         label = "Class " + str(c[0])
                     else:
-                        label = labels[kk][i]
+                        label = labels[kk][c[0]]
 
                     if(zeilen > 1):
-                        ax[i0, j0].scatter(elx, ely, 1 + unique[i], label=label, alpha=0.6)
+                        ax[i0, j0].scatter(x=elx, y=ely, c=myColors[unique[i]], label=label, alpha=0.6)
                         ax[i0, j0].grid(True)
                         # ax.legend(loc='upper right')
                         lgd = ax[i0, j0].legend(bbox_to_anchor=(1.1, 1.05))
@@ -413,7 +425,7 @@ class Plotter:
                         ax[i0, j0].set_ylabel("y")
                         ax[i0, j0].set_title(titles[kk])
                     else:
-                        ax[j0].scatter(elx, ely, 1 + unique[i], label=label, alpha=0.6)
+                        ax[j0].scatter(x=elx, y=ely, c=myColors[unique[i]], label=label, alpha=0.6)
                         ax[j0].grid(True)
                         # ax.legend(loc='upper right')
                         lgd = ax[j0].legend(bbox_to_anchor=(1.1, 1.05))
