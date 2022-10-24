@@ -276,14 +276,19 @@ class Gaussian:
         C0 = np.concatenate((C0_, C1_, C2_), axis=0)
 
         self.X = np.concatenate((x0, x1, x2), axis=0)
-        self.y = np.concatenate((C0_, C0_, C0_), axis=0)
+        self.y = np.concatenate((C0, C0, C0), axis=0)
+
+        print("x0 ", x0.shape, " x1 ", x1.shape, " x2.shape ", x2.shape)
+        print("C0 ", C0.shape)
+        print("X ", self.X.shape)
+        print("y ", self.y.shape)
 
 
         self.data =   [x0, x1, x2]
         self.target = [C0, C0, C0]
 
 
-        self.title = ["S0"]
+        self.title = ["S0", "S1", "S2"]
 
     def plot(self):
         map = dict()

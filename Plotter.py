@@ -352,6 +352,8 @@ class Plotter:
 
         # print("embedding ", embedding.shape)
         # print("Xd ", Xd.shape)
+        print("leng em ", len(embedding_l))
+        print("len(color) ", len(colors))
 
         d = math.ceil(np.sqrt(len(embedding_l)))
 

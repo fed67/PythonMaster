@@ -209,8 +209,8 @@ def test_KernelPCA_Sklearn_split_treatment_dimension():
 def test_LDA_Sklearn_split_treatment_dimension():
     cwd = os.getcwd()
     print("Current working directory: {0}".format(cwd))
-    #data_name = "sample_130922_105529_n_10000_median.csv"
-    data_name = "sample_130922_105630_n_40000_median.csv"
+    data_name = "sample_130922_105529_n_10000_median.csv"
+    #data_name = "sample_130922_105630_n_40000_median.csv"
     treatment = "one_padded_zero_treatments.csv"
     path = "../../Data/kardio_data/"
 
@@ -219,113 +219,71 @@ def test_LDA_Sklearn_split_treatment_dimension():
     variant = ["in groupBy treatment", "in groupBy treatment+trial"]
     #kernel = ["linear", "poly", "rbf", "sigmoid", "cosine"]
     kernel = ["linear", "poly", "cosine"]
-    variant_num = 0
     group_size = 25
 
-    # group_size = 25
-    # for group_size, file_name in zip( [10, 15, 25], ["Result-MaxLARGE-Merge-{0}-10Samples".format(variant[variant_num]), "Result-MaxLARGE-Merge-{0}-15Samples".format(variant[variant_num]), "Result-MaxLARGE-Merge-{0}-25Samples".format(variant[variant_num])]):
     X_list = []
     titles = []
     y = []
     degree = 3
     dim = 2
-    kern = "poly"
+    kern = "rbf"
+
+    _, dfc = get_table_with_class2(df_data, path + treatment)
+
+    dfc, inv_map = string_column_to_int_class(dfc, "treatment")
+
+    df_train = compute_mean_of_group_size_on_treatment(dfc.loc[dfc["trial"].isin(['V1', 'V2', 'V3'])], group_size)
+    X_train, y_train = pruneDF_treatment_trail_plate_well(df_train)
+
+    df_all = compute_mean_of_group_size_on_treatment(dfc.loc[dfc["trial"].isin(['V1', 'V2', 'V3', 'V4'])], group_size)
+    X_all, y_train = pruneDF_treatment_trail_plate_well(df_train)
+
+    df_train_V1 = compute_mean_of_group_size_on_treatment(dfc.loc[dfc["trial"].isin(['V1'])], group_size)
+    df_train_V2 = compute_mean_of_group_size_on_treatment(dfc.loc[dfc["trial"].isin(['V2'])], group_size)
+    df_train_V3 = compute_mean_of_group_size_on_treatment(dfc.loc[dfc["trial"].isin(['V3'])], group_size)
+
+    X_train1, y_train1 = pruneDF_treatment_trail_plate_well(df_train_V1)
+    X_train2, y_train2 = pruneDF_treatment_trail_plate_well(df_train_V2)
+    X_train3, y_train3 = pruneDF_treatment_trail_plate_well(df_train_V3)
+
+    # df_test = compute_mean_of_group_size_on_treatment(dfc.loc[dfc["trial"] == 'V4'], group_size)
+    df_test = compute_mean_of_group_size_on_treatment(dfc.loc[dfc["trial"].isin(['V4'])], group_size)
+    X_test, y_test = pruneDF_treatment_trail_plate_well(df_test)
 
     #for dim in [2, 4, 5, 6, 7, 8]:
     #for dim in [2]:
     #for kern in kernel:
-    #for gamma in [0.1, 0.5, 1, 1.5, 2, 5]:
-    for degree in [2,3,5,7,8,9]:
-        #lda = MyKerneLDA(n_components=200, kernel=kern, degree=dim)
-        lda = MyKerneLDA(n_components=None, kernel=kern, degree=degree)
+    for gamma in [10, 100, 500, 1000, 5000, 1e4, 1e5, 1e6, 1e7]:
+    #for degree in [2,3,5,7,8,9]:
+        lda = SCA(n_components=2, kernel=kern, gamma=gamma)
+        #lda = MyKerneLDA(n_components=None, kernel=kern, degree=degree)
         #lda = KDA(200, kernel=kern)
 
-        #lda.f = lda.f_linear
-        # lda = LinearDiscriminantAnalysis(n_components=dim, solver="svd")
-        # lda = DimensionReduction.LDA(n_components=dim, solver="svd")
-        # lda = DimensionReduction.LDA(n_components=dim, solver="eigen")
+        print("kernel ", kern)
 
-        for group_size in [group_size]:
+        #model = lda.fitDICA([X_train1, X_train2, X_train3], [y_train1, y_train2, y_train3])
+        model = lda.fitDICA([X_train1, X_train2, X_train3], [y_train1, y_train2, y_train3], [X_test])
+        x_sk = model.transformDICA(X_test)
+        X_list.append(x_sk)
+        #y.append(model.predict(X_test.to_numpy()))
+        y.append(y_test)
+        #titles.append("K-LDA - Degree {1} - Train Merge {0} - Kernel {2}\n".format(group_size, degree, kern, ))
+        titles.append("K-LDA - Gamma {1} - Test Merge {0} - Kernel {2}\n ".format(group_size, gamma, kern))
+        print("x_sk shape ", x_sk.shape)
 
-            _, dfc = get_table_with_class2(df_data, path + treatment)
+        #X_list.append(x_sk)
+        #y.append(y_test)
+        #titles.append("LDA - Dimension {1} - Test Original Merge {0} ".format(group_size, dim))
 
-            dfc, inv_map = string_column_to_int_class(dfc, "treatment")
-
-            if variant_num == 0:
-                # df_train = compute_mean_of_group_size_on_treatment(dfc.loc[dfc["trial"].isin(['V1', 'V2', 'V3'])], group_size)
-                df_train = compute_mean_of_group_size_on_treatment(dfc.loc[dfc["trial"].isin(['V1', 'V2', 'V3'])],
-                                                                   group_size)
-                X_train, y_train = pruneDF_treatment_trail_plate_well(df_train)
-
-                # df_test = compute_mean_of_group_size_on_treatment(dfc.loc[dfc["trial"] == 'V4'], group_size)
-                df_test = compute_mean_of_group_size_on_treatment(dfc.loc[dfc["trial"].isin(['V4'])], group_size)
-
-                X_test, y_test = pruneDF_treatment_trail_plate_well(df_test)
-
-            else:
-                # dfc = compute_mean_of_group_size_on_treatment_trial(dfc, group_size )
-                df_train = compute_mean_of_group_size_on_treatment_trial(dfc.loc[dfc["trial"].isin(['V1', 'V2', 'V3'])],
-                                                                         group_size)
-                # X_train, y_train = pruneDF_treatment_trail_plate_well(dfc.loc[dfc["trial"].isin(['V1', 'V2', 'V3'])])
-                X_train, y_train = pruneDF_treatment_trail_plate_well(df_train)
-
-                # df_test = compute_mean_of_group_size_on_treatment_trial(dfc.loc[dfc["trial"] == 'V4'], group_size)
-                df_test = compute_mean_of_group_size_on_treatment_trial(dfc.loc[dfc["trial"].isin(['V4'])], group_size)
-                X_test, y_test = pruneDF_treatment_trail_plate_well(df_test)
-
-            print("kernel ", kern)
-            #try
-            model = lda.fit(X_train.to_numpy(), y_train)
-            x_sk = model.transform(X_test.to_numpy())
-            X_list.append(x_sk)
-            #y.append(model.predict(X_test.to_numpy()))
-            y.append(y_test)
-            titles.append("K-LDA - Degree {1} - Train Merge {0} - Kernel {2}\n score {3} ".format(group_size, degree, kern, lda.score(X_train.to_numpy(), y_train)))
-            #titles.append("K-LDA - Gamma {1} - Test Merge {0} - Kernel {2}\n score {3} ".format(group_size, gamma, kern, lda.score(X_test.to_numpy(),y_test)))
-            print("x_sk shape ", x_sk.shape)
-
-            #X_list.append(x_sk)
-            #y.append(y_test)
-            #titles.append("LDA - Dimension {1} - Test Original Merge {0} ".format(group_size, dim))
-
-            #x_sk = model.transform(X_train.to_numpy())
-            #X_list.append(x_sk)
-            #y.append(y_train)
-            #titles.append("LDA - Dimension {1} - Train Merge {0} ".format(group_size, dim))
-
-            #X_list.append(x_sk)
-            #y.append(y_train)
-            #titles.append("LDA - Dimension {1} - Train Original Merge {0} ".format(group_size, dim))
-
-            #print("xk ", X_list[0].shape, " ", X_list[1].shape, " ", X_list[2].shape)
-            #print("y_test ", y_test)
-            #print("y ", model.predict(X_test.to_numpy()))
-
-            #scale = StandardScaler(copy=True, with_mean=True, with_std=False)
-            # scale = Normalizer(norm='l1')
-            # scale = RobustScaler(with_centering=False)
-            # X = scale.fit_transform(X)
-            # X = X/max_v
-
-            # AC_train = model.score(X_train, y_train)
-            # print(f'{AC_train=}')
-            # AC_test = model.score(X_test, y_test)
-            # print(f'{AC_test=}')
-
-            # x_sk = pca2.fit_KernelPCA(X)
-
-            # titles.append("PCA Kernel {3} - Dimension {2} - Merge {0} samples {1}".format(group_size, variant[variant_num], dim, kern))
-            # titles.append("LDA - Dimension {1} - Merge {0} - AC_Train: {2:.2f}, AC_Test: {3:.2f} ".format(group_size, dim, AC_train, AC_test))
-
-            # print("x_sk shape ", x_sk.shape)
-
-            # AC_train = pca.score(X, y)
-            # Plotter().scatter(x_sk, y_test,  "Scatter - LDA Dimension {2} - Merge {0} samples {1} - AC_Train: {2:.2f}, AC_Test: {3:.2f}".format(group_size, variant[variant_num], AC_train, AC_test), inv_map)
+        # AC_train = model.score(X_train, y_train)
+        # print(f'{AC_train=}')
+        # AC_test = model.score(X_test, y_test)
+        # print(f'{AC_test=}')
 
     print(len(X_list))
-    Plotter().plotUmap_multiple(X_list , y, titles, [inv_map]*len(X_list))
+    #Plotter().plotUmap_multiple(X_list , y, titles, [inv_map]*len(X_list))
     # Plotter().scatter(X_list[0], y, titles[0], inv_map)
-    #Plotter().plotScatter_multiple(X_list, y, titles, [inv_map] * len(X_list))
+    Plotter().plotScatter_multiple(X_list, y, titles, [inv_map] * len(X_list))
     # Plotter().plotUmap(x_sk, y, "PCA Kernel {3} - Dimension {2} - Merge {0} samples {1}".format(group_size, variant[variant_num], dim, kern), inv_map, self.writeToSVG)
     plt.figtext(0.5, 0.01, "Scatter Plot\nDimension of train data: rows: {0}; features: {1}\n sample: {2}".format(X_train.shape[0], X_test.shape[1], data_name), wrap=True, horizontalalignment='center', fontweight='bold')
     plt.show()
@@ -525,6 +483,95 @@ def testGauss():
     plt.show()
 
 
+def testGauss_kernels():
+
+    data = Gaussian(n=100)
+    #data = load_iris()
+    #data = load_digits()
+
+    X = data.data
+    y = data.target
+
+    print("data.data ", len(data.data))
+
+    for x in data.data:
+        print("variance ", np.var(x, axis=0))
+
+    y0 = y[0]
+    for yi in y[1:]:
+        y0 = np.hstack((y0, yi))
+
+    dataSetName = "Gauss"
+
+    #scaler = StandardScaler()
+    #scaler = scaler.fit(X)
+
+    #X = scaler.transform(X)
+
+    #index = np.arange(stop=X.shape[0], dtype=int)
+    #np.random.shuffle( index )
+
+    #gamma = 0.1
+    gamma = 0.02
+    degree = 5
+    kernel = "rbf"
+    delta = 1.0
+    #beta = 1.0
+    beta = 0.05
+
+
+    #for kernel in [ "poly", "gauss", "cosine"]:
+    #for gamma in [0.0005, 0.001, 0.0025, 0.005,  0.01, 0.05, 0.1, 0.5]:
+
+    for beta, delta in [(1.0, 0.0), (0.5, 0.5), (0.5, 1.0), (1.0, 0.5), (1.0, 1.0)]:
+        res = []
+        res_y = []
+        titles = []
+        for gamma in [0.01, 0.05, 0.08, 0.1, 0.5, 1, 2]:
+            lda = SCA(n_components=2, kernel=kernel, gamma=gamma, degree=degree, delta=delta, beta=beta)
+
+            #model = lda.fitDICA([X0, X1], [y0, y1])
+            #model = lda.fitDICA([X0.T], [y0])
+            #x_sk = model.transformDICA(X2)
+
+            model = lda.fitDICA(data.data[:-1], data.target[:-1], [data.data[-1]])
+            #model = lda.fitDICA(data.data[:-1], data.target[:-1])
+            x_sk = model.transformDICA_list(data.data[-1])
+            print("x_sk.shape ", x_sk.shape)
+
+            res.append(x_sk)
+            res_y.append(data.target[-1])
+            titles.append("Scatter Plot - SCA - {0} gamma {1}  ".format(kernel, gamma))
+
+            #model.computeClassifier(X, y)
+            #yp = lda.predict(X)
+
+            #print("iscomplex ", np.iscomplex(x_sk).any())
+
+
+        #print("score ", lda.score(y, yp))
+
+        res.append(data.X)
+        res_y.append(data.y)
+        titles.append("Original Data")
+        map = {}
+        for i in range(20):
+            map[i] = str(i)
+
+        #Plotter().plotUmap_multiple([x_sk, x_sk2, X], [y]*3, ["Kernel LDA", "LDA", "Iris"], [{0:"0", 1:"1", 2:"2"}]*3)
+        #Plotter().plotScatter_multiple([x_sk, x_sk, x_sk2], [y, yp, y] , ["SCA", "Kernel LDA predict", "LDA"], [{0: "0", 1: "1", 2: "2"}] * 3)
+        Plotter().plotScatter_multiple(res, res_y, titles, [map] * len(res))
+        plt.figtext(0.5, 0.01, "Scatter Plot\nDimension of train data: rows: {0}; features: {1}\n delta: {2}, beta: {3} \n Use Domain adaption: {4}".format(lda.X.shape[0], lda.X.shape[1], delta, beta, lda.domainAdaption),
+                    wrap=True, horizontalalignment='center', fontweight='bold')
+    plt.show()
+
+def testIris2():
+
+    data = Gaussian(n=20)
+    plt.show()
+
+
+
 if __name__ == '__main__':
     #test_LDA_Sklearn_split_treatment_dimension()
     #test_Kernel_LDA_Sklearn_MaxLarge_split_treatment_kernels()
@@ -534,4 +581,8 @@ if __name__ == '__main__':
 
     #test_kernel()
 
-    testGauss()
+    #test_LDA_Sklearn_split_treatment_dimension()
+
+    #testGauss()
+    testGauss_kernels()
+    #testIris2()
