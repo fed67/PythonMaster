@@ -523,46 +523,48 @@ def testGauss_kernels():
     #for kernel in [ "poly", "gauss", "cosine"]:
     #for gamma in [0.0005, 0.001, 0.0025, 0.005,  0.01, 0.05, 0.1, 0.5]:
 
-    for beta, delta in [(1.0, 0.0), (0.5, 0.5), (0.5, 1.0), (1.0, 0.5), (1.0, 1.0)]:
-        res = []
-        res_y = []
-        titles = []
-        for gamma in [0.01, 0.05, 0.08, 0.1, 0.5, 1, 2]:
-            lda = SCA(n_components=2, kernel=kernel, gamma=gamma, degree=degree, delta=delta, beta=beta)
+    #for beta, delta in [(1.0, 0.0), (0.5, 0.5), (0.5, 1.0), (1.0, 0.5), (1.0, 1.0)]:
+    for beta in [0.25, 0.5, 0.75, 1]:
+        for delta in [0.25, 0.5, 0.75, 1]:
+            res = []
+            res_y = []
+            titles = []
+            for gamma in [0.01, 0.05, 0.08, 0.1, 0.5, 1, 2]:
+                lda = SCA(n_components=2, kernel=kernel, gamma=gamma, degree=degree, delta=delta, beta=beta)
 
-            #model = lda.fitDICA([X0, X1], [y0, y1])
-            #model = lda.fitDICA([X0.T], [y0])
-            #x_sk = model.transformDICA(X2)
+                #model = lda.fitDICA([X0, X1], [y0, y1])
+                #model = lda.fitDICA([X0.T], [y0])
+                #x_sk = model.transformDICA(X2)
 
-            model = lda.fitDICA(data.data[:-1], data.target[:-1], [data.data[-1]])
-            #model = lda.fitDICA(data.data[:-1], data.target[:-1])
-            x_sk = model.transformDICA_list(data.data[-1])
-            print("x_sk.shape ", x_sk.shape)
+                #model = lda.fitDICA(data.data[:-1], data.target[:-1], [data.data[-1]])
+                model = lda.fitDICA(data.data[:-1], data.target[:-1])
+                x_sk = model.transformDICA_list(data.data[-1])
+                #print("x_sk.shape ", x_sk.shape)
 
-            res.append(x_sk)
-            res_y.append(data.target[-1])
-            titles.append("Scatter Plot - SCA - {0} gamma {1}  ".format(kernel, gamma))
+                res.append(x_sk)
+                res_y.append(data.target[-1])
+                titles.append("Scatter Plot - DomainGeneralization - SCA - {0} gamma {1}  ".format(kernel, gamma))
 
-            #model.computeClassifier(X, y)
-            #yp = lda.predict(X)
+                #model.computeClassifier(X, y)
+                #yp = lda.predict(X)
 
-            #print("iscomplex ", np.iscomplex(x_sk).any())
+                #print("iscomplex ", np.iscomplex(x_sk).any())
 
 
-        #print("score ", lda.score(y, yp))
+            #print("score ", lda.score(y, yp))
 
-        res.append(data.X)
-        res_y.append(data.y)
-        titles.append("Original Data")
-        map = {}
-        for i in range(20):
-            map[i] = str(i)
+            res.append(data.X)
+            res_y.append(data.y)
+            titles.append("Original Data")
+            map = {}
+            for i in range(20):
+                map[i] = str(i)
 
-        #Plotter().plotUmap_multiple([x_sk, x_sk2, X], [y]*3, ["Kernel LDA", "LDA", "Iris"], [{0:"0", 1:"1", 2:"2"}]*3)
-        #Plotter().plotScatter_multiple([x_sk, x_sk, x_sk2], [y, yp, y] , ["SCA", "Kernel LDA predict", "LDA"], [{0: "0", 1: "1", 2: "2"}] * 3)
-        Plotter().plotScatter_multiple(res, res_y, titles, [map] * len(res))
-        plt.figtext(0.5, 0.01, "Scatter Plot\nDimension of train data: rows: {0}; features: {1}\n delta: {2}, beta: {3} \n Use Domain adaption: {4}".format(lda.X.shape[0], lda.X.shape[1], delta, beta, lda.domainAdaption),
-                    wrap=True, horizontalalignment='center', fontweight='bold')
+            #Plotter().plotUmap_multiple([x_sk, x_sk2, X], [y]*3, ["Kernel LDA", "LDA", "Iris"], [{0:"0", 1:"1", 2:"2"}]*3)
+            #Plotter().plotScatter_multiple([x_sk, x_sk, x_sk2], [y, yp, y] , ["SCA", "Kernel LDA predict", "LDA"], [{0: "0", 1: "1", 2: "2"}] * 3)
+            Plotter().plotScatter_multiple(res, res_y, titles, [map] * len(res))
+            plt.figtext(0.5, 0.01, "Scatter Plot\nDimension of train data: rows: {0}; features: {1}\n delta: {2}, beta: {3} \n Use Domain adaption: {4}".format(lda.X.shape[0], lda.X.shape[1], delta, beta, lda.domainAdaption),
+                        wrap=True, horizontalalignment='center', fontweight='bold')
     plt.show()
 
 def testIris2():

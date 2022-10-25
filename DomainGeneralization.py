@@ -376,11 +376,8 @@ class SCA:
 
         self.beta = float(self.beta)
         self.delta = float(self.delta)
-        print("beta ", self.beta, " f")
-        print(type(self.beta))
-
-        (1.0 - self.beta)
-        (1.0 - self.beta) / float(n)
+        #print("beta ", self.beta, " f")
+        #print(type(self.beta))
 
         A = (1.0 - self.beta) / float(n) / K_center.dot(K_center) + self.beta * pm
         B = self.delta * K_center.dot(lm).dot(K_center) + K_center + qm
@@ -402,19 +399,19 @@ class SCA:
         eigenValues = eigenValues[realV]
         eigenVectors = eigenVectors[:, realV]
 
-        print("real Eigenvector.shape ", eigenVectors.shape)
+        #print("real Eigenvector.shape ", eigenVectors.shape)
 
         idx = (eigenValues).argsort()[::-1]
         eigenValues = eigenValues[idx]
 
         eigenVectors = eigenVectors[:, idx].real
 
-        print("eigenValues ", eigenValues[0:5], " remove inf ", self.remove_inf)
+        #print("eigenValues ", eigenValues[0:5], " remove inf ", self.remove_inf)
 
         ncp = min(components, eigenValues.size)
         # print("num cps ", ncp)
 
-        print("real Eigenvector.shape ", eigenVectors.shape)
+        #print("real Eigenvector.shape ", eigenVectors.shape)
         # print("real Eigenvector ", eigenVectors[:, 0:ncp])
 
         self.B_star = eigenVectors[:, 0:ncp].real
@@ -426,42 +423,42 @@ class SCA:
         # print("eigenValues ", eigenValues )
         # print("B* ", self.B_star)
         # print("Delta ", self.Delta)
-        print("det(A) ", np.linalg.det(A), " dtype ", A.dtype)
-        print("det(B) ", np.linalg.det(B), " dtype ", B.dtype)
+        #print("det(A) ", np.linalg.det(A), " dtype ", A.dtype)
+        #print("det(B) ", np.linalg.det(B), " dtype ", B.dtype)
 
-        print("det(K) ", np.linalg.det(km), " dtype ", km.dtype)
-        print("det(L) ", np.linalg.det(lm), " dtype ", lm.dtype)
-        print("det(P) ", np.linalg.det(pm), " dtype ", pm.dtype)
-        print("det(Q) ", np.linalg.det(qm), " dtype ", qm.dtype)
-        print("ncp ", ncp)
+        #print("det(K) ", np.linalg.det(km), " dtype ", km.dtype)
+        #print("det(L) ", np.linalg.det(lm), " dtype ", lm.dtype)
+        #print("det(P) ", np.linalg.det(pm), " dtype ", pm.dtype)
+        #print("det(Q) ", np.linalg.det(qm), " dtype ", qm.dtype)
+        #print("ncp ", ncp)
 
         # self.Zt = km.T.dot(self.B_star).dot( np.linalg.inv(self.Delta)**(0.5))
 
-        print("A.shape ", A.shape)
-        print("B.shape ", B.shape)
-        print("P.shape ", pm.shape)
-        print("Q.shape ", qm.shape)
-        print("K.shape ", km.shape)
-        print("L.shape ", lm.shape)
-        print("B*.shape ", self.B_star.shape, " dtype ", self.B_star.dtype)
-        print("Delta.shape ", self.Delta.shape, " dtype ", self.Delta.dtype)
+        #print("A.shape ", A.shape)
+        #print("B.shape ", B.shape)
+        #print("P.shape ", pm.shape)
+        #print("Q.shape ", qm.shape)
+        #print("K.shape ", km.shape)
+        #print("L.shape ", lm.shape)
+        #print("B*.shape ", self.B_star.shape, " dtype ", self.B_star.dtype)
+        #print("Delta.shape ", self.Delta.shape, " dtype ", self.Delta.dtype)
 
         return self
 
     def transformDICA(self, X):
 
-        print("X.shpae ", X.shape)
+        #print("X.shpae ", X.shape)
 
         #km = self.kernel(self.X, X)
         km = self.K_two(self.S_all, [X])
 
-        print("self.X type ", type(self.X))
-        print("km.shape ", km.shape)
-        print("Delta.shape ", self.Delta.shape)
-        print("B_star.shape ", self.B_star.shape)
+        #print("self.X type ", type(self.X))
+        #print("km.shape ", km.shape)
+        #print("Delta.shape ", self.Delta.shape)
+        #print("B_star.shape ", self.B_star.shape)
 
         Zt = km.T.dot(self.B_star).dot(np.linalg.inv(self.Delta) ** (0.5))
-        print("Zt.shpae ", Zt.shape)
+        #print("Zt.shpae ", Zt.shape)
 
         if np.iscomplex(Zt).any():
             raise Exception("Error result is complex")

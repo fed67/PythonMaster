@@ -150,7 +150,7 @@ class MyTestCase(unittest.TestCase):
             print("xtest.shape ", X_test.shape)
 
             #model = sca.fitDICA([X_train.to_numpy().T], y_train)
-            model = sca.fitDICA([X_train1, X_train2, X_train3], [y_train1, y_train2, y_train3])
+            model = sca.fitDICA([X_train1, X_train2, X_train3], [y_train1, y_train2, y_train3], [X_test])
             x_sk = model.transformDICA(X_test)
 
             print("x_sk.shape ", x_sk.shape)
