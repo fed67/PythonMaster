@@ -7,7 +7,7 @@ import operator
 class SCA:
 
     def f_linear(self, x: np.ndarray, y: np.ndarray):
-        return self.gamma * np.dot(x.T, y)
+        return np.dot(x.T, y) #self.gamma *
 
     def f_gauss(self, x, y):
         return np.exp(-np.linalg.norm(x - y, 2) ** 2 * self.gamma)
@@ -41,47 +41,39 @@ class SCA:
         self.delta = delta
         self.beta = beta
 
-    def kernel(self, xk, xj):
+    def kernel(self, xk: np.array, xj: np.array) -> np.array : #for equation (14)
 
         if xj.ndim > 1:
             nj, mj = xj.shape
         else:
             nj = 1
 
-        n, m = xk.shape
-        # print("xk ", xk.shape)
-        # print("xj ", xj.shape)
+        n, d = xk.shape #n : data, d: features
 
-        # if m != mj:
-        #    raise Exception("Error m != mj")
-
-        if xk.ndim == 1 and xj.ndim == 1:
-            # print("k(x, y)")
-            return self.self.k(xk, xk)
-        elif xk.ndim > 1 and xj.ndim == 1:
-            # print("k(X, y)")
+        if xk.ndim > 1 and xj.ndim == 1:
             Y = np.zeros(n)
             for i in range(n):
-                # print("xk[:, i] ", xk[:,i].shape)
                 res = self.k(xk[i, :], xj)
-                # print(res)
-                # print("res.shape ", res.shape)
                 Y[i] = res
+            return Y
         elif xk.ndim == 1 and xj.ndim > 1:
             # print("k(x, Y)")
             Y = np.zeros(nj)
             for i in range(nj):
                 res = self.k(xk, xj[i, :])
                 Y[i] = res
-        else:
-            # print("k(X, Y)")
+            return Y
+        elif xk.ndim > 0 and xj.ndim > 1:
             Y = np.zeros((n, nj))
             for i in range(n):
                 for j in range(nj):
                     Y[i, j] = self.k(xk[i, :], xj[j, :])
 
-        return Y
+            return Y
+        else:
+            raise Exception("type not supported")
 
+        return None
     def K(self, X_s):  # n, m shaped; m features
         # print("\n K")
 
@@ -108,23 +100,13 @@ class SCA:
             cl.append(nj_)
 
         K = np.zeros((n_all, n_all))
-        #cl = np.vectorize(nd.get)(np.array(range(len(X_s))))
-
-        # print("cl ", cl)
-        # print("nd ", nd)
 
         for l in range(len(X_s)):
             Xi = X_s[l]
             ni_, mi_ = Xi.shape
-            # print("l ", l, " sum cl ", np.sum(cl[0:l]) )
             for k in range(len(X_s)):
                 Xj = X_s[k]
                 nj_, mj_ = Xj.shape
-                # print("l ", l, " k ", k)
-                # print("ni_ ", ni_, " nj_ ", nj_)
-                # print("kernel ", self.kernel(Xi, Xj).shape)
-                # print("shape K ", K[np.sum(cl[0:l]):np.sum(cl[0:l+1]), np.sum(cl[0:k]):np.sum(cl[0:k+1])].shape)
-                # print("ff ", sum(cl[0:l]), " ", np.sum(cl[0:k]) )
 
                 K[sum(cl[0:l]):np.sum(cl[0:l + 1]), sum(cl[0:k]):sum(cl[0:k + 1])] = self.kernel(Xi, Xj)
                 # for i in range(nd[l]):
@@ -133,60 +115,46 @@ class SCA:
 
         return K
 
-    def K_two(self, X_s, Xt):  # n, m shaped; m features
+    #compute the kernel with two input kernels
+    def K_t(self, Su, St):  # n, m shaped; m features
         # print("\n K")
 
-        for xi in X_s:
-            for xj in X_s:
+        for xi in Su:
+            for xj in St:
                 if xi.shape[1] != xj.shape[1]:
                     raise Exception("Error feature dimension must be equal")
 
-        # print("X_S ", X_s)
-        print("type X_s ", type(X_s))
-        print("type Xt ", type(Xt) )
-
         nd = []
         n_all = 0
-        for i in range(len(X_s)):
-            n, m = X_s[i].shape
-            nj_ = n
+        for i in range(len(Su)):
+            n, d = Su[i].shape
             n_all += n
 
-            nd.append( nj_ )
+            nd.append( n )
 
         m_all = 0
         md = []
-        for i in range(len(Xt)):
-            n, m = Xt[i].shape
-            mj_ = n
-            m_all += n
+        for i in range(len(St)):
+            ni, d = St[i].shape
+            m_all += ni
 
-            md.append( mj_ )
+            md.append( ni )
 
         K = np.zeros((n_all, m_all))
         # cl = np.vectorize(nd.get)(np.array(range(len(X_s))))
 
-        for li in range(len(X_s)):
-            Xi = X_s[li]
-            ni_, mi_ = Xi.shape
-            # print("l ", l, " sum cl ", np.sum(cl[0:l]) )
-            for ki in range(len(Xt)):
-                Xj = Xt[ki]
-                nj_, mj_ = Xj.shape
-                # print("l ", l, " k ", k)
-                # print("ni_ ", ni_, " nj_ ", nj_)
-                # print("kernel ", self.kernel(Xi, Xj).shape)
-                # print("shape K ", K[np.sum(cl[0:l]):np.sum(cl[0:l+1]), np.sum(cl[0:k]):np.sum(cl[0:k+1])].shape)
-                # print("ff ", sum(cl[0:l]), " ", np.sum(cl[0:k]) )
-                print("li ", li, " ki ", ki)
-                print(sum(nd[0:li]), " : ", sum(nd[0:li + 1]), " , ", sum(md[0:ki]), " : ", sum(md[0:ki + 1]))
+        for li in range(len(Su)):
+            Si = Su[li] #numpy array
+            for ki in range(len(St)):
+                Sj = St[ki] #numpy array
 
-                K[sum(nd[0:li]):sum(nd[0:li + 1]), sum(md[0:ki]):sum(md[0:ki + 1])] = self.kernel(Xi, Xj)
+                K[sum(nd[0:li]):sum(nd[0:li + 1]), sum(md[0:ki]):sum(md[0:ki + 1])] = self.kernel(Si, Sj)
                 # for i in range(nd[l]):
                 #    for j in range(nd[k]):
                 #        K[np.sum(cl[0:l]) + i, np.sum(cl[0:k]) + j] += self.k(Xi[:, i], Xj[:, j])
 
         return K
+
 
     def L(self, X_s):
         # print("\n L")
@@ -242,36 +210,15 @@ class SCA:
 
         # print("n ", n)
         Ps = np.zeros((n, n))
-
         K_ = self.kernel(X, X)
         m_ = np.sum(K_, axis=1)
-
         m_ = m_ / float(n)
-
-        # print("m_.shape ", m_.shape)
-        # print("X.shape ", X.shape)
-        # print("y.shape ", y.shape)
-        # print("y ", y)
-
-        # print("m_ ", m_)
 
         for c in classes:
             K_ = self.kernel(X, X[y == c, :])
             nk, _ = X[y == c, :].shape
-            # print("K_.shape ", K_.shape)
-            # print("K_ ", K_)
-            # print("y==c ", y==c)
-            # print("X[:, y==c] ", X[:, y==c])
 
             mk = np.sum(K_, axis=1) / float(nk)
-            # print("mk ", mk)
-
-            # print("mk.shape ", mk.shape)
-            # print("mk.shape ", m_.shape)
-            # print("outer ", np.outer((mk - m_), (mk - m_)).shape)
-            # print("Ps.shape ", Ps.shape)
-            # print("nk ", nk)
-            # mk = np.outer((mk - m_), (mk - m_))
             Ps = Ps + float(nk) * np.outer((mk - m_), (mk - m_))
 
         return Ps
@@ -282,19 +229,16 @@ class SCA:
 
         Qs = np.zeros((n, n))
         for c in classes:
-            _, nk = X[y == c, :]
+            nk, _ = X[y == c, :]
             K_ = self.kernel(X, X[y == c, :])
             Hk = np.eye(nk) - 1 / float(nk) * np.outer(np.eye(nk), np.eye(nk))
             Qs += K_.dot(Hk).dot(K_.T)
 
         return Qs
 
-    def fitDICA(self, Xs, ys, Xt=[]):
+    def fit(self, Xs: list[np.array], ys: list[np.array] , Xt=[]):
 
         print(self.kernel_str)
-
-        beta = 0.5
-        delta = 0.2
 
         m = len(Xs)
 
@@ -311,10 +255,10 @@ class SCA:
                 "Error input must be of type list and elements of numpy array {0} {1} - ndims {2}".format(type(ys),
                                                                                                           type(ys[0])))
 
-        if len(Xt) > 0:
-            self.domainAdaption = True
-        else:
+        if len(Xt) == 0:
             self.domainAdaption = False
+        else:
+            self.domainAdaption = True
 
         S_all = Xs.copy()
         for x in Xt:
@@ -322,7 +266,7 @@ class SCA:
 
         self.S_all = S_all
 
-        # n: samples
+        # n: samples, d : features
         n, d = Xs[0].shape
         X = Xs[0]
         for el in Xs[1:]:
@@ -333,16 +277,12 @@ class SCA:
                 raise Exception("Error: Feature Dimension must be equal")
             X = np.vstack((X, el))
 
-        self.X = X.copy()
         for el in Xt:
             nd, d0 = el.shape
             n = n + nd
-
             if d0 != d:
                 print("d0 ", d0, " d ", d)
                 raise Exception("Error: Feature Dimension must be equal")
-
-            self.X = np.vstack((self.X, el))
 
         y = ys[0]
         for el in ys[1:]:
@@ -350,7 +290,7 @@ class SCA:
 
         classes = np.unique(y)
 
-        if self.n_components == None:
+        if self.n_components is None:
             components = classes
         else:
             components = self.n_components
@@ -369,15 +309,15 @@ class SCA:
 
         # print("km ", km)
         # print("lm ", lm)
-        # print("pm ", pm)
+        np.set_printoptions(threshold=4000)
+        #print("pm ", pm)
+        #print("qm ", qm)
 
         In = np.ones(n) / float(n)
         K_center = km - In.dot(km) - km.dot(In) + In.dot(km).dot(In)
 
         self.beta = float(self.beta)
         self.delta = float(self.delta)
-        #print("beta ", self.beta, " f")
-        #print(type(self.beta))
 
         A = (1.0 - self.beta) / float(n) / K_center.dot(K_center) + self.beta * pm
         B = self.delta * K_center.dot(lm).dot(K_center) + K_center + qm
@@ -399,8 +339,7 @@ class SCA:
         eigenValues = eigenValues[realV]
         eigenVectors = eigenVectors[:, realV]
 
-        #print("real Eigenvector.shape ", eigenVectors.shape)
-
+        #sort the eigenvalues from largest to lowest
         idx = (eigenValues).argsort()[::-1]
         eigenValues = eigenValues[idx]
 
@@ -409,75 +348,44 @@ class SCA:
         #print("eigenValues ", eigenValues[0:5], " remove inf ", self.remove_inf)
 
         ncp = min(components, eigenValues.size)
-        # print("num cps ", ncp)
-
-        #print("real Eigenvector.shape ", eigenVectors.shape)
-        # print("real Eigenvector ", eigenVectors[:, 0:ncp])
 
         self.B_star = eigenVectors[:, 0:ncp].real
         self.Delta = np.diag(eigenValues[0:ncp].real)
-
-        # print("K ", km)
-
-        # print("eigenValues ", eigenValues[0:4])
-        # print("eigenValues ", eigenValues )
-        # print("B* ", self.B_star)
-        # print("Delta ", self.Delta)
-        #print("det(A) ", np.linalg.det(A), " dtype ", A.dtype)
-        #print("det(B) ", np.linalg.det(B), " dtype ", B.dtype)
-
-        #print("det(K) ", np.linalg.det(km), " dtype ", km.dtype)
-        #print("det(L) ", np.linalg.det(lm), " dtype ", lm.dtype)
-        #print("det(P) ", np.linalg.det(pm), " dtype ", pm.dtype)
-        #print("det(Q) ", np.linalg.det(qm), " dtype ", qm.dtype)
-        #print("ncp ", ncp)
-
-        # self.Zt = km.T.dot(self.B_star).dot( np.linalg.inv(self.Delta)**(0.5))
-
-        #print("A.shape ", A.shape)
-        #print("B.shape ", B.shape)
-        #print("P.shape ", pm.shape)
-        #print("Q.shape ", qm.shape)
-        #print("K.shape ", km.shape)
-        #print("L.shape ", lm.shape)
-        #print("B*.shape ", self.B_star.shape, " dtype ", self.B_star.dtype)
-        #print("Delta.shape ", self.Delta.shape, " dtype ", self.Delta.dtype)
+        self.eigenvalues = eigenValues[0:ncp].real
 
         return self
 
-    def transformDICA(self, X):
+    def transform(self, X: np.array):
 
-        #print("X.shpae ", X.shape)
+        km = self.K_t(self.S_all, [X])
+        Lambda = np.diag(np.power(self.eigenvalues, (-0.5)))
 
-        #km = self.kernel(self.X, X)
-        km = self.K_two(self.S_all, [X])
-
-        #print("self.X type ", type(self.X))
-        #print("km.shape ", km.shape)
-        #print("Delta.shape ", self.Delta.shape)
-        #print("B_star.shape ", self.B_star.shape)
-
-        Zt = km.T.dot(self.B_star).dot(np.linalg.inv(self.Delta) ** (0.5))
-        #print("Zt.shpae ", Zt.shape)
+        #Zt = km.T.dot(self.B_star).dot(np.linalg.inv(self.Delta) ** (0.5))
+        Zt = (km.T).dot(self.B_star).dot(Lambda)
 
         if np.iscomplex(Zt).any():
             raise Exception("Error result is complex")
 
         return Zt.real
 
-    def transformDICA_list(self, Su):
+    def transform_list(self, Su : list[np.array]) -> list[np.array]:
+        print("method ", self.domainAdaption)
 
         Z = []
         for X in Su:
-            km = self.kernel(self.X, X)
-            Zt = km.T.dot(self.B_star).dot(np.linalg.inv(self.Delta) ** (0.5))
+            km = self.K_t(self.S_all, [X])
+            Lambda = np.diag( np.power(self.eigenvalues, (-0.5)))
+            print("km max ", np.amax(km), " min ", np.amin(km), " B_star max ", np.amax(self.B_star), " min ", np.amin(self.B_star), " Eigenvalues max ", np.amax(self.Delta.diagonal()
+), " min ", np.amin(self.Delta.diagonal()), " power max ", np.amax(self.eigenvalues ** (-0.5)), " min ", np.amin(self.eigenvalues ** (-0.5)) )
+            #Zt = km.T.dot(self.B_star).dot(np.linalg.inv(self.Delta) ** (0.5))
+            #Zt = km.T.dot(self.B_star).dot( self.Delta**(-0.5))
+            Zt = (km.T).dot(self.B_star).dot( Lambda )
+
+            print("(km.T).dot(self.B_star) max ", np.amax((km.T).dot(self.B_star)), " min ", np.amin((km.T).dot(self.B_star)))
+            print("Zt max ", np.amax(Zt), " min ", np.amin(Zt))
 
             if np.iscomplex(Zt).any():
                 raise Exception("Error result is complex")
             Z.append(Zt)
 
-        X = Z[0]
-        for z in Z[1:]:
-            X = np.vstack((X, z))
-
-        return X
+        return Z

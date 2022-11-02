@@ -11,6 +11,9 @@ from sklearn.preprocessing import StandardScaler
 
 class Plotter:
 
+    myColors = ['r', 'g', 'b', 'c', "olive", "gold", "teal", "darkviolet", 'pink', 'grey']
+    myMarker = ['o', 'v', '*', 'p', 'h', 'X', 'd', '<']
+
     def tsne(cls, A, y):
         rng = RandomState(0)
         t_sne = TSNE(
@@ -327,99 +330,44 @@ class Plotter:
         ax.set_xlabel("x")
         ax.set_ylabel("y")
 
-
-    def plotScatter_multiple(cls, dfs, colors_=[], title_=[], labels_=[], title_fig="", title_file=""):
+    def plotScatter_multiple(cls, dfs: list[np.ndarray], classes: list[np.ndarray], titles: list[str], labels=[], title_fig=""):
         import math
-        embedding_l = []
-        titles = []
-        colors = []
-        labels = []
-        for i in range(len(dfs)):
-            try:
-                df = dfs[i]
-                if np.all(dfs[i] == dfs[i][0]):
-                    #raise Exception("Error Matrix has only a single value")
-                    title_[i] = title_[i]+"Error Matrix has single Value"
+        print("len df ", len(dfs), " classes ", len(classes), " titles ", len(titles))
 
-                embedding_l.append(df)
-                titles.append(title_[i])
-                colors.append(colors_[i])
-                labels.append(labels_[i])
-                # print("append ", i)
-            except Exception as ex:
-                # print("not append ", i)
-                print(ex)
-
-        # print("embedding ", embedding.shape)
-        # print("Xd ", Xd.shape)
-        print("leng em ", len(embedding_l))
-        print("len(color) ", len(colors))
-
-        d = math.ceil(np.sqrt(len(embedding_l)))
-
-        print("length ", len(embedding_l))
-        print("dimension d ", d)
-
-        if len(colors) == 0:
-            colors = np.zeros(len(embedding_l[0][:, 0]))
-            colors.fill(6)
+        d = math.ceil(np.sqrt(len(dfs)))
 
         spalten = max(d, 2)
-        zeilen = math.ceil(len(embedding_l) / spalten)
-        print("zeilen ", zeilen)
-        print("spalten ", spalten)
-        print("len(embedding_l)  ", len(embedding_l) )
-
-
+        zeilen = math.ceil(len(dfs) / spalten)
+        #print("zeilen ", zeilen)
+        #print("spalten ", spalten)
+        #print("len(embedding_l)  ", len(embedding_l) )
 
         fig, ax = plt.subplots(zeilen, spalten, figsize=(20, 10))
-        print("d ", d)
-
         i0 = 0
         j0 = 0
 
-        for kk in range(len(embedding_l)):
-            embedding = embedding_l[kk]
-            unique = get_unique(colors[kk])
-            #print("i0 ", i0, " j0 ", j0)
-            #print("embedding ", embedding)
-            #print("colors ", colors[kk])
-            #print("embedding.shape ", embedding.shape)
+        for kk in range(len(dfs)):
+            data = dfs[kk]
+            y = classes[kk]
+            print("typ dfs ", type(data), " shape ", data.shape)
+            print("typ class ", type(y), " shape ", y.shape)
+            unique = np.unique(classes[kk])
 
-            elements = []
-            for i in range(0, len(unique)):
-                f = lambda t: t[2] == unique[i]
-                elm = list(filter(f, zip(embedding[:, 0], embedding[:, 1], colors[kk])))
-                if len(elm) > 0:
-                    elements.append(elm)
-                else:
-                    elements.append([])
-
-            # plt.scatter(
-            #    embedding[:, 0],
-            #    embedding[:, 1], c=colors, label=lab)
+            #print("data ", data)
+            #print("y ", data)
+            #print("type ", data.type)
+            print("unique ", unique)
 
             for i in range(0, len(unique)):
 
-                #print("c ", (1 + unique[i]))
-                #print("label ", labels[kk])
-
-                if len(elements[i]) > 0:
-                    elx, ely, c = zip(*elements[i])
-
-                    #cmap = ListedColormap(['r', 'g', 'b', 'c', "forestgreen", "seagreen", "teal", "navy"] )
-                    #print("c ", c)
+                if len(data) > 0:
+                    elx = data[ unique[i] == y, 0 ]
+                    ely = data[ unique[i] == y, 1]
                     #https://matplotlib.org/stable/gallery/color/named_colors.html
-                    myColors = ['r', 'g', 'b', 'c', "olive", "gold", "teal", "darkviolet", 'pink', 'grey']
-
-
-                    if len(labels) == 0:
-                        label = "Class " + str(c[0])
-                    else:
-                        label = labels[kk][c[0]]
+                    label = labels[kk][unique[i]]
 
                     if(zeilen > 1):
-                        ax[i0, j0].scatter(x=elx, y=ely, c=myColors[unique[i]], label=label, alpha=0.6)
+                        ax[i0, j0].scatter(x=elx, y=ely, c=cls.myColors[unique[i]], label=label, alpha=0.4)
                         ax[i0, j0].grid(True)
                         # ax.legend(loc='upper right')
                         lgd = ax[i0, j0].legend(bbox_to_anchor=(1.1, 1.05))
@@ -427,7 +375,7 @@ class Plotter:
                         ax[i0, j0].set_ylabel("y")
                         ax[i0, j0].set_title(titles[kk])
                     else:
-                        ax[j0].scatter(x=elx, y=ely, c=myColors[unique[i]], label=label, alpha=0.6)
+                        ax[j0].scatter(x=elx, y=ely, c=cls.myColors[unique[i]], label=label, alpha=0.4)
                         ax[j0].grid(True)
                         # ax.legend(loc='upper right')
                         lgd = ax[j0].legend(bbox_to_anchor=(1.1, 1.05))
@@ -439,15 +387,52 @@ class Plotter:
             if j0 == spalten:
                 i0 = i0 + 1
                 j0 = 0
-
         fig.suptitle(title_fig)
-        # fig.set_size_inches(13, 63)
 
-        if title_file != "":
-            # fig.savefig(title_.replace(" ", "-") + ".eps", format='eps')
-            # fig.savefig(title_file + ".eps", format='eps')
-            fig.savefig(title_file + ".png", format='png')
+    def plotScatter_multipleDomains(cls, domains, domainClasses =[], title_=[], labels_=[], title_fig=""):
+        import math
 
+        spalten = max( math.ceil(len(domains)**0.5), 2)
+        zeilen = math.ceil(len(domains) / spalten)
+        print("spalten ", spalten, " zeilen ", zeilen)
+
+        fig, ax = plt.subplots(zeilen, spalten, figsize=(20, 10))
+        i0 = 0
+        j0 = 0
+
+        for dpi, domainplot in enumerate(domains):
+            dC = domainClasses[dpi]
+            #print("domainplot")
+            #print(domainplot)
+            for i,domain in enumerate(domainplot):
+
+                if domain is None or domain.size == 0:
+                    continue
+
+                #print( "i ", i, " marker ", cls.myMarker[i] )
+                unique = np.unique( dC[i] )
+                y = dC[i]
+                #print("y.shape ", y.shape)
+                #print("domain.shape ", domain.shape)
+                for c in unique:
+
+                    elx = domain[ c == y, 0]
+                    ely = domain[c == y, 1]
+                    label=labels_[dpi][c]
+                    if zeilen > 1:
+                        ax[i0, j0].scatter(x=elx, y=ely, c=cls.myColors[c], label=label, marker=cls.myMarker[i], alpha=0.4)
+                        ax[i0, j0].set_title(title_[dpi])
+                        lgd = ax[i0, j0].legend(bbox_to_anchor=(1.1, 1.05))
+                    else:
+                        ax[j0].scatter(x=elx, y=ely, c=cls.myColors[c], label=label, marker=cls.myMarker[i], alpha=0.4)
+                        ax[j0].set_title(title_[dpi])
+                        lgd = ax[j0].legend(bbox_to_anchor=(1.1, 1.05))
+
+            j0 = j0 + 1
+            if j0 == spalten:
+                i0 = i0 + 1
+                j0 = 0
+        fig.suptitle(title_fig)
 
 def plot_unsupervised_umap_tsne_mds(cls, df, color, titles=[], label=[], title_fig="", write_to_svg=False):
     import math
