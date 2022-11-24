@@ -362,23 +362,24 @@ class Gaussian:
         C2_ = np.ones(n, dtype=int) * 2
 
         x0 = np.concatenate((a0_, a1_, a2_), axis=0)
-        x2 = np.concatenate((b0_, b1_, b2_), axis=0) + np.array([1, 0.3]) * 0.18
+        x1 = np.concatenate((b0_, b1_, b2_), axis=0) + np.array([1, 0.3]) * 0.18
+        x2 = np.concatenate((b0_, b1_, b2_), axis=0) - np.array([1, 0.3]) * 0.18
         #x2 = np.concatenate((c0_, c1_, c2_), axis=0)
 
         C0 = np.concatenate((C0_, C1_, C2_), axis=0)
 
-        self.X = np.concatenate((x0, x2), axis=0)
-        self.y = np.concatenate((C0, C0), axis=0)
+        self.X = np.concatenate((x0, x1, x2), axis=0)
+        self.y = np.concatenate((C0, C0, C0), axis=0)
 
         #print("x0 ", x0.shape, " x1 ", x1.shape, " x2.shape ", x2.shape)
         print("C0 ", C0.shape)
         print("X ", self.X.shape)
         print("y ", self.y.shape)
 
-        self.data   = [x0, x2]
-        self.target = [C0, C0]
+        self.data   = [x0, x1, x2]
+        self.target = [C0, C0, C0]
 
-        self.title = ["S0", "S1"]
+        self.title = ["S0", "S1", "S2"]
 
 
     def plot(self):

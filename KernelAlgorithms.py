@@ -19,38 +19,44 @@ def computeKernelMatrix(np2d_array, f):
 
     return K
 
-class KernelAlgorithms:
 
-    def f_linear(self, x, y):
-        return self.gamma*np.dot(x.T,y)
+class KernelClass:
+    def f_linear(self, x: np.ndarray, y: np.ndarray):
+        return self.gamma * np.dot(x.T, y)
 
     def f_gauss(self, x, y):
-        return np.exp(-np.linalg.norm(x-y,2)**2/self.gamma)
+        return np.exp(-np.linalg.norm(x - y, 2) ** 2 * self.gamma)
 
-    def f_sigmoid(self, x, y):
-        return np.tanh(self.gamma*x.T.dot(y) + self.c0)
+    def f_sigmoid(self, x: np.ndarray, y: np.ndarray):
+        return np.tanh(self.gamma * x.T.dot(y) + self.c0)
 
     def f_cos(self, x, y):
-        return np.cos(self.gamma*x.T.dot(y) + self.c0)
+        return np.cos(self.gamma * x.T.dot(y) + self.c0)
+
+    def f_laplacian(self, x, y):
+        return np.exp(self.gamma * np.linalg.norm(x-y,1))
 
     def f_poly(self, x, y):
-        return (np.dot(x.T, y) + self.c0)**self.degree
+        return np.power(np.dot(x.T, y), self.degree, dtype=float)
 
-    def f_rbf(self, x, y):
-        return np.exp(-self.gamma*np.linalg.norm(x-y,2)**2)
+    def f_rbf(self, x: np.ndarray, y: np.ndarray):
+        return np.exp(-np.linalg.norm(x - y, ord=2) ** 2.0 / (self.gamma ** 2.0) )
+        # return np.exp(-self.gamma * (x - y).dot(x-y) )
 
-
+    def __init__(self):
+        self.sw = {"linear": self.f_linear, "poly": self.f_poly, "gauss": self.f_gauss, "sigmoid": self.f_sigmoid,
+              "cosine": self.f_cos, "rbf": self.f_rbf, "laplacian" : self.f_laplacian}
+class KernelAlgorithms(KernelClass):
     def __init__(self, n_components=None, kernel="linear"):
-
-        sw = { "linear" : self.f_linear, "poly" : self.f_poly, "gauss" : self.f_gauss, "sigmoid" : self.f_sigmoid, "cosine" : self.f_cos, "rbf" : self.f_rbf }
-
+        super().__init__()
         self.n_components = n_components
-        self.f = sw[kernel]
+        self.f = self.sw[kernel]
         self.gamma = 1.0
         self.c0 = 0.0
         self.degree = 3
+        self.kernel = kernel
 
-        self.A = []
+        #self.A = []
 
 
     #n data, m features
@@ -119,6 +125,7 @@ class KernelAlgorithms:
         self.X = X
         m, n = X.shape
 
+
         self.classes = np.unique(y)
 
         if self.n_components == None:
@@ -126,15 +133,14 @@ class KernelAlgorithms:
 
         self.n_components = min(len(self.classes) - 1, self.n_components, m)
 
-        print("Classes ", self.classes)
-
-
-        print("n ", n, " m ", m)
-        print("y ", y.shape)
+        #print("Classes ", self.classes)
+        #print("n ", n, " m ", m)
+        #print("y ", y.shape)
 
         M_i = {}
         nj_c = {}
 
+        """
         for c in self.classes:
             M_i[c] = np.zeros(n)
 
@@ -143,6 +149,7 @@ class KernelAlgorithms:
             #print("nj ", nj)
 
             Xk = X[:, y == c]
+            nj_c[c] = Xk.shape[0]
             #print("Xk ", Xk.shape)
             for j in range(n):
                 for k in range(nj_c[c]):
@@ -156,11 +163,38 @@ class KernelAlgorithms:
 
         M_star = 1/float(n) * M_star
 
+        M = np.zeros((n, n))
+        for c in self.classes:
+            M = M + nj_c[c] * np.outer((M_i[c] - M_star), (M_i[c] - M_star))
+        """
+        m_star = np.zeros(n)
+        for i in range(n):
+            for k in range(n):
+                m_star[i] = m_star[i] + self.f(X[:, i], X[:, k])
+        m_star = m_star / float(n)
+
+        M = np.zeros((n, n))
+        nj_c = {}
+        mi = {}
+        for c in self.classes:
+            Xk = X[:, y == c]
+            nj_c[c] = Xk.shape[1]
+            #print("nj_c ", nj_c[c])
+            #print("Xk.shape ", Xk.shape, " X.shape ", X.shape)
+
+            m_ = np.zeros(n)
+            for i in range(X.shape[1]):
+                for k in range(Xk.shape[1]):
+                    m_[i] = m_[i] + self.f(X[:, i], Xk[:, k])
+            m_ = m_/float(nj_c[c])
+            mi[c] = m_.copy()
+
+        for c in self.classes:
+            M = M + float(nj_c[c]) * np.outer( mi[c]-m_star, mi[c]-m_star )
+
         K_X_c = {}
         for c in self.classes:
-
-
-            Xk = X[:, y == c, ]
+            Xk = X[:, y == c ]
             K_X_c[c] = np.zeros((n,nj_c[c]))
             for i in range(n):
                 for j in range(nj_c[c]):
@@ -178,63 +212,34 @@ class KernelAlgorithms:
             N = N + K_X_c[c].dot( IN ).dot(K_X_c[c].T)
             #N = N + IN
 
-
-        M = np.zeros((n, n))
-        for c in self.classes:
-            M = M + nj_c[c] * np.outer( (M_i[c]-M_star), (M_i[c]-M_star) )
+        #print("M.T ", M)
+        #print("N.T ", N)
 
 
         #eigenValues, eigenVectors = scipy.linalg.eig(M, N)  # i.th columnn contains the i-th eigenvector sci.linalg.eig(
+        eigenValues, eigenVectors = np.linalg.eig(np.linalg.inv(N).dot(M))
 
         #eigenValues, eigenVectors = scipy.linalg.eig( np.linalg.inv(N).dot(M) )
         #eigenValues, eigenVectors = np.linalg.eigh( np.linalg.inv(N).dot(M) )
-        eigenValues, eigenVectors = np.linalg.eig(np.linalg.inv(N).dot(M))
 
-        #H, a, _ = sci.linalg.svd(self.Sw)
-        #A = np.diag(a)
 
-        #M = np.dot(H, scipy.linalg.fractional_matrix_power(A, -0.5)).T
-        #U, sigma, _ = sci.linalg.svd(M.T.dot(self.Sb).dot(M))
-        #Sigma = np.diag(sigma)
-
-        #Delta = M.dot(U)
-
-        #eigenVectors = Delta
-        #eigenValues = np.diagonal(Sigma)
-
-        realV = eigenValues.imag == 0
-        #print("real ", realV)
-        eigenValues = eigenValues[realV]
-        eigenVectors = eigenVectors[:, realV]
-
+        #realV = eigenValues.imag == 0
+        #eigenValues = eigenValues[realV].real
+        #eigenVectors = eigenVectors[:, realV].real
+        eigenValues, eigenVectors = eigenValues.real, eigenVectors.real
 
         idx = (eigenValues).argsort()[::-1]
         eigenValues = eigenValues[idx]
+        eigenVectors = eigenVectors[:, idx]
 
-        #print("Eigenvalues ", eigenValues)
-        #print("EigenVectors ", eigenVectors[:,0:3])
-        #print("EigenVectors.shape ", eigenVectors.shape)
-        #print("M ", M)
-        #print("N ", N)
-
-        #print("rank ", np.linalg.matrix_rank(np.linalg.inv(N).dot(M)) )
-        #print("rank ", np.linalg.matrix_rank(np.linalg.inv(N).dot(M)))
-        #print("rank M ", np.linalg.matrix_rank(M))
-        #print("rank N ", np.linalg.matrix_rank(N))
-        #print("rank eigenval ", eigenValues.shape)
-
-
-        eigenVectors = eigenVectors[:, idx].real
-
-        #self.n_components = min(eigenValues.shape[0], self.n_components)
-
-
-
-        print("self.n_components ", self.n_components)
-
-
-        self.eigvals = eigenValues
-        self.E = eigenVectors[:, 0:self.n_components].real
+        #print("self.n_components ", self.n_components)
+        self.eigvals = eigenValues[0:self.n_components]
+        self.E = eigenVectors[:, 0:self.n_components]
+        #print("eigenvals ", self.eigvals)
+        #print("KDA eigenvals ", self.eigvals[0:self.n_components])
+        if (self.eigvals == np.inf).any():
+            import warnings
+            warnings.simplefilter("One eigenvalues is INF", UserWarning)
 
         #print("eigenvec shape ", eigvecs)
         #print("n ", n, " k ", k, " n_components ", self.n_components)
@@ -248,6 +253,7 @@ class KernelAlgorithms:
         #print("E ", self.E.shape)
         Y = np.zeros( (self.n_components, X_new.shape[1]))
         #print("Y shape ", Y.shape)
+        #print("transfrom self.E ", self.E)
         for g in range(X_new.shape[1]):
             Kn = np.zeros(self.X.shape[1])
 
@@ -258,13 +264,17 @@ class KernelAlgorithms:
             #print("kn ", K.dot(Kn).shape)
             #print("all ", (E.T.dot(K).dot(Kn)).shape)
             #print(Kn)
-
             v = self.E.T.dot(Kn)
             #print("v.shape ", v.shape)
-
             Y[:, g] = v
-       # print("Y.shape ", Y.shape)
 
+        K = np.zeros((self.X.shape[1], X_new.shape[1]))
+        for i in range(self.X.shape[1]):
+            for j in range(X_new.shape[1]):
+                K[i,j] = self.f(self.X[:, i], X_new[:, j])
+
+        Y = self.E.T.dot(K)
+        #print("Y.shape ", Y.shape)
 
         return Y
 
@@ -332,6 +342,7 @@ class MyKerneLDA:
 
     def __init__(self, n_components, kernel="linear", gamma=None, degree=None):
         self.lda = KernelAlgorithms(n_components=n_components, kernel=kernel)
+        self.kernel = kernel
 
         if gamma != None:
             self.lda.gamma = gamma
@@ -339,8 +350,9 @@ class MyKerneLDA:
             self.lda.degree = degree
 
     def fit(self, X, y):
+        print("kernel ", self.kernel, " X n: ", X.shape[0], " m: ", X.shape[1])
         self.model = self.lda.fit_KernelLDA(X, y)
-        self.model.computeClassifier(X, y)
+        #self.model.computeClassifier(X, y)
         return self
 
     def transform(self, X):

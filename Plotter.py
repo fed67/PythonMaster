@@ -349,15 +349,11 @@ class Plotter:
         for kk in range(len(dfs)):
             data = dfs[kk]
             y = classes[kk]
-            print("typ dfs ", type(data), " shape ", data.shape)
-            print("typ class ", type(y), " shape ", y.shape)
             unique = np.unique(classes[kk])
 
             #print("data ", data)
             #print("y ", data)
             #print("type ", data.type)
-            print("unique ", unique)
-
             for i in range(0, len(unique)):
 
                 if len(data) > 0:
@@ -388,6 +384,7 @@ class Plotter:
                 i0 = i0 + 1
                 j0 = 0
         fig.suptitle(title_fig)
+        fig.tight_layout()
 
     def plotScatter_multipleDomains(cls, domains, domainClasses =[], title_=[], labels_=[], title_fig=""):
         import math
@@ -405,6 +402,10 @@ class Plotter:
             #print("domainplot")
             #print(domainplot)
             for i,domain in enumerate(domainplot):
+
+                #print("domain ", type(domain), " i ", i)
+                #if not isinstance(np.array, domain):
+                #    raise Exception("Error each domain must be a numpy array but it is {0}\n".format(type(domain)))
 
                 if domain is None or domain.size == 0:
                     continue
@@ -433,6 +434,7 @@ class Plotter:
                 i0 = i0 + 1
                 j0 = 0
         fig.suptitle(title_fig)
+        fig.tight_layout()
 
 def plot_unsupervised_umap_tsne_mds(cls, df, color, titles=[], label=[], title_fig="", write_to_svg=False):
     import math

@@ -407,10 +407,14 @@ def test_iris():
     #plt.show()
 
 from DataSets import *
-def testGauss():
+
+
+def testGauss_KLDA():
+    np.random.seed(3)
 
     data = Gaussian(n=100)
-    data.init_twoDomains2(n=100)
+    #data.init_twoDomains2(n=100)
+    data.init_threeDomains2(n=100)
     #data = load_iris()
     #data = load_digits()
 
@@ -425,10 +429,11 @@ def testGauss():
 
     gamma = 0.02
     degree = 5
-    kernel = "gauss"
+    #kernel = "gauss"
+    #kernel = "laplacian"
     #kernel = "rbf"
     #kernel = "poly"
-    #kernel = "linear"
+    kernel = "linear"
     delta = 1.0
     beta = 1.0
 
@@ -456,10 +461,107 @@ def testGauss():
     #for gamma in [0.001, 0.01, 0.025, 0.05, 0.06, 0.08, 0.1, 0.3 ]:
     #for degree in [3, 10, 50, 100]:
     #for gamma in [0.01, 0.005, 0.1, 0.5]:
-    #for gamma in [0.005, 0.01, 0.08, 0.1, 0.5]:
+    for gamma in [0.01, 0.1, 0.2, 0.5, 1.0, 10.0, 20, 50]:
     #for gamma in [0.01, 0.025, 0.03, 0.05, 0.1, 0.5, 1, 10, 50, 100, 500]:
-    for gamma in [10, 50, 100, 500]:
-        lda = SCA(n_components=2, kernel=kernel, gamma=gamma, degree=degree, delta=delta, beta=beta)
+    #for gamma in [10, 50, 100, 500]:
+        #lda = SCA(n_components=2, kernel=kernel, gamma=gamma, degree=degree, delta=delta, beta=beta)
+        lda = MyKerneLDA(n_components=2, kernel=kernel, gamma=gamma)
+
+        #DOMAIN GENERALIZATION
+        lda.fit( np.concatenate( (data.data[0], data.data[1]), axis=0), np.concatenate( (data.target[0], data.target[1]), axis=0))
+        x_sk = lda.transform(data.data[2])
+        res_gen.append(x_sk)
+        res_y_gen.append(data.target[2])
+        titles_gen.append("Transformed TestDomain - gamma {0}".format(gamma))
+
+    res_gen_compare.append(data.data)
+    resy_gen_compare.append(data.target)
+    titles_gen_compare.append("Domains")
+
+    res_gen.append(data.X)
+    res_y_gen.append(data.y)
+    titles_gen.append("Domains")
+
+    #Plotter().plotUmap_multiple([x_sk, x_sk2, X], [y]*3, ["Kernel LDA", "LDA", "Iris"], [{0:"0", 1:"1", 2:"2"}]*3)
+    #Plotter().plotScatter_multiple([x_sk, x_sk, x_sk2], [y, yp, y] , ["SCA", "Kernel LDA predict", "LDA"], [{0: "0", 1: "1", 2: "2"}] * 3)
+    #Plotter().plotScatter_multiple(res_compare, resy_compare, titles_compare, [map] * len(res_compare), "SCA Domain Adaption")
+    Plotter().plotScatter_multiple(res_gen, res_y_gen, titles_gen, [map] * len(res_gen), "Kernel Discriminant Analysis - {0}".format(kernel))
+
+    """
+    Plotter().plotScatter_multipleDomains( res_compare, resy_compare, titles_compare, [map]*len(titles_compare), "ScatterPlot - SCA DomainAdaption- {0}".format(kernel))
+    plt.figtext(0.5, 0.01,
+                "Scatter Plot\nDimension of train Domains: {0}; Test Domains: {1}\n delta: {2}, beta: {3} \n".format(
+                    len(trainDomain), len(testDomain), delta, beta),
+                wrap=True, horizontalalignment='center', fontweight='bold')
+
+    Plotter().plotScatter_multipleDomains( res_gen_compare, resy_gen_compare, titles_gen_compare, [map]*len(titles_gen_compare), "ScatterPlot - SCA Domain Generalization - {0}".format(kernel))
+    plt.figtext(0.5, 0.01,
+                "Scatter Plot\nDimension of train Domains: {0}; Test Domains: {1}\n delta: {2}, beta: {3} \n".format(
+                    len(trainDomain), len(testDomain), delta, beta),
+                wrap=True, horizontalalignment='center', fontweight='bold')
+    """
+
+    plt.show()
+def testGauss():
+    np.random.seed(20)
+
+    data = Gaussian(n=100)
+    data.init_threeDomains2(n=100)
+    #data = load_iris()
+    #data = load_digits()
+
+    print("data.data ", len(data.data))
+
+    for x in data.data:
+        print("variance ", np.var(x, axis=0))
+
+    map = {}
+    for i in range(20):
+        map[i] = str(i)
+
+    gamma = 0.2
+    #gamma = np.var(data.X)
+    degree = 5
+    #kernel = "gauss"
+    kernel = "rbf"
+    #kernel = "laplacian"
+    #kernel = "poly"
+    #kernel = "linear"
+    delta = 1.0
+    beta = 1.0
+
+    res = []
+    res_y = []
+    titles = []
+
+    res_gen = []
+    res_y_gen = []
+    titles_gen = []
+
+    trainDomain  = data.data[0:2]
+    trainDomain_y = data.target[0:2]
+    testDomain = [data.data[2]]
+    testDomain_y = [data.target[2]]
+
+    res_compare = []
+    resy_compare = []
+    titles_compare = []
+    res_gen_compare = []
+    resy_gen_compare = []
+    titles_gen_compare = []
+
+    #for kernel in [ "poly", "gauss", "cosine"]:
+    #for gamma in [0.001, 0.01, 0.025, 0.05, 0.06, 0.08, 0.1, 0.3 ]:
+    #for degree in [3, 10, 50, 100]:
+    #for gamma in [0.01, 0.005, 0.1, 0.5]:
+    #for gamma in [0.005, 0.01, 0.08, 0.1, 0.5]:
+    #for gamma in [0.01, 0.1, 0.2, 0.5, 1.0, 10.0, 20, 50]:
+    #for gamma in [1, 10, 50]:
+    for delta in [0, 0.1, 0.3, 0.5, 0.8, 1.0]:
+    #for delta in [1.0]:
+        #lda = SCA(n_components=2, kernel=kernel, gamma=gamma, degree=degree, delta=delta, beta=beta)
+        lda = SCA2(n_components=2, kernel=kernel, gamma=gamma, degree=degree, delta=delta, beta=beta)
+        #lda = MyKerneLDA(n_components=2, kernel=kernel, gamma=gamma)
         #lda.remove_inf = True
         #lda.f = lda.f_gauss
 
@@ -467,13 +569,15 @@ def testGauss():
         #x_sk = model.transform_list(data.target[:-1])
 
         model = lda.fit(trainDomain, trainDomain_y, testDomain)
+        #model = lda.fit(trainDomain[0], trainDomain_y[0], testDomain)
         #model = lda.fit(data.data[:-1], data.target[:-1])
 
         x_sk = model.transform_list(trainDomain)
         for x, y in zip(x_sk, trainDomain_y):
             res.append(x)
             res_y.append(y)
-        titles.append("Transformed TrainDomain - gamma {0}".format(gamma))
+        titles.append("TrainDomain \n gamma {0}".format(gamma))
+        #titles.append("TrainDomain \n delta {0} beta {1}".format(delta, beta))
 
         x_sk = model.transform_list(testDomain)
         for x, y in zip(x_sk, testDomain_y):
@@ -482,18 +586,21 @@ def testGauss():
             res_compare.append([x])
             resy_compare.append([y])
         titles.append("Transformed TestDomain - gamma {0}".format(gamma))
-        titles_compare.append("Transformed TestDomain - gamma {0}".format(gamma))
+        #titles.append("TrainDomain \n delta {0} beta {1}".format(delta, beta))
+        #titles_compare.append("Transformed TestDomain - gamma {0}".format(gamma))
+        titles_compare.append("Transformed TestDomain \n delta {0} beta {1}".format(delta, beta))
 
 
         #DOMAIN GENERALIZATION
-        sca_generalization = SCA(n_components=2, kernel=kernel, gamma=gamma, degree=degree, delta=delta, beta=beta)
+        #sca_generalization = SCA(n_components=2, kernel=kernel, gamma=gamma, degree=degree, delta=delta, beta=beta)
+        sca_generalization = SCA2(n_components=2, kernel=kernel, gamma=gamma, degree=degree, delta=delta, beta=beta)
         model_generalization = sca_generalization.fit(trainDomain, trainDomain_y)
 
         x_sk = model_generalization.transform_list(trainDomain)
         for x,y in zip(x_sk, trainDomain_y):
             res_gen.append(x)
             res_y_gen.append(y)
-        titles_gen.append("Transformed TrainDomain - gamma {0}".format(gamma))
+        #titles_gen.append("Transformed TrainDomain - gamma {0}".format(gamma))
 
         x_sk = model_generalization.transform_list(testDomain)
         for x, y in zip(x_sk, testDomain_y):
@@ -502,7 +609,9 @@ def testGauss():
             res_gen_compare.append([x])
             resy_gen_compare.append([y])
         titles_gen.append("Transformed TestDomain - gamma {0}".format(gamma))
-        titles_gen_compare.append("Transformed TestDomain - gamma {0}".format(gamma))
+        #titles_gen.append("TrainDomain \n delta {0} beta {1}".format(delta, beta))
+        #titles_gen_compare.append("Transformed TestDomain - gamma {0}".format(gamma))
+        titles_gen_compare.append("Transformed TestDomain \n delta {0} beta {1}".format(delta, beta))
 
         #model.computeClassifier(X, y)
         #yp = lda.predict(X)
@@ -529,8 +638,8 @@ def testGauss():
 
     Plotter().plotScatter_multipleDomains( res_compare, resy_compare, titles_compare, [map]*len(titles_compare), "ScatterPlot - SCA DomainAdaption- {0}".format(kernel))
     plt.figtext(0.5, 0.01,
-                "Scatter Plot\nDimension of train Domains: {0}; Test Domains: {1}\n delta: {2}, beta: {3} \n".format(
-                    len(trainDomain), len(testDomain), delta, beta),
+                "Scatter Plot\nDimension of train Domains: {0}; Test Domains: {1}\n delta: {2}, beta: {3}, gamma: {4} \n".format(
+                    len(trainDomain), len(testDomain), delta, beta, gamma),
                 wrap=True, horizontalalignment='center', fontweight='bold')
 
     Plotter().plotScatter_multipleDomains( res_gen_compare, resy_gen_compare, titles_gen_compare, [map]*len(titles_gen_compare), "ScatterPlot - SCA Domain Generalization - {0}".format(kernel))
@@ -559,7 +668,8 @@ def testGauss2():
 
     gamma = 0.02
     degree = 5
-    kernel = "rbf"
+    kernel = "linear"
+    #kernel = "rbf"
     #kernel = "poly"
     delta = 1.0
     beta = 1.0
@@ -585,10 +695,10 @@ def testGauss2():
     titles_gen_compare = []
 
     #for kernel in [ "poly", "gauss", "cosine"]:
-    for gamma in [0.001, 0.01, 0.025, 0.05, 0.06, 0.08, 0.1, 0.3 ]:
+    #for gamma in [0.001, 0.01, 0.025, 0.05, 0.06, 0.08, 0.1, 0.3 ]:
     #for degree in [3, 10, 50, 100]:
     #for gamma in [0.01, 0.005, 0.1, 0.5]:
-    #for gamma in [0.08]:
+    for gamma in [1.0]:
         lda = SCA(n_components=2, kernel=kernel, gamma=gamma, degree=degree, delta=delta, beta=beta)
         #lda.remove_inf = True
         #lda.f = lda.f_gauss
@@ -647,22 +757,22 @@ def testGauss2():
 
     #Plotter().plotUmap_multiple([x_sk, x_sk2, X], [y]*3, ["Kernel LDA", "LDA", "Iris"], [{0:"0", 1:"1", 2:"2"}]*3)
     #Plotter().plotScatter_multiple([x_sk, x_sk, x_sk2], [y, yp, y] , ["SCA", "Kernel LDA predict", "LDA"], [{0: "0", 1: "1", 2: "2"}] * 3)
-    Plotter().plotScatter_multiple(res_gen, resy_gen_compare, titles_gen_compare, [map] * len(res_gen))
+    #Plotter().plotScatter_multiple(res_gen, resy_gen_compare, titles_gen_compare, [map] * len(res_gen))
 
-    """
+
     Plotter().plotScatter_multipleDomains( [ [res[0]], [None, res[1]], res, data.data], [ [res_y[0]], [None, res_y[1]], res_y, data.target], titles, [map]*len(titles), "ScatterPlot - SCA DomainAdaption- {0}".format(kernel))
     plt.figtext(0.5, 0.01,
                 "Scatter Plot\nDimension of train Domains: {0}; Test Domains: {1}\n delta: {2}, beta: {3} \n".format(
                     len(trainDomain), len(testDomain), delta, beta),
                 wrap=True, horizontalalignment='center', fontweight='bold')
-    """
 
-    """Plotter().plotScatter_multipleDomains( [ [res_gen[0]], [None, res_gen[1]], res_gen, data.data], [ [res_y_gen[0]], [None, res_y_gen[1]], res_y_gen, data.target], titles_gen, [map]*len(titles), "ScatterPlot - SCA Domain Generalization - {0}".format(kernel))
+
+    Plotter().plotScatter_multipleDomains( [ [res_gen[0]], [None, res_gen[1]], res_gen, data.data], [ [res_y_gen[0]], [None, res_y_gen[1]], res_y_gen, data.target], titles_gen, [map]*len(titles), "ScatterPlot - SCA Domain Generalization - {0}".format(kernel))
     plt.figtext(0.5, 0.01,
                 "Scatter Plot\nDimension of train Domains: {0}; Test Domains: {1}\n delta: {2}, beta: {3} \n".format(
                     len(trainDomain), len(testDomain), delta, beta),
                 wrap=True, horizontalalignment='center', fontweight='bold')
-    """
+
     plt.show()
 
 
@@ -777,7 +887,9 @@ def testGauss3():
 
 def testGauss_kernels():
 
-    data = Gaussian(n=80)
+    data = Gaussian(n=5)
+    data.init_twoDomains2(n=50)
+
     #data = load_iris()
     #data = load_digits()
 
@@ -811,8 +923,10 @@ def testGauss_kernels():
             res = []
             res_y = []
             titles = []
-            for gamma in [0.01, 0.05, 0.065, 0.08, 0.1, 0.2, 0.5, 1]:
-                lda = SCA(n_components=2, kernel=kernel, gamma=gamma, degree=degree, delta=delta, beta=beta)
+            #for gamma in [0.01, 0.05, 0.065, 0.08, 0.1, 0.2, 0.5, 1]:
+            for gamma in [ 0.1, 0.2, 0.5, 1]:
+                #lda = SCA(n_components=2, kernel=kernel, gamma=gamma, degree=degree, delta=delta, beta=beta)
+                lda = MyKerneLDA(n_components=2, kernel=kernel, gamma=gamma, degree=degree, delta=delta, beta=beta)
 
                 #model = lda.fitDICA([X0, X1], [y0, y1])
                 #model = lda.fitDICA([X0.T], [y0])
@@ -821,9 +935,9 @@ def testGauss_kernels():
                 print("number of domains ", len(data.data))
                 print("number of domains Su ", len(data.data[:-1]))
 
-                model = lda.fit(data.data[:-1], data.target[:-1], [data.data[-1]])
-                #model = lda.fit(data.data[:-1], data.target[:-1])
-                x_sk = model.transform(data.data[-1])
+                #model = lda.fit(data.data[:-1], data.target[:-1], [data.data[-1]])
+                model = lda.fit(data.data[0], data.target[0])
+                x_sk = model.transform(data.data[1])
                 #print("x_sk.shape ", x_sk.shape)
 
                 res.append(x_sk)
@@ -848,13 +962,79 @@ def testGauss_kernels():
             #Plotter().plotUmap_multiple([x_sk, x_sk2, X], [y]*3, ["Kernel LDA", "LDA", "Iris"], [{0:"0", 1:"1", 2:"2"}]*3)
             #Plotter().plotScatter_multiple([x_sk, x_sk, x_sk2], [y, yp, y] , ["SCA", "Kernel LDA predict", "LDA"], [{0: "0", 1: "1", 2: "2"}] * 3)
             Plotter().plotScatter_multiple(res, res_y, titles, [map] * len(res))
-            plt.figtext(0.5, 0.01, "Scatter Plot\nDimension of train data: rows: {0}; features: {1}\n delta: {2}, beta: {3}".format(lda.X.shape[0], lda.X.shape[1], delta, beta),
+            plt.figtext(0.5, 0.01, "SCA Scatter Plot\n delta: {delta}, beta: {beta}".format(delta=delta, beta=beta),
                         wrap=True, horizontalalignment='center', fontweight='bold')
     plt.show()
 
 def testIris2():
 
-    data = Gaussian(n=20)
+    np.random.seed(20)
+
+    data = Gaussian(n=10)
+    data.init_twoDomains2(n=100)
+    #data.init_threeDomains2(n=100)
+
+    #X = np.concatenate( (data.data[0], data.data[1]), axis=0)
+    #y = np.concatenate( (data.target[0], data.target[1]), axis=0)
+
+    X = data.data[0]
+    y = data.target[0]
+
+    x_lda = []
+    title_lda = []
+    x_sca = []
+    x_sca_train = []
+    title_sca = []
+    #kernel = "linear"
+    #kernel = "rbf"
+    kernel = "laplacian"
+
+    g = []
+    for i in range(data.X.shape[0]):
+        for j in range(data.X.shape[0]):
+            g.append( np.linalg.norm( data.X[i,:] - data.X[j,:],2)**2.0 )
+    g = np.array(g)
+    g = np.median(g)
+
+    for gamma in [0.008, 0.01, g, 0.02, 0.03, 0.08, 0.1, 0.3, 0.5, 1.0, 10.0]:
+    #for gamma in [0.1, 0.2]:
+        lda = MyKerneLDA(n_components=2, kernel=kernel, gamma=gamma)
+        lda.fit( X, y)
+        x_lda.append( lda.transform(data.data[1]) )
+        #lda.fit(data.data[0].copy(), data.target[0].copy())
+        #x_lda.append( lda.transform(data.data[1].copy()) )
+        title_lda.append("gamma - {0}".format(gamma))
+        #print("len data.data ", len(data.data))
+
+        sca = SCA2(n_components=2, kernel=kernel, gamma=gamma, delta=1.0, beta=1.0)
+        #model = sca.fit([data.data[0].copy()], [data.target[0].copy()])
+        #x_sca.append( model.transform(data.data[1]) )
+        model = sca.fit( [data.data[0]], [data.target[0]], [data.data[1]])
+        #model = sca.fit([data.data[0]], [data.target[0]])
+        x_sca.append( model.transform(data.data[0]) )
+        x_sca_train.append(model.transform(data.data[1]))
+
+        title_sca.append("gamma - {0}".format(gamma))
+
+    print("X ", X.shape)
+    print("y ", y.shape)
+    #Plotter().plotScatter_multiple([x_lda, x_sca,], [data.target[2], data.target[2]], ["KDA", "SCA"], [{0: "0", 1: "1", 2: "2"}] * 2)
+    Plotter().plotScatter_multiple([x_lda[2], x_sca[2] ], [data.target[1], data.target[1]], ["KDA", "SCA"],[{0: "0", 1: "1", 2: "2"}] * 2)
+    #Plotter().plotScatter_multiple(x_lda, [data.target[1]]*len(x_lda), title_lda, [{0: "0", 1: "1", 2: "2"}] * len(x_lda), "KDA Three Domains - {0}".format(kernel))
+
+    #Plotter().plotScatter_multiple(x_sca, [data.target[1]]*len(x_sca), title_sca, [{0: "0", 1: "1", 2: "2"}] * len(x_sca), "SCA Test Two Domains - {0}".format(kernel))
+    #Plotter().plotScatter_multiple(x_sca_train, [data.target[1]] * len(x_sca), title_sca, [{0: "0", 1: "1", 2: "2"}] * len(x_sca), "SCA Train Two Domains - {0}".format(kernel))
+    title_sca.append("Origina Data")
+    X = []
+    Y = []
+    for i, x in enumerate(x_lda):
+        X.append( [x_sca_train[i], x_sca[i]] )
+        Y.append([data.target[0], data.target[1]])
+    X.append(data.data)
+    Y.append(data.target)
+
+    Plotter().plotScatter_multipleDomains(X, Y, title_sca, [{0: "0", 1: "1", 2: "2"}]*len(title_sca), "ScatterPlot - DomainGeneralization Transformed all Domains - {0}".format(kernel))
+
     plt.show()
 
 
@@ -862,7 +1042,12 @@ def testIris2():
 if __name__ == '__main__':
     #test_Kernel_LDA_Sklearn_MaxLarge_split_treatment_kernels()
 
-    testGauss()
+    testIris2()
+
+    #testGauss()
+
+    #testGauss_KLDA()
+    #testGauss_kernels()
 
     #testGauss2()
     #testGauss3()
