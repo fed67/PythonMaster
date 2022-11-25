@@ -381,6 +381,11 @@ class Gaussian:
 
         self.title = ["S0", "S1", "S2"]
 
+    def scale(self):
+        scaler = StandardScaler()
+        for i in range(self.data):
+            self.data[i] = scaler.fit_transform(self.data[i])
+
 
     def plot(self):
         map = dict()

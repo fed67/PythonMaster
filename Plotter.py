@@ -330,7 +330,7 @@ class Plotter:
         ax.set_xlabel("x")
         ax.set_ylabel("y")
 
-    def plotScatter_multiple(cls, dfs: list[np.ndarray], classes: list[np.ndarray], titles: list[str], labels=[], title_fig=""):
+    def plotScatter_multiple(cls, dfs: list[np.ndarray], classes: list[np.ndarray], titles: list[str], labels=[], markerId=0, title_fig=""):
         import math
         print("len df ", len(dfs), " classes ", len(classes), " titles ", len(titles))
 
@@ -363,7 +363,7 @@ class Plotter:
                     label = labels[kk][unique[i]]
 
                     if(zeilen > 1):
-                        ax[i0, j0].scatter(x=elx, y=ely, c=cls.myColors[unique[i]], label=label, alpha=0.4)
+                        ax[i0, j0].scatter(x=elx, y=ely, c=cls.myColors[unique[i]], label=label, marker=cls.myMarker[markerId], alpha=0.4)
                         ax[i0, j0].grid(True)
                         # ax.legend(loc='upper right')
                         lgd = ax[i0, j0].legend(bbox_to_anchor=(1.1, 1.05))
@@ -371,7 +371,7 @@ class Plotter:
                         ax[i0, j0].set_ylabel("y")
                         ax[i0, j0].set_title(titles[kk])
                     else:
-                        ax[j0].scatter(x=elx, y=ely, c=cls.myColors[unique[i]], label=label, alpha=0.4)
+                        ax[j0].scatter(x=elx, y=ely, c=cls.myColors[unique[i]], label=label, marker=cls.myMarker[markerId], alpha=0.4)
                         ax[j0].grid(True)
                         # ax.legend(loc='upper right')
                         lgd = ax[j0].legend(bbox_to_anchor=(1.1, 1.05))
@@ -419,7 +419,12 @@ class Plotter:
 
                     elx = domain[ c == y, 0]
                     ely = domain[c == y, 1]
-                    label=labels_[dpi][c]
+                    label=labels_[dpi][c]+" D"+str(i)
+                    #print(labels_[dpi][c])
+                    #label = {}
+                    #for key, value in labels_[dpi][c].items():
+                    #    label[key] = value+" Domain "+str(i)
+
                     if zeilen > 1:
                         ax[i0, j0].scatter(x=elx, y=ely, c=cls.myColors[c], label=label, marker=cls.myMarker[i], alpha=0.4)
                         ax[i0, j0].set_title(title_[dpi])

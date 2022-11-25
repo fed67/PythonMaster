@@ -124,7 +124,8 @@ def test_Kernel_LDA_Sklearn_MaxLarge_split_treatment_kernels():
 def test_KernelPCA_Sklearn_split_treatment_dimension():
     cwd = os.getcwd()
     print("Current working directory: {0}".format(cwd))
-    data_name = "sample_130922_105529_n_10000_median.csv"
+    #data_name = "sample_130922_105529_n_10000_median.csv"
+    data_name = "sample_130922_105630_n_40000_median.csv"
     treatment = "one_padded_zero_treatments.csv"
     path = "../../Data/kardio_data/"
 
@@ -210,7 +211,7 @@ def test_LDA_Sklearn_split_treatment_dimension():
     cwd = os.getcwd()
     print("Current working directory: {0}".format(cwd))
     data_name = "sample_130922_105529_n_10000_median.csv"
-    #data_name = "sample_130922_105630_n_40000_median.csv"
+    data_name = "sample_130922_105630_n_40000_median.csv"
     treatment = "one_padded_zero_treatments.csv"
     path = "../../Data/kardio_data/"
 
@@ -253,7 +254,7 @@ def test_LDA_Sklearn_split_treatment_dimension():
     #for dim in [2, 4, 5, 6, 7, 8]:
     #for dim in [2]:
     #for kern in kernel:
-    for gamma in [10, 100, 500, 1000, 5000, 1e4, 1e5, 1e6, 1e7]:
+    for gamma in [0.1, 1, 10, 100, 500, 1000, 1e4, 1e5, 1e6, 1e7]:
     #for degree in [2,3,5,7,8,9]:
         lda = SCA(n_components=2, kernel=kern, gamma=gamma)
         #lda = MyKerneLDA(n_components=None, kernel=kern, degree=degree)
@@ -926,7 +927,8 @@ def testGauss_kernels():
             #for gamma in [0.01, 0.05, 0.065, 0.08, 0.1, 0.2, 0.5, 1]:
             for gamma in [ 0.1, 0.2, 0.5, 1]:
                 #lda = SCA(n_components=2, kernel=kernel, gamma=gamma, degree=degree, delta=delta, beta=beta)
-                lda = MyKerneLDA(n_components=2, kernel=kernel, gamma=gamma, degree=degree, delta=delta, beta=beta)
+                #lda = MyKerneLDA(n_components=2, kernel=kernel, gamma=gamma, degree=degree, delta=delta, beta=beta)
+                lda = MyKernelPCA(n_components=2, kernel=kernel, gamma=gamma, degree=degree, delta=delta, beta=beta)
 
                 #model = lda.fitDICA([X0, X1], [y0, y1])
                 #model = lda.fitDICA([X0.T], [y0])
@@ -942,7 +944,8 @@ def testGauss_kernels():
 
                 res.append(x_sk)
                 res_y.append(data.target[-1])
-                titles.append("Scatter Plot - DomainGeneralization - SCA - {0} gamma {1}  ".format(kernel, gamma))
+                #titles.append("Scatter Plot - DomainGeneralization - {2} - {0} gamma {1}  ".format(kernel, gamma, lda.name))
+                titles.append("Scatter Plot - {2} - {0} gamma {1}  ".format(kernel, gamma, lda.name))
 
                 #model.computeClassifier(X, y)
                 #yp = lda.predict(X)
@@ -982,12 +985,12 @@ def testIris2():
 
     x_lda = []
     title_lda = []
-    x_sca = []
+    x_sca_test = []
     x_sca_train = []
     title_sca = []
     #kernel = "linear"
-    #kernel = "rbf"
-    kernel = "laplacian"
+    kernel = "rbf"
+    #kernel = "laplacian"
 
     g = []
     for i in range(data.X.shape[0]):
@@ -998,40 +1001,40 @@ def testIris2():
 
     for gamma in [0.008, 0.01, g, 0.02, 0.03, 0.08, 0.1, 0.3, 0.5, 1.0, 10.0]:
     #for gamma in [0.1, 0.2]:
-        lda = MyKerneLDA(n_components=2, kernel=kernel, gamma=gamma)
-        lda.fit( X, y)
-        x_lda.append( lda.transform(data.data[1]) )
-        #lda.fit(data.data[0].copy(), data.target[0].copy())
-        #x_lda.append( lda.transform(data.data[1].copy()) )
-        title_lda.append("gamma - {0}".format(gamma))
-        #print("len data.data ", len(data.data))
+        #lda = MyKerneLDA(n_components=2, kernel=kernel, gamma=gamma)
+        lda = MyKernelPCA(n_components=2, kernel=kernel, gamma=gamma)
 
-        sca = SCA2(n_components=2, kernel=kernel, gamma=gamma, delta=1.0, beta=1.0)
-        #model = sca.fit([data.data[0].copy()], [data.target[0].copy()])
-        #x_sca.append( model.transform(data.data[1]) )
-        model = sca.fit( [data.data[0]], [data.target[0]], [data.data[1]])
+        title_lda.append("gamma - {0}".format(gamma))
+
+        model = lda.fit(data.data[0], data.target[0])
+        #model = lda.fit( [data.data[0]], [data.target[0]], [data.data[1]])
         #model = sca.fit([data.data[0]], [data.target[0]])
-        x_sca.append( model.transform(data.data[0]) )
-        x_sca_train.append(model.transform(data.data[1]))
+
+        x_sca_train.append( model.transform(data.data[0]) )
+        x_sca_test.append(model.transform(data.data[1]))
 
         title_sca.append("gamma - {0}".format(gamma))
 
     print("X ", X.shape)
     print("y ", y.shape)
     #Plotter().plotScatter_multiple([x_lda, x_sca,], [data.target[2], data.target[2]], ["KDA", "SCA"], [{0: "0", 1: "1", 2: "2"}] * 2)
-    Plotter().plotScatter_multiple([x_lda[2], x_sca[2] ], [data.target[1], data.target[1]], ["KDA", "SCA"],[{0: "0", 1: "1", 2: "2"}] * 2)
+    #Plotter().plotScatter_multiple([x_lda[2], x_sca[2] ], [data.target[1], data.target[1]], ["KDA", "SCA"],[{0: "0", 1: "1", 2: "2"}] * 2)
     #Plotter().plotScatter_multiple(x_lda, [data.target[1]]*len(x_lda), title_lda, [{0: "0", 1: "1", 2: "2"}] * len(x_lda), "KDA Three Domains - {0}".format(kernel))
-
-    #Plotter().plotScatter_multiple(x_sca, [data.target[1]]*len(x_sca), title_sca, [{0: "0", 1: "1", 2: "2"}] * len(x_sca), "SCA Test Two Domains - {0}".format(kernel))
-    #Plotter().plotScatter_multiple(x_sca_train, [data.target[1]] * len(x_sca), title_sca, [{0: "0", 1: "1", 2: "2"}] * len(x_sca), "SCA Train Two Domains - {0}".format(kernel))
     title_sca.append("Origina Data")
+
+    Plotter().plotScatter_multiple([*x_sca_train, data.data[0]], [data.target[0]]*(len(x_sca_train)+1), title_sca, [{0: "0", 1: "1", 2: "2"}]*(len(x_sca_test)+1), title_fig="Train - {1} - {0}".format(kernel, lda.name), markerId=0)
+    Plotter().plotScatter_multiple( [*x_sca_test, data.data[1]], [data.target[1]]*(len(x_sca_test)+1), title_sca, [{0: "0", 1: "1", 2: "2"}]*(len(x_sca_test)+1), title_fig="Test - {1} - {0}".format(kernel, lda.name), markerId=1)
+
     X = []
     Y = []
-    for i, x in enumerate(x_lda):
-        X.append( [x_sca_train[i], x_sca[i]] )
+    for i, x in enumerate(x_sca_train):
+        X.append( [x_sca_train[i], x_sca_test[i]] )
         Y.append([data.target[0], data.target[1]])
     X.append(data.data)
     Y.append(data.target)
+
+    print("X ", len(X))
+    print("y ", len(y))
 
     Plotter().plotScatter_multipleDomains(X, Y, title_sca, [{0: "0", 1: "1", 2: "2"}]*len(title_sca), "ScatterPlot - DomainGeneralization Transformed all Domains - {0}".format(kernel))
 
@@ -1042,7 +1045,7 @@ def testIris2():
 if __name__ == '__main__':
     #test_Kernel_LDA_Sklearn_MaxLarge_split_treatment_kernels()
 
-    testIris2()
+    #testIris2()
 
     #testGauss()
 
@@ -1053,3 +1056,5 @@ if __name__ == '__main__':
     #testGauss3()
     #testGauss_kernels()
     #testIris2()
+
+    test_LDA_Sklearn_split_treatment_dimension()

@@ -8,10 +8,9 @@ from KernelAlgorithms import *
 class SCA(KernelClass):
     def __init__(self, n_components, kernel, gamma: float = 1.0, degree: float = 1.0, delta: float = 0.5,
                  beta: float = 0.5):
-        sw = {"linear": self.f_linear, "poly": self.f_poly, "gauss": self.f_gauss, "sigmoid": self.f_sigmoid,
-              "cosine": self.f_cos, "rbf": self.f_rbf}
+        super().__init__()
         self.n_components = n_components
-        self.k = sw[kernel]
+        self.k = self.sw[kernel]
         self.kernel_str = kernel
 
         self.c0 = float(0)
@@ -715,7 +714,7 @@ class SCA2(KernelClass):
 
         #print("eigenvals ", eigenValues)
         self.eigvals = eigenValues[0:self.n_components]
-        print("SCA eigenvals ", self.eigvals)
+        #print("SCA eigenvals ", self.eigvals)
         self.E = eigenVectors[:, 0:self.n_components]
 
         if (self.eigvals == np.inf).any():
@@ -739,7 +738,7 @@ class SCA2(KernelClass):
         # print("Zt ", Zt.shape)
         Zt = np.dot(np.dot(km.T, self.E), Lambda)
         #Zt = np.dot(km.T, self.E)
-        print("Zt ", Zt.shape)
+        #print("Zt ", Zt.shape)
 
         return Zt
 
