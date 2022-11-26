@@ -207,11 +207,11 @@ def test_KernelPCA_Sklearn_split_treatment_dimension():
     plt.show()
 
 
-def test_LDA_Sklearn_split_treatment_dimension():
+def test_LDA_Sklearn_split_treatment_dimension(method="sca-DomainAdaption"):
     cwd = os.getcwd()
     print("Current working directory: {0}".format(cwd))
     data_name = "sample_130922_105529_n_10000_median.csv"
-    data_name = "sample_130922_105630_n_40000_median.csv"
+    #data_name = "sample_130922_105630_n_40000_median.csv"
     treatment = "one_padded_zero_treatments.csv"
     path = "../../Data/kardio_data/"
 
@@ -242,6 +242,7 @@ def test_LDA_Sklearn_split_treatment_dimension():
     df_train_V1 = compute_mean_of_group_size_on_treatment(dfc.loc[dfc["trial"].isin(['V1'])], group_size)
     df_train_V2 = compute_mean_of_group_size_on_treatment(dfc.loc[dfc["trial"].isin(['V2'])], group_size)
     df_train_V3 = compute_mean_of_group_size_on_treatment(dfc.loc[dfc["trial"].isin(['V3'])], group_size)
+    df_train_V4 = compute_mean_of_group_size_on_treatment(dfc.loc[dfc["trial"].isin(['V4'])], group_size)
 
     X_train1, y_train1 = pruneDF_treatment_trail_plate_well(df_train_V1)
     X_train2, y_train2 = pruneDF_treatment_trail_plate_well(df_train_V2)
@@ -251,30 +252,62 @@ def test_LDA_Sklearn_split_treatment_dimension():
     df_test = compute_mean_of_group_size_on_treatment(dfc.loc[dfc["trial"].isin(['V4'])], group_size)
     X_test, y_test = pruneDF_treatment_trail_plate_well(df_test)
 
+
+    X_V1 = []
+    X_V2 = []
+    X_V3 = []
+    X_V4 = []
+
     #for dim in [2, 4, 5, 6, 7, 8]:
     #for dim in [2]:
     #for kern in kernel:
-    for gamma in [0.1, 1, 10, 100, 500, 1000, 1e4, 1e5, 1e6, 1e7]:
+    #for gamma in [10, 100, 500, 1000, 5000, 1e4, 1e5, 1e6, 1e7]:
+    for gamma in [1, 1e4]:
     #for degree in [2,3,5,7,8,9]:
-        lda = SCA(n_components=2, kernel=kern, gamma=gamma)
+        if method == "sca-DomainAdaption" or method=="sca-DomainGeneralization":
+            alg = SCA2(n_components=2, kernel=kern, gamma=gamma)
+        elif method == "kda":
+            alg = MyKerneLDA(n_components=None, kernel=kern, degree=degree)
+        #elif method == "pca":
+            #alg = MyKernePCA(n_components=None, kernel=kern, degree=degree)
+
+        alg.name
+
+        #lda = SCA(n_components=2, kernel=kern, gamma=gamma)
         #lda = MyKerneLDA(n_components=None, kernel=kern, degree=degree)
         #lda = KDA(200, kernel=kern)
 
-        print("kernel ", kern)
 
-        #model = lda.fitDICA([X_train1, X_train2, X_train3], [y_train1, y_train2, y_train3])
-        model = lda.fit([X_train1, X_train2, X_train3], [y_train1, y_train2, y_train3], [X_test])
-        x_sk = model.transform(X_test)
-        X_list.append(x_sk)
-        #y.append(model.predict(X_test.to_numpy()))
+        if method == "sca-DomainAdaption":
+            model = alg.fit([X_train1, X_train2, X_train3], [y_train1, y_train2, y_train3], [X_test])
+        elif method == "sca-DomainGeneralization":
+            model = alg.fit([X_train1, X_train2, X_train3], [y_train1, y_train2, y_train3])
+        elif method == "kda":
+            X_train = np.concaternate((X_train1, X_train2, X_train3))
+            y_train = np.concaternate((X_train1, X_train2, X_train3))
+            model = alg.fit(X_train, y_train)
+
+        xV4 = model.transform(X_test)
+        xV1 = model.transform(X_train1)
+        xV2 = model.transform(X_train2)
+        xV3 = model.transform(X_train3)
+
+        reducer = umap.UMAP()
+        xV4 = reducer.fit_transform(xV4)
+        xV1 = reducer.fit_transform(xV1)
+        xV2 = reducer.fit_transform(xV2)
+        xV3 = reducer.fit_transform(xV3)
+
+
+
+        X_V4.append(xV4)
+        X_V1.append(xV1)
+        X_V2.append(xV2)
+        X_V3.append(xV3)
+
         y.append(y_test)
         #titles.append("K-LDA - Degree {1} - Train Merge {0} - Kernel {2}\n".format(group_size, degree, kern, ))
         titles.append("K-LDA - Gamma {1} - Test Merge {0} - Kernel {2}\n ".format(group_size, gamma, kern))
-        print("x_sk shape ", x_sk.shape)
-
-        #X_list.append(x_sk)
-        #y.append(y_test)
-        #titles.append("LDA - Dimension {1} - Test Original Merge {0} ".format(group_size, dim))
 
         # AC_train = model.score(X_train, y_train)
         # print(f'{AC_train=}')
@@ -282,9 +315,12 @@ def test_LDA_Sklearn_split_treatment_dimension():
         # print(f'{AC_test=}')
 
     print(len(X_list))
+    titles = [""]
     #Plotter().plotUmap_multiple(X_list , y, titles, [inv_map]*len(X_list))
     # Plotter().scatter(X_list[0], y, titles[0], inv_map)
-    Plotter().plotScatter_multiple(X_list, y, titles, [inv_map] * len(X_list))
+    #Plotter().plotScatter_multiple(X_V4, y, titles, [inv_map] * len(X_V4))
+    Plotter().plotScatter_multipleDomains([X_V1, X_V2, X_V3], [y_train1, y_train2, y_train3], titles, [inv_map]*3, title_fig="Train - {1} - {0}".format(kernel, alg.name))
+
     # Plotter().plotUmap(x_sk, y, "PCA Kernel {3} - Dimension {2} - Merge {0} samples {1}".format(group_size, variant[variant_num], dim, kern), inv_map, self.writeToSVG)
     plt.figtext(0.5, 0.01, "Scatter Plot\nDimension of train data: rows: {0}; features: {1}\n sample: {2}".format(X_train.shape[0], X_test.shape[1], data_name), wrap=True, horizontalalignment='center', fontweight='bold')
     plt.show()

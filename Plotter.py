@@ -392,6 +392,7 @@ class Plotter:
         spalten = max( math.ceil(len(domains)**0.5), 2)
         zeilen = math.ceil(len(domains) / spalten)
         print("spalten ", spalten, " zeilen ", zeilen)
+        print("len(domains) ", len(domains), " len(class) ", len(domainClasses), " titles ", len(title_), " label ", len(labels_))
 
         fig, ax = plt.subplots(zeilen, spalten, figsize=(20, 10))
         i0 = 0

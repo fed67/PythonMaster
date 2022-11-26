@@ -354,30 +354,14 @@ class SCA(KernelClass):
 
     def transform(self, X: np.array):
 
-        print("X.shape ", X.shape)
-
         km = self.K_t(self.S_all, [X])
         Lambda = np.diag(np.power(self.eigenvalues, (-0.5)))
-
-        print("gamma ", self.gamma)
-        # print("km ", km)
-        # print("lm ", self.lm)
-        print("self.km")
-        self.printMatrix(self.km)
-        print("self.lm")
-        self.printMatrix(self.lm)
-        print("km.T")
-        self.printMatrix(km.T)
-        print("B_star ", self.B_star)
-        print("km B ", (km.T).dot(self.B_star))
+        #self.printMatrix(self.lm)
 
         # Zt = km.T.dot(self.B_star).dot(np.linalg.inv(self.Delta) ** (0.5))
         Zt = (km.T).dot(self.B_star).dot(Lambda)
 
-        print("(km.T).dot(self.B_star) max ", np.amax((km.T).dot(self.B_star)), " min ",
-              np.amin((km.T).dot(self.B_star)))
-        print("Zt max ", np.amax(Zt), " min ", np.amin(Zt))
-
+        #print("Zt max ", np.amax(Zt), " min ", np.amin(Zt))
         if np.iscomplex(Zt).any():
             raise Exception("Error result is complex")
 
@@ -442,6 +426,7 @@ class SCA2(KernelClass):
         self.remove_inf = False
         self.delta = delta
         self.beta = beta
+        self.name="SCA"
 
     # compute the kernel with two input kernels
     def K_t(self, Su, St):  # n, m shaped; m features
@@ -641,6 +626,10 @@ class SCA2(KernelClass):
             raise Exception("error need to be list {0} {1}".format(isinstance(Su, list), isinstance(Su_y, list)))
 
         #print("lenght ", len(Su), " ", len(Su_y))
+        if St != []:
+            self.name = "SCA DA"
+        else:
+            self.name ="SCA DG"
         X = Su[0]
         for xi in Su[1:]:
             X = np.concatenate((X, xi), axis=0)
