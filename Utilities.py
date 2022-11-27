@@ -36,7 +36,7 @@ def get_unique(v):
 
     return list(output)
 
-def pruneDF_treatment_trail_plate_well(df):
+def pruneDF_treatment_trail_plate_well(df, centerData=False):
 
     if 'trial' in df:
         df = df.drop('trial', axis=1)
@@ -59,9 +59,11 @@ def pruneDF_treatment_trail_plate_well(df):
         if X[col].dtype == int or X[col].dtype == np.compat.long:
             X_new[col] = X_new[col].astype(float)
 
-    #scaler = StandardScaler()
-    #X = scaler.fit_transform(X)
-    X = X_new.to_numpy()
+    if centerData:
+        scaler = StandardScaler()
+        X = scaler.fit_transform(X_new)
+    else:
+        X = X_new.to_numpy()
 
     return X, y
 

@@ -412,7 +412,7 @@ class SCA(KernelClass):
 
 class SCA2(KernelClass):
     def __init__(self, n_components, kernel, gamma: float = 1.0, degree: float = 1.0, delta: float = 1.0,
-                 beta: float = 0.5):
+                 beta: float = 1.0):
         super().__init__()
 
         self.n_components = n_components
@@ -627,9 +627,9 @@ class SCA2(KernelClass):
 
         #print("lenght ", len(Su), " ", len(Su_y))
         if St != []:
-            self.name = "SCA DA"
+            self.name = "SCA DomainAdaption"
         else:
-            self.name ="SCA DG"
+            self.name ="SCA DomainGeneralization"
         X = Su[0]
         for xi in Su[1:]:
             X = np.concatenate((X, xi), axis=0)

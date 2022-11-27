@@ -4,6 +4,7 @@ from sklearn.manifold import *
 import numpy as np
 from Utilities import *
 from matplotlib.colors import ListedColormap, BoundaryNorm
+import matplotlib.patches as mpatches
 
 import umap
 from sklearn.preprocessing import StandardScaler
@@ -12,7 +13,7 @@ from sklearn.preprocessing import StandardScaler
 class Plotter:
 
     myColors = ['r', 'g', 'b', 'c', "olive", "gold", "teal", "darkviolet", 'pink', 'grey']
-    myMarker = ['o', 'v', '*', 'p', 'h', 'X', 'd', '<']
+    myMarker = ['o', 'v', '*', '1', 'P', 'p', 'h', 'X', 'd', '<']
 
     def tsne(cls, A, y):
         rng = RandomState(0)
@@ -403,11 +404,6 @@ class Plotter:
             #print("domainplot")
             #print(domainplot)
             for i,domain in enumerate(domainplot):
-
-                #print("domain ", type(domain), " i ", i)
-                #if not isinstance(np.array, domain):
-                #    raise Exception("Error each domain must be a numpy array but it is {0}\n".format(type(domain)))
-
                 if domain is None or domain.size == 0:
                     continue
 
@@ -416,8 +412,12 @@ class Plotter:
                 y = dC[i]
                 #print("y.shape ", y.shape)
                 #print("domain.shape ", domain.shape)
-                for c in unique:
 
+                #for c in unique:
+                plts = []
+                for ic in range(len(unique)):
+
+                    c = unique[ic]
                     elx = domain[ c == y, 0]
                     ely = domain[c == y, 1]
                     label=labels_[dpi][c]+" D"+str(i)
@@ -425,20 +425,40 @@ class Plotter:
                     #label = {}
                     #for key, value in labels_[dpi][c].items():
                     #    label[key] = value+" Domain "+str(i)
-
+                    #print("plotId ", dpi, " domain ", i, " elx ", elx.shape, " ely ", ely.shape)
                     if zeilen > 1:
                         ax[i0, j0].scatter(x=elx, y=ely, c=cls.myColors[c], label=label, marker=cls.myMarker[i], alpha=0.4)
                         ax[i0, j0].set_title(title_[dpi])
-                        lgd = ax[i0, j0].legend(bbox_to_anchor=(1.1, 1.05))
+                        #lgd = ax[i0, j0].legend(bbox_to_anchor=(1.1, 1.05))
                     else:
                         ax[j0].scatter(x=elx, y=ely, c=cls.myColors[c], label=label, marker=cls.myMarker[i], alpha=0.4)
                         ax[j0].set_title(title_[dpi])
-                        lgd = ax[j0].legend(bbox_to_anchor=(1.1, 1.05))
+
+
+                #red_patch = mpatches.Patch(color='red', label='The red data')
+                #ax[j0].scatter(x=[0], y=[0], c='red', label="cross", alpha=0.0)
+
+            if zeilen > 1:
+                axis = ax[i0, j0]
+            else:
+                axis = ax[j0]
+
+            unique = np.unique( dC[i] )
+            patches = []
+            for ic in unique:
+                c = unique[ic]
+                label = labels_[dpi][c]
+            #    #plots.append(ax[j0].scatter(x=[], y=[], c=cls.myColors[c], label=label, alpha=1.0) )
+                patches.append(mpatches.Patch(color=cls.myColors[c], label=label, alpha=0.4))
+            for i, _ in enumerate(domainplot):
+                patches.append( axis.scatter( [], [], color='black', marker=cls.myMarker[i], label="Domain "+str(i), alpha=0.4) )
+            lgd = axis.legend(handles=patches, bbox_to_anchor=(1.1, 1.05))
 
             j0 = j0 + 1
             if j0 == spalten:
-                i0 = i0 + 1
                 j0 = 0
+                i0 = i0 + 1
+
         fig.suptitle(title_fig)
         fig.tight_layout()
 
