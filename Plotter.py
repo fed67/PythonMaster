@@ -331,7 +331,7 @@ class Plotter:
         ax.set_xlabel("x")
         ax.set_ylabel("y")
 
-    def plotScatter_multiple(cls, dfs: list[np.ndarray], classes: list[np.ndarray], titles: list[str], labels=[], markerId=0, title_fig=""):
+    def plotScatter_multiple(cls, dfs: list[np.ndarray], classes: list[np.ndarray], titles: list[str], labels=[], markerId=0, title_fig="", path="graphics/"):
         import math
         print("len df ", len(dfs), " classes ", len(classes), " titles ", len(titles))
 
@@ -386,8 +386,16 @@ class Plotter:
                 j0 = 0
         fig.suptitle(title_fig)
         fig.tight_layout()
+        currentDir = os.getcwd()
+        #dir_name = currentDir+"/graphics/"
+        #plt.rcParams["savefig.directory"] = os.chdir(os.path.dirname(dir_name))
 
-    def plotScatter_multipleDomains(cls, domains, domainClasses =[], title_=[], labels_=[], title_fig=""):
+        s = path + title_fig + '.svg'
+        print("title fig ", title_fig)
+        print("s ", s)
+        plt.savefig(s)
+
+    def plotScatter_multipleDomains(cls, domains, domainClasses =[], title_=[], labels_=[], title_fig="", path="graphics/"):
         import math
 
         spalten = max( math.ceil(len(domains)**0.5), 2)
@@ -461,6 +469,8 @@ class Plotter:
 
         fig.suptitle(title_fig)
         fig.tight_layout()
+        s = path + title_fig+'.svg'
+        plt.savefig(fname=s)
 
 def plot_unsupervised_umap_tsne_mds(cls, df, color, titles=[], label=[], title_fig="", write_to_svg=False):
     import math

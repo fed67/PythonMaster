@@ -180,7 +180,7 @@ class KernelAlgorithms(KernelClass):
         self.classes = np.unique(y)
 
         if self.n_components is None:
-            self.n_components = m-1
+            self.n_components = len(self.classes)-1
 
         self.n_components = min(len(self.classes) - 1, self.n_components, m)
 
