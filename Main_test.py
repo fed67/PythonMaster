@@ -1248,13 +1248,14 @@ def testIris2():
     for gamma in [0.008, 0.01, g, 0.02, 0.03, 0.08, 0.1, 0.3, 0.5, 1.0, 10.0]:
     #for gamma in [0.1, 0.2]:
         #lda = MyKerneLDA(n_components=2, kernel=kernel, gamma=gamma)
-        lda = MyKernelPCA(n_components=2, kernel=kernel, gamma=gamma)
+        #lda = MyKernelPCA(n_components=2, kernel=kernel, gamma=gamma)
+        lda = SCA2(n_components=2, kernel=kernel, gamma=gamma)
 
         title_lda.append("gamma - {0}".format(gamma))
 
-        model = lda.fit(data.data[0], data.target[0])
+        #model = lda.fit(data.data[0], data.target[0])
         #model = lda.fit( [data.data[0]], [data.target[0]], [data.data[1]])
-        #model = sca.fit([data.data[0]], [data.target[0]])
+        model = lda.fit([data.data[0]], [data.target[0]])
 
         x_sca_train.append( model.transform(data.data[0]) )
         x_sca_test.append(model.transform(data.data[1]))
