@@ -433,7 +433,7 @@ class Plotter:
                     if domainNames is None:
                         label=labels_[dpi][c]+" D"+str(i)
                     else:
-                        label = labels_[dpi][c] + " " + domainNames[dpi]
+                        label = labels_[dpi][c] + " " + domainNames[i]
                     #print(labels_[dpi][c])
                     #label = {}
                     #for key, value in labels_[dpi][c].items():

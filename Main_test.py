@@ -1279,13 +1279,13 @@ def testIris2():
     plt.show()
 
 
-def testDataSets(method="sca-DomainAdaption", beta=1.0, delta=1.0):
+def testDataSets(method="sca-DomainAdaption", beta=1.0, delta=1.0, n=10):
     matplotlib.use('Agg')
     np.random.seed(20)
 
-    data = Gaussian(n=10)
+    data = Gaussian(n=n)
     #data.init_twoDomains2(n=100)
-    data.twoDomains2_roate(n=20)
+    data.twoDomains2_roate(n=n)
     #data.init_threeDomains2(n=100)
 
     #X = np.concatenate( (data.data[0], data.data[1]), axis=0)
