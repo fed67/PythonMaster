@@ -331,13 +331,14 @@ class Plotter:
         ax.set_xlabel("x")
         ax.set_ylabel("y")
 
-    def plotScatter_multiple(cls, dfs: list[np.ndarray], classes: list[np.ndarray], titles: list[str], labels=[], markerId=0, title_fig="", path="graphics/"):
+    def plotScatter_multiple(cls, dfs: list[np.ndarray], classes: list[np.ndarray], titles: list[str], labels=[], markerId=0, title_fig="", path="graphics/", spalten=None):
         import math
         print("len df ", len(dfs), " classes ", len(classes), " titles ", len(titles))
 
         d = math.ceil(np.sqrt(len(dfs)))
 
-        spalten = max(d, 2)
+        if spalten is None:
+            spalten = max(d, 2)
         zeilen = math.ceil(len(dfs) / spalten)
         #print("zeilen ", zeilen)
         #print("spalten ", spalten)
@@ -395,10 +396,11 @@ class Plotter:
         print("s ", s)
         plt.savefig(s)
 
-    def plotScatter_multipleDomains(cls, domains, domainClasses =[], title_=[], labels_=[], title_fig="", path="graphics/"):
+    def plotScatter_multipleDomains(cls, domains, domainClasses =[], title_=[], labels_=[], title_fig="", path="graphics/", spalten=None, domainNames=None):
         import math
 
-        spalten = max( math.ceil(len(domains)**0.5), 2)
+        if spalten is None:
+            spalten = max( math.ceil(len(domains)**0.5), 2)
         zeilen = math.ceil(len(domains) / spalten)
         print("spalten ", spalten, " zeilen ", zeilen)
         print("len(domains) ", len(domains), " len(class) ", len(domainClasses), " titles ", len(title_), " label ", len(labels_))
@@ -428,7 +430,10 @@ class Plotter:
                     c = unique[ic]
                     elx = domain[ c == y, 0]
                     ely = domain[c == y, 1]
-                    label=labels_[dpi][c]+" D"+str(i)
+                    if domainNames is None:
+                        label=labels_[dpi][c]+" D"+str(i)
+                    else:
+                        label = labels_[dpi][c] + " " + domainNames[dpi]
                     #print(labels_[dpi][c])
                     #label = {}
                     #for key, value in labels_[dpi][c].items():
