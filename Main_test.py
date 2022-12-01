@@ -1,19 +1,6 @@
 import unittest
 
 import numpy as np
-import pandas as pd
-from sklearn.datasets import load_digits
-from sklearn.model_selection import train_test_split
-
-import Utilities
-from Plotter import Plotter
-from ClusteringFunctions import *
-from Utilities import *
-
-import matplotlib.pyplot as plt
-from sklearn.preprocessing import *
-
-from dml import *
 import DimensionReduction
 from sklearn.discriminant_analysis import *
 from sklearn.decomposition import *
