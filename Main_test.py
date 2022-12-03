@@ -11,7 +11,7 @@ from DomainGeneralization import *
 
 def test_Kernel_LDA_Sklearn_MaxLarge_split_treatment_kernels():
     data_name = "sample_130922_105630_n_40000_median.csv"
-    #data_name = "sample_130922_105529_n_10000_median.csv"
+    # data_name = "sample_130922_105529_n_10000_median.csv"
     treatment = "one_padded_zero_treatments.csv"
     path = "../../Data/kardio_data/"
 
@@ -30,13 +30,13 @@ def test_Kernel_LDA_Sklearn_MaxLarge_split_treatment_kernels():
 
     titles = []
     Xs = []
-    y= []
+    y = []
     dim = 2
     kern = "poly"
-    #for kern in kernels:
-    #for kern in ["poly"]:
+    # for kern in kernels:
+    # for kern in ["poly"]:
     for degree in [3, 5, 8]:
-        #lda = KDA(kernel=kern, n_components=2)
+        # lda = KDA(kernel=kern, n_components=2)
         lda = MyKerneLDA(kernel=kern, n_components=None, degree=degree)
         # lda = KDA(kernel=kern)
 
@@ -88,7 +88,8 @@ def test_Kernel_LDA_Sklearn_MaxLarge_split_treatment_kernels():
             y.append(y_sk)
 
             titles.append("UMAP - Kernel LDA, Kernel {1} - degree {2} Split  {0}".format(group_size, kern, degree))
-            titles.append("UMAP - Kernel LDA Prediction, Kernel {1} - degree {2} Split  {0}".format(group_size, kern, degree))
+            titles.append(
+                "UMAP - Kernel LDA Prediction, Kernel {1} - degree {2} Split  {0}".format(group_size, kern, degree))
 
             # score_classification(y_sk, y_test)
 
@@ -97,15 +98,16 @@ def test_Kernel_LDA_Sklearn_MaxLarge_split_treatment_kernels():
             AC_test = lda.score(X_test.to_numpy(), y_test)
             # print(f'{AC_test=}')
 
-            #x_train = lda.fit_transform(X_train, y_train)
-            #x_test = lda.fit_transform(X_test, y_test)
+            # x_train = lda.fit_transform(X_train, y_train)
+            # x_test = lda.fit_transform(X_test, y_test)
 
-    #Plotter().plotUmap_multiple([x_sk, x_sk], [y_test, y_sk], titles, [inv_map] * 2)
+    # Plotter().plotUmap_multiple([x_sk, x_sk], [y_test, y_sk], titles, [inv_map] * 2)
     Plotter().plotScatter_multiple(Xs, y, titles, [inv_map] * len(Xs))
     # Plotter().plotUmap(x_sk, y_test, "LDA Merge {0} samples {1}, {2} Split in Train (V1, V2, V3) and Test (V4) set".format(group_size, variant[variant_num], self.data_name), inv_map, self.writeToSVG)
     plt.figtext(0.5, 0.01,
                 "Dimension of train data: rows: {0}; features: {1}, Dimension of test data: rows: {2}; features: {3} \n data {4}\n AC_train {5} AC_Test {6}".format(
-                    X_train.shape[0], X_train.shape[1], X_test.shape[0], X_test.shape[1], data_name, AC_train, AC_test), wrap=True,
+                    X_train.shape[0], X_train.shape[1], X_test.shape[0], X_test.shape[1], data_name, AC_train, AC_test),
+                wrap=True,
                 horizontalalignment='center', fontweight='bold')
     plt.show()
 
@@ -113,7 +115,7 @@ def test_Kernel_LDA_Sklearn_MaxLarge_split_treatment_kernels():
 def test_KernelPCA_Sklearn_split_treatment_dimension():
     cwd = os.getcwd()
     print("Current working directory: {0}".format(cwd))
-    #data_name = "sample_130922_105529_n_10000_median.csv"
+    # data_name = "sample_130922_105529_n_10000_median.csv"
     data_name = "sample_130922_105630_n_40000_median.csv"
     treatment = "one_padded_zero_treatments.csv"
     path = "../../Data/kardio_data/"
@@ -195,21 +197,25 @@ def test_KernelPCA_Sklearn_split_treatment_dimension():
                 wrap=True, horizontalalignment='center', fontweight='bold')
     plt.show()
 
+
 import matplotlib
-def test_LDA_Sklearn_split_treatment_dimension(method="kda", centering=True, beta=1.0, delta=1.0): #sca-DomainAdaption, sca-DomainGeneralization, kpca
+
+
+def test_LDA_Sklearn_split_treatment_dimension(method="kda", centering=True, beta=1.0,
+                                               delta=1.0):  # sca-DomainAdaption, sca-DomainGeneralization, kpca
     matplotlib.use('Agg')
     cwd = os.getcwd()
     print("Current working directory: {0}".format(cwd))
-    #data_name = "sample_130922_105529_n_10000_median.csv"
+    # data_name = "sample_130922_105529_n_10000_median.csv"
     data_name = "sample_130922_105630_n_40000_median.csv"
     treatment = "one_padded_zero_treatments.csv"
-    #path = "../../Data/kardio_data/"
+    # path = "../../Data/kardio_data/"
     path = "../Data/"
 
     df_data = pd.read_csv(path + data_name)
 
     variant = ["in groupBy treatment", "in groupBy treatment+trial"]
-    #kernel = ["linear", "poly", "rbf", "sigmoid", "cosine"]
+    # kernel = ["linear", "poly", "rbf", "sigmoid", "cosine"]
     kernel = ["linear", "poly", "cosine"]
     group_size = 25
 
@@ -219,7 +225,7 @@ def test_LDA_Sklearn_split_treatment_dimension(method="kda", centering=True, bet
     degree = 3
     dim = 2
     kern = "rbf"
-    center=True
+    center = True
 
     _, dfc = get_table_with_class2(df_data, path + treatment)
 
@@ -244,7 +250,6 @@ def test_LDA_Sklearn_split_treatment_dimension(method="kda", centering=True, bet
     df_test = compute_mean_of_group_size_on_treatment(dfc.loc[dfc["trial"].isin(['V4'])], group_size)
     X_test, y_test = pruneDF_treatment_trail_plate_well(df_test, centering)
 
-
     X_V1_list = []
     X_V2_list = []
     X_V3_list = []
@@ -258,16 +263,16 @@ def test_LDA_Sklearn_split_treatment_dimension(method="kda", centering=True, bet
     x_all = []
     y_all = []
 
-    #for dim in [2, 4, 5, 6, 7, 8]:
-    #for dim in [2]:
-    #for kern in kernel:
+    # for dim in [2, 4, 5, 6, 7, 8]:
+    # for dim in [2]:
+    # for kern in kernel:
     for gamma in [10, 100, 500, 1000, 5000, 1e4, 1e5, 1e6]:
-    #for gamma in [0.1, 1, 10, 100, 300, 500, 1000, 5000,
-    #              7000, 1e4, 5e4, 1e5, 5e5, 1e6, 5e6, 1e7]:
-    #for gamma in [10, 100, 500, 1000, 5000]:
-    #for gamma in [1, 1e4]:
-    #for degree in [2,3,5,7,8,9]:
-        if method == "sca-DomainAdaption" or method=="sca-DomainGeneralization":
+        # for gamma in [0.1, 1, 10, 100, 300, 500, 1000, 5000,
+        #              7000, 1e4, 5e4, 1e5, 5e5, 1e6, 5e6, 1e7]:
+        # for gamma in [10, 100, 500, 1000, 5000]:
+        # for gamma in [1, 1e4]:
+        # for degree in [2,3,5,7,8,9]:
+        if method == "sca-DomainAdaption" or method == "sca-DomainGeneralization":
             alg = SCA2(n_components=2, kernel=kern, gamma=gamma, beta=beta, delta=delta)
             name = method + " beta: " + str(beta) + " delta: " + str(delta)
         elif method == "kda":
@@ -280,7 +285,7 @@ def test_LDA_Sklearn_split_treatment_dimension(method="kda", centering=True, bet
             alg = PCA()
             name = "PCA"
         elif method == "lda":
-            #alg = LinearDiscriminantAnalysis(n_components=None)
+            # alg = LinearDiscriminantAnalysis(n_components=None)
             alg = LinearDiscriminantAnalysis(solver="svd")
             name = "LDA"
 
@@ -288,7 +293,7 @@ def test_LDA_Sklearn_split_treatment_dimension(method="kda", centering=True, bet
             model = alg.fit([X_train1, X_train2, X_train3], [y_train1, y_train2, y_train3], [X_test])
         elif method == "sca-DomainGeneralization":
             model = alg.fit([X_train1, X_train2, X_train3], [y_train1, y_train2, y_train3])
-        elif method == "kda" or method == "lda" :
+        elif method == "kda" or method == "lda":
             X_train = np.concatenate((X_train1, X_train2, X_train3))
             y_train = np.concatenate((y_train1, y_train2, y_train3))
             model = alg.fit(X_train, y_train)
@@ -324,8 +329,8 @@ def test_LDA_Sklearn_split_treatment_dimension(method="kda", centering=True, bet
         y_all.append([y_train1, y_train2, y_train3, y_test])
 
         y.append(y_test)
-        #titles.append("K-LDA - Degree {1} - Train Merge {0} - Kernel {2}\n".format(group_size, degree, kern, ))
-        #titles.append("K-LDA - Gamma {1} - Test Merge {0} - Kernel {2}\n ".format(group_size, gamma, kern))
+        # titles.append("K-LDA - Degree {1} - Train Merge {0} - Kernel {2}\n".format(group_size, degree, kern, ))
+        # titles.append("K-LDA - Gamma {1} - Test Merge {0} - Kernel {2}\n ".format(group_size, gamma, kern))
         titles.append("Gamma {1} - Test Merge {0} - Kernel {2}\n ".format(group_size, gamma, kern))
 
         # AC_train = model.score(X_train, y_train)
@@ -334,36 +339,46 @@ def test_LDA_Sklearn_split_treatment_dimension(method="kda", centering=True, bet
         # print(f'{AC_test=}')
 
     reducer = umap.UMAP()
-    original_all = [ reducer.fit_transform(X_train1) ]
+    original_all = [reducer.fit_transform(X_train1)]
     original_all.append(reducer.fit_transform(X_train2))
     original_all.append(reducer.fit_transform(X_train3))
     original_all.append(reducer.fit_transform(X_test))
 
-    original_all_y = [ y_train1, y_train2, y_train3, y_test ]
+    original_all_y = [y_train1, y_train2, y_train3, y_test]
 
     print(len(X_list))
     print(len(X_V4_list))
-    #Plotter().plotUmap_multiple(X_list , y, titles, [inv_map]*len(X_list))
+    # Plotter().plotUmap_multiple(X_list , y, titles, [inv_map]*len(X_list))
     # Plotter().scatter(X_list[0], y, titles[0], inv_map)
-    Plotter().plotScatter_multiple([*X_V4_list[0:8], X_test], [*y[0:8], y_test], [*titles[0:8], "Original"], [inv_map] * (len(X_V4_list)+1), title_fig="{0} Center {1} V4-Only".format(name, center))
-    #Plotter().plotScatter_multiple([*X_V4_list[8:16], X_test], [*y[8:16], y_test], [*titles[8:16], "Original"], [inv_map] * len(X_V4_list), title_fig="{0} Center {1} V4-Only2".format(name, center))
-    #Plotter().plotScatter_multipleDomains( x_train_list, y_train_list, titles, [inv_map]*len(y_train_list), title_fig="Train - {1} - {0}".format(kernel, alg.name))
-    #Plotter().plotScatter_multipleDomains(x_test_list, y_test_list, titles, [inv_map] * len(y_test_list), title_fig="Test - {1} - {0}".format(kernel, alg.name))
+    Plotter().plotScatter_multiple([*X_V4_list[0:8], X_test], [*y[0:8], y_test], [*titles[0:8], "Original"],
+                                   [inv_map] * (len(X_V4_list) + 1),
+                                   title_fig="{0} Center {1} V4-Only".format(name, center))
+    # Plotter().plotScatter_multiple([*X_V4_list[8:16], X_test], [*y[8:16], y_test], [*titles[8:16], "Original"], [inv_map] * len(X_V4_list), title_fig="{0} Center {1} V4-Only2".format(name, center))
+    # Plotter().plotScatter_multipleDomains( x_train_list, y_train_list, titles, [inv_map]*len(y_train_list), title_fig="Train - {1} - {0}".format(kernel, alg.name))
+    # Plotter().plotScatter_multipleDomains(x_test_list, y_test_list, titles, [inv_map] * len(y_test_list), title_fig="Test - {1} - {0}".format(kernel, alg.name))
 
-    Plotter().plotScatter_multipleDomains([*x_all[0:8], original_all] , [*y_all[0:8], original_all_y], [*titles[0:8], "Original"], [inv_map] * (len(y_train_list)+1), title_fig="{1}-{0}-Center {2}- Train V1,V2,V3 Test V4 ".format(kern, name, center), domainNames=["V1", "V2", "V3", "V4"])
-    plt.figtext(0.5, 0.01, "UMAP Plot\nDimension of train data: rows: {0}; features: {1}\n sample: {2}".format(X_train.shape[0], X_test.shape[1], data_name), wrap=True, horizontalalignment='center', fontweight='bold')
+    Plotter().plotScatter_multipleDomains([*x_all[0:8], original_all], [*y_all[0:8], original_all_y],
+                                          [*titles[0:8], "Original"], [inv_map] * (len(y_train_list) + 1),
+                                          title_fig="{1}-{0}-Center {2}- Train V1,V2,V3 Test V4 ".format(kern, name,
+                                                                                                         center),
+                                          domainNames=["V1", "V2", "V3", "V4"])
+    plt.figtext(0.5, 0.01,
+                "UMAP Plot\nDimension of train data: rows: {0}; features: {1}\n sample: {2}".format(X_train.shape[0],
+                                                                                                    X_test.shape[1],
+                                                                                                    data_name),
+                wrap=True, horizontalalignment='center', fontweight='bold')
 
-
-    #Plotter().plotScatter_multipleDomains([*x_all[8:16], original_all], [*y_all[8:16], original_all_y], [*titles[8:16], "Original"], [inv_map] * len(y_train_list), title_fig="{1}-{0}-Center {2}- Train V1,V2,V3 Test V4 -2".format(kern, name, center))
+    # Plotter().plotScatter_multipleDomains([*x_all[8:16], original_all], [*y_all[8:16], original_all_y], [*titles[8:16], "Original"], [inv_map] * len(y_train_list), title_fig="{1}-{0}-Center {2}- Train V1,V2,V3 Test V4 -2".format(kern, name, center))
     # Plotter().plotUmap(x_sk, y, "PCA Kernel {3} - Dimension {2} - Merge {0} samples {1}".format(group_size, variant[variant_num], dim, kern), inv_map, self.writeToSVG)
-    #plt.figtext(0.5, 0.01, "UMAP Plot\nDimension of train data: rows: {0}; features: {1}\n sample: {2}".format(X_train.shape[0], X_test.shape[1], data_name), wrap=True, horizontalalignment='center', fontweight='bold')
+    # plt.figtext(0.5, 0.01, "UMAP Plot\nDimension of train data: rows: {0}; features: {1}\n sample: {2}".format(X_train.shape[0], X_test.shape[1], data_name), wrap=True, horizontalalignment='center', fontweight='bold')
     plt.show()
 
 
-def test_LDA_Sklearn_split_treatment_PCA(method="pca", centering=True): #sca-DomainAdaption, sca-DomainGeneralization, kpca
+def test_LDA_Sklearn_split_treatment_Linear(method="pca",
+                                            centering=True):  # sca-DomainAdaption, sca-DomainGeneralization, kpca
     cwd = os.getcwd()
     print("Current working directory: {0}".format(cwd))
-    #data_name = "sample_130922_105529_n_10000_median.csv"
+    # data_name = "sample_130922_105529_n_10000_median.csv"
     data_name = "sample_130922_105630_n_40000_median.csv"
     treatment = "one_padded_zero_treatments.csv"
     path = "../../Data/kardio_data/"
@@ -371,7 +386,7 @@ def test_LDA_Sklearn_split_treatment_PCA(method="pca", centering=True): #sca-Dom
     df_data = pd.read_csv(path + data_name)
 
     variant = ["in groupBy treatment", "in groupBy treatment+trial"]
-    #kernel = ["linear", "poly", "rbf", "sigmoid", "cosine"]
+    # kernel = ["linear", "poly", "rbf", "sigmoid", "cosine"]
     kernel = ["linear", "poly", "cosine"]
     group_size = 25
 
@@ -381,7 +396,7 @@ def test_LDA_Sklearn_split_treatment_PCA(method="pca", centering=True): #sca-Dom
     degree = 3
     dim = 2
     kern = "rbf"
-    center=True
+    center = True
 
     _, dfc = get_table_with_class2(df_data, path + treatment)
 
@@ -406,7 +421,6 @@ def test_LDA_Sklearn_split_treatment_PCA(method="pca", centering=True): #sca-Dom
     df_test = compute_mean_of_group_size_on_treatment(dfc.loc[dfc["trial"].isin(['V4'])], group_size)
     X_test, y_test = pruneDF_treatment_trail_plate_well(df_test, centering)
 
-
     X_V1_list = []
     X_V2_list = []
     X_V3_list = []
@@ -420,80 +434,71 @@ def test_LDA_Sklearn_split_treatment_PCA(method="pca", centering=True): #sca-Dom
     x_all = []
     y_all = []
 
-    #for dim in [2, 4, 5, 6, 7, 8]:
-    #for dim in [2]:
-    #for kern in kernel:
-    #for gamma in [10, 100, 500, 1000, 5000, 1e4, 1e5, 1e6, 1e7]:
-    for gamma in [0.1, 1, 10, 100, 300, 500, 1000, 5000,
-                  7000, 1e4, 5e4, 1e5, 5e5, 1e6, 5e6, 1e7]:
-    #for gamma in [10, 100, 500, 1000, 5000]:
-    #for gamma in [1, 1e4]:
-    #for degree in [2,3,5,7,8,9]:
-        if method == "kpca":
-            name = "K-PCA"
-            #alg = MyKernelPCA(n_components=None, kernel=kern, degree=degree)
-            alg = KernelPCA(kernel=kern, degree=degree)
-        elif method == "pca":
-            alg = PCA()
-            name = "PCA"
+    # for dim in [2, 4, 5, 6, 7, 8]:
+    if method == "lda":
+        name = "LDA"
+        # alg = MyKernelPCA(n_components=None, kernel=kern, degree=degree)
+        # alg = KernelPCA(kernel=kern, degree=degree)
+        alg = LinearDiscriminantAnalysis(solver="svd")
+    elif method == "pca":
+        alg = PCA()
+        name = "PCA"
 
-        #lda = SCA(n_components=2, kernel=kern, gamma=gamma)
-        #lda = MyKerneLDA(n_components=None, kernel=kern, degree=degree)
-        #lda = KDA(200, kernel=kern)
+    # lda = SCA(n_components=2, kernel=kern, gamma=gamma)
+    # lda = MyKerneLDA(n_components=None, kernel=kern, degree=degree)
+    # lda = KDA(200, kernel=kern)
 
+    if method == "pca":
+        X_train = np.concatenate((X_train1, X_train2, X_train3, X_test))
+        y_train = np.concatenate((y_train1, y_train2, y_train3, y_test))
+        model = alg.fit(X_train, y_train)
+    elif method == "lda":
+        X_train = np.concatenate((X_train1, X_train2, X_train3))
+        y_train = np.concatenate((y_train1, y_train2, y_train3))
+        model = alg.fit(X_train, y_train)
 
-        if method == "pca" or method == "kpca":
-            X_train = np.concatenate((X_train1, X_train2, X_train3, X_test))
-            y_train = np.concatenate((y_train1, y_train2, y_train3, y_test))
-            model = alg.fit(X_train, y_train)
+    xV1 = model.transform(X_train1)
+    xV2 = model.transform(X_train2)
+    xV3 = model.transform(X_train3)
+    xV4 = model.transform(X_test)
 
-        xV1 = model.transform(X_train1)
-        xV2 = model.transform(X_train2)
-        xV3 = model.transform(X_train3)
-        xV4 = model.transform(X_test)
+    V = model.fit_transform(X_train)
 
-        V = model.fit_transform(X_train)
-
-        print("contains NaN ", np.isnan(xV4).any())
-
-        reducer = umap.UMAP()
-        xV4 = reducer.fit_transform(xV4)
-        xV1 = reducer.fit_transform(xV1)
-        xV2 = reducer.fit_transform(xV2)
-        xV3 = reducer.fit_transform(xV3)
-        V = reducer.fit_transform(V)
-
-        X_V4_list.append(xV4)
-        X_V1_list.append(xV1)
-        X_V2_list.append(xV2)
-        X_V3_list.append(xV3)
-
-        x_test_list.append([xV4])
-        x_train_list.append(V)
-        x_all.append([xV1, xV2, xV3, xV4])
-
-        y_test_list.append(y_test)
-        y_train_list.append(y_train)
-        #y_train_list.append(y_test)
-        y_all.append([y_train1, y_train2, y_train3, y_test])
-
-        y.append([*y_train1, *y_train2, *y_train3, *y_test])
-        #titles.append("K-LDA - Degree {1} - Train Merge {0} - Kernel {2}\n".format(group_size, degree, kern, ))
-        #titles.append("K-LDA - Gamma {1} - Test Merge {0} - Kernel {2}\n ".format(group_size, gamma, kern))
-        titles.append("Gamma {1} - Test Merge {0} - Kernel {2}\n ".format(group_size, gamma, kern))
-
-        # AC_train = model.score(X_train, y_train)
-        # print(f'{AC_train=}')
-        # AC_test = model.score(X_test, y_test)
-        # print(f'{AC_test=}')
+    print("contains NaN ", np.isnan(xV4).any())
 
     reducer = umap.UMAP()
-    original_all = [ reducer.fit_transform(X_train1) ]
+    xV4 = reducer.fit_transform(xV4)
+    xV1 = reducer.fit_transform(xV1)
+    xV2 = reducer.fit_transform(xV2)
+    xV3 = reducer.fit_transform(xV3)
+    V = reducer.fit_transform(V)
+
+    X_V4_list.append(xV4)
+    X_V1_list.append(xV1)
+    X_V2_list.append(xV2)
+    X_V3_list.append(xV3)
+
+    x_test_list.append([xV4])
+    x_train_list.append(V)
+    x_all.append([xV1, xV2, xV3, xV4])
+
+    y_test_list.append(y_test)
+    y_train_list.append(y_train)
+    # y_train_list.append(y_test)
+    y_all.append([y_train1, y_train2, y_train3, y_test])
+
+    y.append([*y_train1, *y_train2, *y_train3, *y_test])
+    # titles.append("K-LDA - Degree {1} - Train Merge {0} - Kernel {2}\n".format(group_size, degree, kern, ))
+    # titles.append("K-LDA - Gamma {1} - Test Merge {0} - Kernel {2}\n ".format(group_size, gamma, kern))
+    titles.append("{1} Test Merge {0}\n ".format(group_size, name))
+
+    reducer = umap.UMAP()
+    original_all = [reducer.fit_transform(X_train1)]
     original_all.append(reducer.fit_transform(X_train2))
     original_all.append(reducer.fit_transform(X_train3))
     original_all.append(reducer.fit_transform(X_test))
 
-    original_all_y = [ y_train1, y_train2, y_train3, y_test ]
+    original_all_y = [y_train1, y_train2, y_train3, y_test]
 
     print(len(X_list))
     print("X_V4_list ", X_V4_list[0].shape)
@@ -501,23 +506,37 @@ def test_LDA_Sklearn_split_treatment_PCA(method="pca", centering=True): #sca-Dom
 
     print("x_train_list ", x_train_list[0].shape)
     print("y_train_list ", y_train_list[0].shape)
-    #Plotter().plotUmap_multiple(X_list , y, titles, [inv_map]*len(X_list))
+    # Plotter().plotUmap_multiple(X_list , y, titles, [inv_map]*len(X_list))
     # Plotter().scatter(X_list[0], y, titles[0], inv_map)
-    Plotter().plotScatter_multiple([*X_V4_list[0:8], X_test], [*y_test_list[0:8], y_test], [*titles[0:8], "Original"], [inv_map] * len(X_V4_list), title_fig="{0} Center {1} V4-Only".format(name, center))
-    Plotter().plotScatter_multiple([*X_V4_list[8:16], X_test], [*y_test_list[8:16], y_test], [*titles[0:8], "Original"], [inv_map] * len(X_V4_list), title_fig="{0} Center {1} V4-Only".format(name, center))
+    Plotter().plotScatter_multiple([*X_V4_list[0:8], X_test], [*y_test_list[0:8], y_test], [*titles[0:8], "Original"],
+                                   [inv_map] * len(X_V4_list), title_fig="{0} Center {1} V4-Only".format(name, center))
+    Plotter().plotScatter_multiple([*X_V4_list[8:16], X_test], [*y_test_list[8:16], y_test], [*titles[0:8], "Original"],
+                                   [inv_map] * len(X_V4_list), title_fig="{0} Center {1} V4-Only".format(name, center))
 
-    #Plotter().plotScatter_multiple([*x_train_list[8:16], X_train], [*y_train_list[8:16], y_train], [*titles[8:16], "Original"], [inv_map] * len(X_V4_list), title_fig="{0} V4-Only2".format(name))
-    #Plotter().plotScatter_multipleDomains( x_train_list, y_train_list, titles, [inv_map]*len(y_train_list), title_fig="Train - {1} - {0}".format(kernel, alg.name))
-    #Plotter().plotScatter_multipleDomains(x_test_list, y_test_list, titles, [inv_map] * len(y_test_list), title_fig="Test - {1} - {0}".format(kernel, alg.name))
+    # Plotter().plotScatter_multiple([*x_train_list[8:16], X_train], [*y_train_list[8:16], y_train], [*titles[8:16], "Original"], [inv_map] * len(X_V4_list), title_fig="{0} V4-Only2".format(name))
+    # Plotter().plotScatter_multipleDomains( x_train_list, y_train_list, titles, [inv_map]*len(y_train_list), title_fig="Train - {1} - {0}".format(kernel, alg.name))
+    # Plotter().plotScatter_multipleDomains(x_test_list, y_test_list, titles, [inv_map] * len(y_test_list), title_fig="Test - {1} - {0}".format(kernel, alg.name))
 
-    Plotter().plotScatter_multipleDomains([*x_all[0:8], original_all] , [*y_all[0:8], original_all_y], [*titles[0:8], "Original"], [inv_map] * len(y_train_list), title_fig="{1} {0} Center {2} - Train V1,V2,V3 Test V4 - 1".format(kern, name, center))
-    plt.figtext(0.5, 0.01, "UMAP Plot\nDimension of train data: rows: {0}; features: {1}\n sample: {2}".format(X_train.shape[0], X_test.shape[1], data_name), wrap=True, horizontalalignment='center', fontweight='bold')
+    Plotter().plotScatter_multipleDomains([*x_all[0:8], original_all], [*y_all[0:8], original_all_y],
+                                          [*titles[0:8], "Original"], [inv_map] * len(y_train_list),
+                                          title_fig="{1} {0} Center {2} - Train V1,V2,V3 Test V4 - 1".format(kern, name,
+                                                                                                             center))
+    plt.figtext(0.5, 0.01,
+                "UMAP Plot\nDimension of train data: rows: {0}; features: {1}\n sample: {2}".format(X_train.shape[0],
+                                                                                                    X_test.shape[1],
+                                                                                                    data_name), wrap=True,
+                horizontalalignment='center', fontweight='bold')
 
-
-    Plotter().plotScatter_multipleDomains([*x_all[8:16], original_all], [*y_all[8:16], original_all_y], [*titles[8:16], "Original"], [inv_map] * len(y_train_list), title_fig="{1} {0} Center {2} - Train V1,V2,V3 Test V4 -2".format(kern, name, center))
+    Plotter().plotScatter_multipleDomains([*x_all[8:16], original_all], [*y_all[8:16], original_all_y],
+                                          [*titles[8:16], "Original"], [inv_map] * len(y_train_list),
+                                          title_fig="{1} {0} Center {2} - Train V1,V2,V3 Test V4 -2".format(kern, name, center), domainNames=["V1", "V2", "V3", "V4"])
 
     # Plotter().plotUmap(x_sk, y, "PCA Kernel {3} - Dimension {2} - Merge {0} samples {1}".format(group_size, variant[variant_num], dim, kern), inv_map, self.writeToSVG)
-    plt.figtext(0.5, 0.01, "UMAP Plot\nDimension of train data: rows: {0}; features: {1}\n sample: {2}".format(X_train.shape[0], X_test.shape[1], data_name), wrap=True, horizontalalignment='center', fontweight='bold')
+    plt.figtext(0.5, 0.01,
+                "UMAP Plot\nDimension of train data: rows: {0}; features: {1}\n sample: {2}".format(X_train.shape[0],
+                                                                                                    X_test.shape[1],
+                                                                                                    data_name), wrap=True,
+                horizontalalignment='center', fontweight='bold')
     plt.show()
 
 
@@ -525,22 +544,19 @@ def test_iris():
     from sklearn.datasets import load_iris
 
     data = load_iris()
-    #data = load_digits()
+    # data = load_digits()
 
     indxA = np.arange(150)
     indx = np.random.choice(indxA, 10)
 
-    #X = data.data[indx]
-    #y = data.target[indx]
+    # X = data.data[indx]
+    # y = data.target[indx]
 
     X = data.data
     y = data.target
     y_max = np.max(np.unique(y))
-    print("y_max ", y_max )
+    print("y_max ", y_max)
     dataSetName = "iris"
-
-
-
 
     print("x shape ", X.shape)
 
@@ -548,11 +564,11 @@ def test_iris():
     res = []
     res_y = []
     titles = []
-    for kernel in ["linear"]: # "poly", "gauss"
-    #kernel = "gauss"
-    #for gamma in [0.01, 0.02, 0.05, 1, 1.4, 2]:
+    for kernel in ["linear"]:  # "poly", "gauss"
+        # kernel = "gauss"
+        # for gamma in [0.01, 0.02, 0.05, 1, 1.4, 2]:
         lda = SCA(n_components=2, kernel=kernel)
-        #lda.f = lda.f_gauss
+        # lda.f = lda.f_gauss
         lda.gamma = 1
 
         model = lda.fit([X.T], y)
@@ -561,18 +577,18 @@ def test_iris():
         res_y.append(y)
         titles.append("SCA - {0} - {1} ".format(kernel, dataSetName))
 
-        #model.computeClassifier(X, y)
-        #yp = lda.predict(X)
+        # model.computeClassifier(X, y)
+        # yp = lda.predict(X)
         yp = y
 
         print("iscomplex ", np.iscomplex(x_sk).any())
 
-        #x_sk2 = lda2.fit_transform(X.T,y)
+        # x_sk2 = lda2.fit_transform(X.T,y)
         print("x_sk ", x_sk.shape)
-        #print("x_sk2 ", x_sk2.shape)
+        # print("x_sk2 ", x_sk2.shape)
         print("X.shape ", X.shape)
 
-    #print("score ", lda.score(y, yp))
+    # print("score ", lda.score(y, yp))
 
     res.append(X)
     res_y.append(y)
@@ -581,24 +597,25 @@ def test_iris():
     for i in range(20):
         map[i] = str(i)
 
-    #Plotter().plotUmap_multiple([x_sk, x_sk2, X], [y]*3, ["Kernel LDA", "LDA", "Iris"], [{0:"0", 1:"1", 2:"2"}]*3)
-    #Plotter().plotScatter_multiple([x_sk, x_sk, x_sk2], [y, yp, y] , ["SCA", "Kernel LDA predict", "LDA"], [{0: "0", 1: "1", 2: "2"}] * 3)
-    #Plotter().plotScatter_multiple(res, res_y, titles, [map] * len(res))
-    #plt.show()
+    # Plotter().plotUmap_multiple([x_sk, x_sk2, X], [y]*3, ["Kernel LDA", "LDA", "Iris"], [{0:"0", 1:"1", 2:"2"}]*3)
+    # Plotter().plotScatter_multiple([x_sk, x_sk, x_sk2], [y, yp, y] , ["SCA", "Kernel LDA predict", "LDA"], [{0: "0", 1: "1", 2: "2"}] * 3)
+    # Plotter().plotScatter_multiple(res, res_y, titles, [map] * len(res))
+    # plt.show()
+
 
 from DataSets import *
 
-def testIris2():
 
+def testIris2():
     np.random.seed(20)
 
     data = Gaussian(n=10)
-    #data.init_twoDomains2(n=100)
+    # data.init_twoDomains2(n=100)
     data.twoDomains2_roate(n=50)
-    #data.init_threeDomains2(n=100)
+    # data.init_threeDomains2(n=100)
 
-    #X = np.concatenate( (data.data[0], data.data[1]), axis=0)
-    #y = np.concatenate( (data.target[0], data.target[1]), axis=0)
+    # X = np.concatenate( (data.data[0], data.data[1]), axis=0)
+    # y = np.concatenate( (data.target[0], data.target[1]), axis=0)
 
     X = data.data[0]
     y = data.target[0]
@@ -608,48 +625,52 @@ def testIris2():
     x_sca_test = []
     x_sca_train = []
     title_sca = []
-    #kernel = "linear"
+    # kernel = "linear"
     kernel = "rbf"
-    #kernel = "laplacian"
+    # kernel = "laplacian"
 
     g = []
     for i in range(data.X.shape[0]):
         for j in range(data.X.shape[0]):
-            g.append( np.linalg.norm( data.X[i,:] - data.X[j,:],2)**2.0 )
+            g.append(np.linalg.norm(data.X[i, :] - data.X[j, :], 2) ** 2.0)
     g = np.array(g)
     g = np.median(g)
 
     for gamma in [0.008, 0.01, g, 0.02, 0.03, 0.08, 0.1, 0.3, 0.5, 1.0, 10.0]:
-    #for gamma in [0.1, 0.2]:
-        #lda = MyKerneLDA(n_components=2, kernel=kernel, gamma=gamma)
-        #lda = MyKernelPCA(n_components=2, kernel=kernel, gamma=gamma)
+        # for gamma in [0.1, 0.2]:
+        # lda = MyKerneLDA(n_components=2, kernel=kernel, gamma=gamma)
+        # lda = MyKernelPCA(n_components=2, kernel=kernel, gamma=gamma)
         lda = SCA2(n_components=2, kernel=kernel, gamma=gamma)
 
         title_lda.append("gamma - {0}".format(gamma))
 
-        #model = lda.fit(data.data[0], data.target[0])
-        #model = lda.fit( [data.data[0]], [data.target[0]], [data.data[1]])
+        # model = lda.fit(data.data[0], data.target[0])
+        # model = lda.fit( [data.data[0]], [data.target[0]], [data.data[1]])
         model = lda.fit([data.data[0]], [data.target[0]])
 
-        x_sca_train.append( model.transform(data.data[0]) )
+        x_sca_train.append(model.transform(data.data[0]))
         x_sca_test.append(model.transform(data.data[1]))
 
         title_sca.append("gamma - {0}".format(gamma))
 
     print("X ", X.shape)
     print("y ", y.shape)
-    #Plotter().plotScatter_multiple([x_lda, x_sca,], [data.target[2], data.target[2]], ["KDA", "SCA"], [{0: "0", 1: "1", 2: "2"}] * 2)
-    #Plotter().plotScatter_multiple([x_lda[2], x_sca[2] ], [data.target[1], data.target[1]], ["KDA", "SCA"],[{0: "0", 1: "1", 2: "2"}] * 2)
-    #Plotter().plotScatter_multiple(x_lda, [data.target[1]]*len(x_lda), title_lda, [{0: "0", 1: "1", 2: "2"}] * len(x_lda), "KDA Three Domains - {0}".format(kernel))
+    # Plotter().plotScatter_multiple([x_lda, x_sca,], [data.target[2], data.target[2]], ["KDA", "SCA"], [{0: "0", 1: "1", 2: "2"}] * 2)
+    # Plotter().plotScatter_multiple([x_lda[2], x_sca[2] ], [data.target[1], data.target[1]], ["KDA", "SCA"],[{0: "0", 1: "1", 2: "2"}] * 2)
+    # Plotter().plotScatter_multiple(x_lda, [data.target[1]]*len(x_lda), title_lda, [{0: "0", 1: "1", 2: "2"}] * len(x_lda), "KDA Three Domains - {0}".format(kernel))
     title_sca.append("Origina Data")
 
-    Plotter().plotScatter_multiple([*x_sca_train, data.data[0]], [data.target[0]]*(len(x_sca_train)+1), title_sca, [{0: "0", 1: "1", 2: "2"}]*(len(x_sca_test)+1), title_fig="Train - {1} - {0}".format(kernel, lda.name), markerId=0)
-    Plotter().plotScatter_multiple( [*x_sca_test, data.data[1]], [data.target[1]]*(len(x_sca_test)+1), title_sca, [{0: "0", 1: "1", 2: "2"}]*(len(x_sca_test)+1), title_fig="Test - {1} - {0}".format(kernel, lda.name), markerId=1)
+    Plotter().plotScatter_multiple([*x_sca_train, data.data[0]], [data.target[0]] * (len(x_sca_train) + 1), title_sca,
+                                   [{0: "0", 1: "1", 2: "2"}] * (len(x_sca_test) + 1),
+                                   title_fig="Train - {1} - {0}".format(kernel, lda.name), markerId=0)
+    Plotter().plotScatter_multiple([*x_sca_test, data.data[1]], [data.target[1]] * (len(x_sca_test) + 1), title_sca,
+                                   [{0: "0", 1: "1", 2: "2"}] * (len(x_sca_test) + 1),
+                                   title_fig="Test - {1} - {0}".format(kernel, lda.name), markerId=1)
 
     X = []
     Y = []
     for i, x in enumerate(x_sca_train):
-        X.append( [x_sca_train[i], x_sca_test[i]] )
+        X.append([x_sca_train[i], x_sca_test[i]])
         Y.append([data.target[0], data.target[1]])
     X.append(data.data)
     Y.append(data.target)
@@ -657,7 +678,9 @@ def testIris2():
     print("X ", len(X))
     print("y ", len(y))
 
-    Plotter().plotScatter_multipleDomains(X, Y, title_sca, [{0: "0", 1: "1", 2: "2"}]*len(title_sca), "ScatterPlot - DomainGeneralization Transformed all Domains - {0}".format(kernel))
+    Plotter().plotScatter_multipleDomains(X, Y, title_sca, [{0: "0", 1: "1", 2: "2"}] * len(title_sca),
+                                          "ScatterPlot - DomainGeneralization Transformed all Domains - {0}".format(
+                                              kernel))
 
     plt.show()
 
@@ -667,12 +690,12 @@ def testDataSets(method="sca-DomainAdaption", beta=1.0, delta=1.0, n=10):
     np.random.seed(20)
 
     data = Gaussian(n=n)
-    #data.init_twoDomains2(n=100)
+    # data.init_twoDomains2(n=100)
     data.twoDomains2_roate(n=n)
-    #data.init_threeDomains2(n=100)
+    # data.init_threeDomains2(n=100)
 
-    #X = np.concatenate( (data.data[0], data.data[1]), axis=0)
-    #y = np.concatenate( (data.target[0], data.target[1]), axis=0)
+    # X = np.concatenate( (data.data[0], data.data[1]), axis=0)
+    # y = np.concatenate( (data.target[0], data.target[1]), axis=0)
 
     dx = data.data[0]
     dy = data.target[0]
@@ -682,32 +705,32 @@ def testDataSets(method="sca-DomainAdaption", beta=1.0, delta=1.0, n=10):
     x_sca_test = []
     x_sca_train = []
     title_sca = []
-    #kernel = "linear"
+    # kernel = "linear"
     kernel = "rbf"
-    #kernel = "laplacian"
+    # kernel = "laplacian"
 
     X = []
     Y = []
 
-    for rot, scale, shear in [ (0, 1.0, 0.0), (3.14, 1.0, 0.0), (0, 10, 0.0), (3.14, 10, 0.0), (0.0, 1.0, 5.0), (3.14, 1.0, 5.0) ]:
+    for rot, scale, shear in [(0, 1.0, 0.0), (3.14, 1.0, 0.0), (0, 10, 0.0), (3.14, 10, 0.0), (0.0, 1.0, 5.0),
+                              (3.14, 1.0, 5.0)]:
         data.twoDomains2_roate(n=50, rot=rot, scale=scale, shear=shear)
         g = []
         for i in range(data.X.shape[0]):
             for j in range(data.X.shape[0]):
-                g.append( np.linalg.norm( data.X[i,:] - data.X[j,:],2)**2.0 )
+                g.append(np.linalg.norm(data.X[i, :] - data.X[j, :], 2) ** 2.0)
         g = np.array(g)
         g = np.median(g)
 
-
         for gamma in [0.1, 0.5, 1.0, 10.0]:
-        #for gamma in [0.1, 0.2]:
-            #lda = MyKerneLDA(n_components=2, kernel=kernel, gamma=gamma)
-            #lda = MyKernelPCA(n_components=2, kernel=kernel, gamma=gamma)
+            # for gamma in [0.1, 0.2]:
+            # lda = MyKerneLDA(n_components=2, kernel=kernel, gamma=gamma)
+            # lda = MyKernelPCA(n_components=2, kernel=kernel, gamma=gamma)
 
             if method == "sca-DomainAdaption":
                 lda = SCA2(n_components=2, kernel=kernel, gamma=gamma, beta=beta, delta=delta)
                 name = lda.name + " beta: " + str(beta) + " delta: " + str(delta)
-                model = lda.fit([data.data[0]], [data.target[0]], [data.data[1 ]])
+                model = lda.fit([data.data[0]], [data.target[0]], [data.data[1]])
             elif method == "sca-DomainGeneralization":
                 lda = SCA2(n_components=2, kernel=kernel, gamma=gamma, beta=beta, delta=delta)
                 name = lda.name + " beta: " + str(beta) + " delta: " + str(delta)
@@ -719,12 +742,10 @@ def testDataSets(method="sca-DomainAdaption", beta=1.0, delta=1.0, n=10):
                 model = lda.fit([data.data[0]], [data.target[0]])
                 print("Mode KDA")
 
-
             title_lda.append("gamma - {0}".format(gamma))
 
-            #model = lda.fit(data.data[0], data.target[0])
-            #model = lda.fit( [data.data[0]], [data.target[0]], [data.data[1]])
-
+            # model = lda.fit(data.data[0], data.target[0])
+            # model = lda.fit( [data.data[0]], [data.target[0]], [data.data[1]])
 
             train = model.transform(data.data[0])
             test = model.transform(data.data[1])
@@ -742,49 +763,58 @@ def testDataSets(method="sca-DomainAdaption", beta=1.0, delta=1.0, n=10):
 
         title_sca.append("Origina Data")
 
-    Plotter().plotScatter_multiple([*x_sca_train], [data.target[0]]*(len(x_sca_train)), title_sca, [{0: "0", 1: "1", 2: "2"}]*(len(x_sca_test)+1), title_fig="Train - {1} - {0}".format(kernel, name), markerId=0, path="graphics/ToyData", spalten=5)
-    Plotter().plotScatter_multiple( [*x_sca_test], [data.target[1]]*(len(x_sca_test)), title_sca, [{0: "0", 1: "1", 2: "2"}]*(len(x_sca_test)+1), title_fig="Test - {1} - {0}".format(kernel, name), markerId=1, path="graphics/ToyData",  spalten=5)
+    Plotter().plotScatter_multiple([*x_sca_train], [data.target[0]] * (len(x_sca_train)), title_sca,
+                                   [{0: "0", 1: "1", 2: "2"}] * (len(x_sca_test) + 1),
+                                   title_fig="Train - {1} - {0}".format(kernel, name), markerId=0,
+                                   path="graphics/ToyData", spalten=5)
+    Plotter().plotScatter_multiple([*x_sca_test], [data.target[1]] * (len(x_sca_test)), title_sca,
+                                   [{0: "0", 1: "1", 2: "2"}] * (len(x_sca_test) + 1),
+                                   title_fig="Test - {1} - {0}".format(kernel, name), markerId=1,
+                                   path="graphics/ToyData", spalten=5)
 
-    #for i, x in enumerate(x_sca_train):
+    # for i, x in enumerate(x_sca_train):
     #    X.append( [x_sca_train[i], x_sca_test[i]] )
     #    Y.append([data.target[0], data.target[1]])
-    #X.append(data.data)
-    #Y.append(data.target)
+    # X.append(data.data)
+    # Y.append(data.target)
 
-    Plotter().plotScatter_multipleDomains(X, Y, title_sca, [{0: "0", 1: "1", 2: "2"}]*len(title_sca), "ScatterPlot {1} - {0}".format(kernel, name), path="graphics/ToyData", spalten=5, domainNames=["Dom0", "Dom1", "Dom2"])
+    Plotter().plotScatter_multipleDomains(X, Y, title_sca, [{0: "0", 1: "1", 2: "2"}] * len(title_sca),
+                                          "ScatterPlot {1} - {0}".format(kernel, name), path="graphics/ToyData",
+                                          spalten=5, domainNames=["Dom0", "Dom1", "Dom2"])
 
     plt.show()
 
 
-
 if __name__ == '__main__':
-    #test_Kernel_LDA_Sklearn_MaxLarge_split_treatment_kernels()
+    # test_Kernel_LDA_Sklearn_MaxLarge_split_treatment_kernels()
 
-    #testIris2()
+    # testIris2()
 
-    #for beta in [ 0.0, 0.25, 0.5, 1.0]:
+    # for beta in [ 0.0, 0.25, 0.5, 1.0]:
     #    for delta in [0.0, 0.25, 0.5, 1.0]:
     #        testDataSets(method="sca-DomainGeneralization", beta=beta, delta=delta)
 
-    #testGauss()
+    # testGauss()
 
-    #testGauss_KLDA()
-    #testGauss_kernels()
+    # testGauss_KLDA()
+    # testGauss_kernels()
 
-    #testGauss2()
-    #testGauss3()
-    #testGauss_kernels()
-    #testIris2()
+    # testGauss2()
+    # testGauss3()
+    # testGauss_kernels()
+    # testIris2()
 
     for centering in [True, False]:
         test_LDA_Sklearn_split_treatment_dimension("kda", centering=centering)
         for beta in [0.0, 0.25, 0.5, 1.0]:
             for delta in [0, 0.25, 0.5, 1.0]:
                 print("beta ", beta, " delta ", delta)
-                test_LDA_Sklearn_split_treatment_dimension("sca-DomainGeneralization", beta=beta, delta=delta, centering=centering)
-                test_LDA_Sklearn_split_treatment_dimension("sca-DomainAdaption", beta=beta, delta=delta, centering=centering)
+                test_LDA_Sklearn_split_treatment_dimension("sca-DomainGeneralization", beta=beta, delta=delta,
+                                                           centering=centering)
+                test_LDA_Sklearn_split_treatment_dimension("sca-DomainAdaption", beta=beta, delta=delta,
+                                                           centering=centering)
         test_LDA_Sklearn_split_treatment_dimension("lda", centering=centering)
         test_LDA_Sklearn_split_treatment_dimension("pca", centering=centering)
-    #sca - DomainAdaption
+    # sca - DomainAdaption
 
-    #test_LDA_Sklearn_split_treatment_PCA("kpca")
+    # test_LDA_Sklearn_split_treatment_PCA("kpca")
