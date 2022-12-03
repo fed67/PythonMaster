@@ -266,7 +266,8 @@ def test_LDA_Sklearn_split_treatment_dimension(method="kda", centering=True, bet
     # for dim in [2, 4, 5, 6, 7, 8]:
     # for dim in [2]:
     # for kern in kernel:
-    for gamma in [10, 100, 500, 1000, 5000, 1e4, 1e5, 1e6]:
+    #for gamma in [10, 100, 500, 1000, 5000, 1e4, 1e5, 1e6]:
+    for gamma in [0.1, 1, 10, 100, 1000, 1e4, 1e5, 1e6]:
         # for gamma in [0.1, 1, 10, 100, 300, 500, 1000, 5000,
         #              7000, 1e4, 5e4, 1e5, 5e5, 1e6, 5e6, 1e7]:
         # for gamma in [10, 100, 500, 1000, 5000]:
