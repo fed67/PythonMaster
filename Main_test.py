@@ -524,8 +524,7 @@ def test_LDA_Sklearn_split_treatment_Linear(method="pca",
     plt.figtext(0.5, 0.01,
                 "UMAP Plot\nDimension of train data: rows: {0}; features: {1}\n sample: {2}".format(X_train.shape[0],
                                                                                                     X_test.shape[1],
-                                                                                                    data_name), wrap=True,
-                horizontalalignment='center', fontweight='bold')
+                                                                                                    data_name), wrap=True, horizontalalignment='center', fontweight='bold')
 
     Plotter().plotScatter_multipleDomains([*x_all[8:16], original_all], [*y_all[8:16], original_all_y],
                                           [*titles[8:16], "Original"], [inv_map] * len(y_train_list),
