@@ -430,10 +430,14 @@ class Plotter:
                     c = unique[ic]
                     elx = domain[ c == y, 0]
                     ely = domain[c == y, 1]
-                    if domainNames is None:
-                        label=labels_[dpi][c]+" D"+str(i)
-                    else:
-                        label = labels_[dpi][c] + " " + domainNames[i]
+
+                    #if domainNames is None:
+                    #    label=labels_[dpi][c]+" D"+str(i)
+                    #else:
+                    #    label = labels_[dpi][c] + " " + domainNames[i]
+                    label = labels_[dpi][c]
+
+                    #print("domainNames ", domainNames, " label ", label, " is none ", domainNames is None)
                     #print(labels_[dpi][c])
                     #label = {}
                     #for key, value in labels_[dpi][c].items():
@@ -464,7 +468,10 @@ class Plotter:
             #    #plots.append(ax[j0].scatter(x=[], y=[], c=cls.myColors[c], label=label, alpha=1.0) )
                 patches.append(mpatches.Patch(color=cls.myColors[c], label=label, alpha=0.4))
             for i, _ in enumerate(domainplot):
-                patches.append( axis.scatter( [], [], color='black', marker=cls.myMarker[i], label="Domain "+str(i), alpha=0.4) )
+                if domainNames is None:
+                    patches.append( axis.scatter( [], [], color='black', marker=cls.myMarker[i], label="Domain "+str(i), alpha=0.4) )
+                else:
+                    patches.append(axis.scatter([], [], color='black', marker=cls.myMarker[i], label=domainNames[i], alpha=0.4))
             lgd = axis.legend(handles=patches, bbox_to_anchor=(1.1, 1.05))
 
             j0 = j0 + 1
