@@ -740,8 +740,13 @@ def testDataSets(method="sca-DomainAdaption", beta=1.0, delta=1.0, n=10):
                 print("Mode sca-DomainGeneralization")
             elif method == "kda":
                 lda = MyKerneLDA(n_components=2, kernel=kernel, gamma=gamma)
-                name = lda.name
-                model = lda.fit([data.data[0]], [data.target[0]])
+                name = "KDA"
+                model = lda.fit(data.data[0], data.target[0])
+                print("Mode KDA")
+            elif method == "kpca":
+                lda = KernelPCA(n_components=2, kernel=kernel, gamma=gamma)
+                name = "KPCA"
+                model = lda.fit(data.data[0], data.target[0])
                 print("Mode KDA")
 
             title_lda.append("gamma - {0}".format(gamma))
@@ -768,11 +773,11 @@ def testDataSets(method="sca-DomainAdaption", beta=1.0, delta=1.0, n=10):
     Plotter().plotScatter_multiple([*x_sca_train], [data.target[0]] * (len(x_sca_train)), title_sca,
                                    [{0: "0", 1: "1", 2: "2"}] * (len(x_sca_test) + 1),
                                    title_fig="Train - {1} - {0}".format(kernel, name), markerId=0,
-                                   path="graphics/ToyData", spalten=5)
+                                   path="graphics/ToyData/", spalten=5)
     Plotter().plotScatter_multiple([*x_sca_test], [data.target[1]] * (len(x_sca_test)), title_sca,
                                    [{0: "0", 1: "1", 2: "2"}] * (len(x_sca_test) + 1),
                                    title_fig="Test - {1} - {0}".format(kernel, name), markerId=1,
-                                   path="graphics/ToyData", spalten=5)
+                                   path="graphics/ToyData/", spalten=5)
 
     # for i, x in enumerate(x_sca_train):
     #    X.append( [x_sca_train[i], x_sca_test[i]] )
@@ -871,14 +876,16 @@ if __name__ == '__main__':
     # test_Kernel_LDA_Sklearn_MaxLarge_split_treatment_kernels()
 
     # testIris2()
+    n = 100
+    for beta in [ 0.0, 0.25, 0.5, 1.0]:
+       for delta in [0.0, 0.25, 0.5, 1.0]:
+           testDataSets(method="sca-DomainGeneralization", beta=beta, delta=delta, n=n)
+           testDataSets(method="sca-DomainAdaption", beta=beta, delta=delta, n=n)
 
-    #for beta in [ 0.0, 0.25, 0.5, 1.0]:
-    #   for delta in [0.0, 0.25, 0.5, 1.0]:
-    #       testDataSets(method="sca-DomainGeneralization", beta=beta, delta=delta, n=50)
-    #       testDataSets(method="sca-DomainAdaption", beta=beta, delta=delta, n=50)
-
-    testDataSets_linear(method="lda", n=50)
-    testDataSets_linear(method="pca", n=50)
+    testDataSets(method="kda", n=n)
+    testDataSets(method="kpca", n=n)
+    testDataSets_linear(method="lda", n=n)
+    testDataSets_linear(method="pca", n=n)
     # testGauss()
 
     # testGauss_KLDA()
