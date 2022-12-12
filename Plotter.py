@@ -331,7 +331,7 @@ class Plotter:
         ax.set_xlabel("x")
         ax.set_ylabel("y")
 
-    def plotScatter_multiple(cls, dfs: list[np.ndarray], classes: list[np.ndarray], titles: list[str], labels=[], markerId=0, title_fig="", path="graphics/", spalten=None):
+    def plotScatter_multiple(cls, dfs: list[np.ndarray], classes: list[np.ndarray], titles: list[str], labels=[], markerId=0, title_fig="", path="graphics/", spalten=None, figsize=(20, 10)):
         import math
         print("len df ", len(dfs), " classes ", len(classes), " titles ", len(titles))
 
@@ -344,7 +344,7 @@ class Plotter:
         #print("spalten ", spalten)
         #print("len(embedding_l)  ", len(embedding_l) )
 
-        fig, ax = plt.subplots(zeilen, spalten, figsize=(20, 10))
+        fig, ax = plt.subplots(zeilen, spalten, figsize=figsize)
         i0 = 0
         j0 = 0
 
@@ -396,7 +396,7 @@ class Plotter:
         print("s ", s)
         plt.savefig(s)
 
-    def plotScatter_multipleDomains(cls, domains, domainClasses =[], title_=[], labels_=[], title_fig="", path="graphics/", spalten=None, domainNames=None):
+    def plotScatter_multipleDomains(cls, domains, domainClasses =[], title_=[], labels_=[], title_fig="", path="graphics/", spalten=None, domainNames=None, figsize=(20, 10)):
         import math
 
         if spalten is None:
@@ -405,7 +405,7 @@ class Plotter:
         print("spalten ", spalten, " zeilen ", zeilen)
         print("len(domains) ", len(domains), " len(class) ", len(domainClasses), " titles ", len(title_), " label ", len(labels_))
 
-        fig, ax = plt.subplots(zeilen, spalten, figsize=(20, 10))
+        fig, ax = plt.subplots(zeilen, spalten, figsize=figsize)
         i0 = 0
         j0 = 0
 

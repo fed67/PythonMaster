@@ -786,16 +786,99 @@ def testDataSets(method="sca-DomainAdaption", beta=1.0, delta=1.0, n=10):
 
     plt.show()
 
+def testDataSets_linear(method="lda", n=10):
+    #matplotlib.use('Agg')
+    np.random.seed(20)
+
+    data = Gaussian(n=n)
+    # data.init_twoDomains2(n=100)
+    data.twoDomains2_roate(n=n)
+    # data.init_threeDomains2(n=100)
+
+    # X = np.concatenate( (data.data[0], data.data[1]), axis=0)
+    # y = np.concatenate( (data.target[0], data.target[1]), axis=0)
+
+    dx = data.data[0]
+    dy = data.target[0]
+
+    x_lda = []
+    title_lda = []
+    x_sca_test = []
+    x_sca_train = []
+    title_sca = []
+
+    X = []
+    Y = []
+
+    for rot, scale, shear in [(0, 1.0, 0.0), (3.14, 1.0, 0.0), (0, 10, 0.0), (3.14, 10, 0.0), (0.0, 1.0, 5.0), (3.14, 1.0, 5.0)]:
+    #for rot, scale, shear in [(0, 1.0, 0.0), (3.14, 1.0, 0.0), (0.0, 1.0, 5.0), (3.14, 1.0, 5.0)]:
+        data.twoDomains2_roate(n=50, rot=rot, scale=scale, shear=shear)
+
+        if method == "lda":
+            lda = LinearDiscriminantAnalysis(n_components=2)
+            name ="LDA"
+            model = lda.fit(data.data[0], data.target[0])
+        elif method == "pca":
+            lda = PCA(n_components=2)
+            name = "PCA"
+            model = lda.fit(data.data[0], data.target[0])
+
+
+        train = model.transform(data.data[0])
+        test = model.transform(data.data[1])
+
+        x_sca_train.append(train)
+        x_sca_test.append(test)
+        X.append([train, test])
+        Y.append([data.target[0], data.target[1]])
+
+        title_sca.append(name)
+
+        X.append(data.data)
+        Y.append(data.target)
+        x_sca_train.append(data.data[0])
+        x_sca_test.append(data.data[1])
+
+        title_sca.append("Origina Data")
+
+    print("len ", len(x_sca_train), " test ", len(x_sca_test) )
+    figsize = (10,10)
+
+    Plotter().plotScatter_multiple([*x_sca_train], [data.target[0]] * (len(x_sca_train)), title_sca,
+                                   [{0: "0", 1: "1", 2: "2"}] * (len(x_sca_test) + 1),
+                                   title_fig="Train - {0}".format(name), markerId=0,
+                                   path="graphics/ToyData", spalten=2, figsize=figsize)
+    Plotter().plotScatter_multiple([*x_sca_test], [data.target[1]] * (len(x_sca_test)), title_sca,
+                                   [{0: "0", 1: "1", 2: "2"}] * (len(x_sca_test) + 1),
+                                   title_fig="Test - {0}".format(name), markerId=1,
+                                   path="graphics/ToyData", spalten=2, figsize=figsize)
+
+    # for i, x in enumerate(x_sca_train):
+    #    X.append( [x_sca_train[i], x_sca_test[i]] )
+    #    Y.append([data.target[0], data.target[1]])
+    # X.append(data.data)
+    # Y.append(data.target)
+
+    Plotter().plotScatter_multipleDomains(X, Y, title_sca, [{0: "0", 1: "1", 2: "2"}] * len(title_sca),
+                                          "ScatterPlot - {0}".format(name), path="graphics/ToyData",
+                                          spalten=2, domainNames=["Dom0", "Dom1", "Dom2"], figsize=figsize)
+
+    plt.show()
+
+
 
 if __name__ == '__main__':
     # test_Kernel_LDA_Sklearn_MaxLarge_split_treatment_kernels()
 
     # testIris2()
 
-    # for beta in [ 0.0, 0.25, 0.5, 1.0]:
-    #    for delta in [0.0, 0.25, 0.5, 1.0]:
-    #        testDataSets(method="sca-DomainGeneralization", beta=beta, delta=delta)
+    #for beta in [ 0.0, 0.25, 0.5, 1.0]:
+    #   for delta in [0.0, 0.25, 0.5, 1.0]:
+    #       testDataSets(method="sca-DomainGeneralization", beta=beta, delta=delta, n=50)
+    #       testDataSets(method="sca-DomainAdaption", beta=beta, delta=delta, n=50)
 
+    testDataSets_linear(method="lda", n=50)
+    testDataSets_linear(method="pca", n=50)
     # testGauss()
 
     # testGauss_KLDA()
@@ -806,8 +889,9 @@ if __name__ == '__main__':
     # testGauss_kernels()
     # testIris2()
 
-    for centering in [True, False]:
+    #for centering in [True, False]:
     #    test_LDA_Sklearn_split_treatment_dimension("kda", centering=centering)
+    #    test_LDA_Sklearn_split_treatment_dimension("kpca", centering=centering)
     #    for beta in [0.0, 0.25, 0.5, 1.0]:
     #        for delta in [0, 0.25, 0.5, 1.0]:
     #            print("beta ", beta, " delta ", delta)
@@ -815,8 +899,8 @@ if __name__ == '__main__':
     #                                                       centering=centering)
     #            test_LDA_Sklearn_split_treatment_dimension("sca-DomainAdaption", beta=beta, delta=delta,
     #                                                       centering=centering)
-        test_LDA_Sklearn_split_treatment_Linear("lda", centering=centering)
-        test_LDA_Sklearn_split_treatment_Linear("pca", centering=centering)
+    #    test_LDA_Sklearn_split_treatment_Linear("lda", centering=centering)
+    #    test_LDA_Sklearn_split_treatment_Linear("pca", centering=centering)
     # sca - DomainAdaption
 
     # test_LDA_Sklearn_split_treatment_PCA("kpca")
