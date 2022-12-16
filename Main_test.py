@@ -773,11 +773,11 @@ def testDataSets(method="sca-DomainAdaption", beta=1.0, delta=1.0, n=10):
 
     Plotter().plotScatter_multiple([*x_sca_train], [data.target[0]] * (len(x_sca_train)), title_sca,
                                    [{0: "0", 1: "1", 2: "2"}] * (len(x_sca_test) + 1),
-                                   title_fig="Train - {1} - {0}".format(kernel, name), markerId=0,
+                                   title_fig="Train Domain - {1} - {0}".format(kernel, name), markerId=0,
                                    path="graphics/ToyData/", spalten=5)
     Plotter().plotScatter_multiple([*x_sca_test], [data.target[1]] * (len(x_sca_test)), title_sca,
                                    [{0: "0", 1: "1", 2: "2"}] * (len(x_sca_test) + 1),
-                                   title_fig="Test - {1} - {0}".format(kernel, name), markerId=1,
+                                   title_fig="Test Domain - {1} - {0}".format(kernel, name), markerId=1,
                                    path="graphics/ToyData/", spalten=5)
 
     # for i, x in enumerate(x_sca_train):
@@ -787,7 +787,7 @@ def testDataSets(method="sca-DomainAdaption", beta=1.0, delta=1.0, n=10):
     # Y.append(data.target)
 
     Plotter().plotScatter_multipleDomains(X, Y, title_sca, [{0: "0", 1: "1", 2: "2"}] * len(title_sca),
-                                          "ScatterPlot {1} - {0}".format(kernel, name), path="graphics/ToyData",
+                                          "All Domains {1} - {0}".format(kernel, name), path="graphics/ToyData/",
                                           spalten=5, domainNames=["Dom0", "Dom1", "Dom2"])
 
     plt.show()
