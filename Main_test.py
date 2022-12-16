@@ -763,6 +763,7 @@ def testDataSets(method="sca-DomainAdaption", beta=1.0, delta=1.0, n=10):
             Y.append([data.target[0], data.target[1]])
 
             title_sca.append("gamma - {0}".format(gamma))
+
         X.append(data.data)
         Y.append(data.target)
         x_sca_train.append(data.data[0])
