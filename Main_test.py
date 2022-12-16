@@ -852,12 +852,12 @@ def testDataSets_linear(method="lda", n=10):
 
     Plotter().plotScatter_multiple([*x_sca_train], [data.target[0]] * (len(x_sca_train)), title_sca,
                                    [{0: "0", 1: "1", 2: "2"}] * (len(x_sca_test) + 1),
-                                   title_fig="Train - {0}".format(name), markerId=0,
-                                   path="graphics/ToyData", spalten=2, figsize=figsize)
+                                   title_fig="Train Domain - {0}".format(name), markerId=0,
+                                   path="graphics/ToyData/", spalten=2, figsize=figsize)
     Plotter().plotScatter_multiple([*x_sca_test], [data.target[1]] * (len(x_sca_test)), title_sca,
                                    [{0: "0", 1: "1", 2: "2"}] * (len(x_sca_test) + 1),
-                                   title_fig="Test - {0}".format(name), markerId=1,
-                                   path="graphics/ToyData", spalten=2, figsize=figsize)
+                                   title_fig="Test Domain - {0}".format(name), markerId=1,
+                                   path="graphics/ToyData/", spalten=2, figsize=figsize)
 
     # for i, x in enumerate(x_sca_train):
     #    X.append( [x_sca_train[i], x_sca_test[i]] )
@@ -866,8 +866,8 @@ def testDataSets_linear(method="lda", n=10):
     # Y.append(data.target)
 
     Plotter().plotScatter_multipleDomains(X, Y, title_sca, [{0: "0", 1: "1", 2: "2"}] * len(title_sca),
-                                          "ScatterPlot - {0}".format(name), path="graphics/ToyData",
-                                          spalten=2, domainNames=["Dom0", "Dom1", "Dom2"], figsize=figsize)
+                                          "All Domains - {0}".format(name), path="graphics/ToyData/",
+                                          spalten=2, domainNames=["Domain 0", "Domain 1", "Domain 2"], figsize=figsize)
 
     plt.show()
 
