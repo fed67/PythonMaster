@@ -266,7 +266,7 @@ def test_LDA_Sklearn_split_treatment_dimension(method="kda", centering=True, bet
     # for dim in [2]:
     # for kern in kernel:
     #for gamma in [10, 100, 500, 1000, 5000, 1e4, 1e5, 1e6]:
-    for gamma in [0.1, 1, 10, 100, 1000, 1e4, 1e5, 1e6]:
+    for gamma in [0.01, 0.1, 1, 10, 100, 1000, 1e4, 1e5, 1e6]:
         # for gamma in [0.1, 1, 10, 100, 300, 500, 1000, 5000,
         #              7000, 1e4, 5e4, 1e5, 5e5, 1e6, 5e6, 1e7]:
         # for gamma in [10, 100, 500, 1000, 5000]:
@@ -350,15 +350,15 @@ def test_LDA_Sklearn_split_treatment_dimension(method="kda", centering=True, bet
     print(len(X_V4_list))
     # Plotter().plotUmap_multiple(X_list , y, titles, [inv_map]*len(X_list))
     # Plotter().scatter(X_list[0], y, titles[0], inv_map)
-    Plotter().plotScatter_multiple([*X_V4_list[0:8], X_test], [*y[0:8], y_test], [*titles[0:8], "Original"],
-                                   [inv_map] * (len(X_V4_list) + 1),
+    Plotter().plotScatter_multiple([*X_V4_list[0:9]], [*y[0:9]], [*titles[0:9]],
+                                   [inv_map] * (len(X_V4_list) + 0),
                                    title_fig="{0} Center {1} V4-Only".format(name, centering))
     # Plotter().plotScatter_multiple([*X_V4_list[8:16], X_test], [*y[8:16], y_test], [*titles[8:16], "Original"], [inv_map] * len(X_V4_list), title_fig="{0} Center {1} V4-Only2".format(name, center))
     # Plotter().plotScatter_multipleDomains( x_train_list, y_train_list, titles, [inv_map]*len(y_train_list), title_fig="Train - {1} - {0}".format(kernel, alg.name))
     # Plotter().plotScatter_multipleDomains(x_test_list, y_test_list, titles, [inv_map] * len(y_test_list), title_fig="Test - {1} - {0}".format(kernel, alg.name))
 
-    Plotter().plotScatter_multipleDomains([*x_all[0:8], original_all], [*y_all[0:8], original_all_y],
-                                          [*titles[0:8], "Original"], [inv_map] * (len(y_train_list) + 1),
+    Plotter().plotScatter_multipleDomains([*x_all[0:9]], [*y_all[0:9]],
+                                          [*titles[0:9]], [inv_map] * (len(y_train_list) + 0),
                                           title_fig="{1}-{0}-Center {2}- Train V1,V2,V3 Test V4 ".format(kern, name,
                                                                                                          centering),
                                           domainNames=["V1", "V2", "V3", "V4"])
@@ -494,7 +494,8 @@ def test_LDA_Sklearn_split_treatment_Linear(method="pca", centering=True):  # sc
     y.append([*y_train1, *y_train2, *y_train3, *y_test])
     # titles.append("K-LDA - Degree {1} - Train Merge {0} - Kernel {2}\n".format(group_size, degree, kern, ))
     # titles.append("K-LDA - Gamma {1} - Test Merge {0} - Kernel {2}\n ".format(group_size, gamma, kern))
-    titles.append("{1} Test Merge {0}\n ".format(group_size, name))
+    #titles.append("{1} Test Merge {0}\n ".format(group_size, name))
+    titles.append("")
 
     reducer = umap.UMAP()
     original_all = [reducer.fit_transform(X_train1)]
@@ -512,8 +513,8 @@ def test_LDA_Sklearn_split_treatment_Linear(method="pca", centering=True):  # sc
     print("y_train_list ", y_train_list[0].shape)
     # Plotter().plotUmap_multiple(X_list , y, titles, [inv_map]*len(X_list))
     # Plotter().scatter(X_list[0], y, titles[0], inv_map)
-    Plotter().plotScatter_multiple([X_V4_list[0], X_test], [y_test_list[0], y_test], [titles[0], "Original"],
-                                   [inv_map] * 2, title_fig="{0} Center {1} V4-Only".format(name, centering))
+    Plotter().plotScatter_multiple([X_V4_list[0]], [y_test_list[0]], [titles[0]],
+                                   [inv_map] * 1, title_fig="{0} Center {1} V4-Only".format(name, centering))
     #Plotter().plotScatter_multiple([*X_V4_list[8:16], X_test], [*y_test_list[8:16], y_test], [*titles[0:8], "Original"],
     #                               [inv_map] * len(X_V4_list), title_fig="{0} Center {1} V4-Only".format(name, center))
 
@@ -521,8 +522,8 @@ def test_LDA_Sklearn_split_treatment_Linear(method="pca", centering=True):  # sc
     # Plotter().plotScatter_multipleDomains( x_train_list, y_train_list, titles, [inv_map]*len(y_train_list), title_fig="Train - {1} - {0}".format(kernel, alg.name))
     # Plotter().plotScatter_multipleDomains(x_test_list, y_test_list, titles, [inv_map] * len(y_test_list), title_fig="Test - {1} - {0}".format(kernel, alg.name))
 
-    Plotter().plotScatter_multipleDomains([x_all[0], original_all], [y_all[0], original_all_y],
-                                          [titles[0], "Original"], [inv_map] * 2,
+    Plotter().plotScatter_multipleDomains([x_all[0]], [y_all[0]],
+                                          [titles[0], "Original"], [inv_map] * 1,
                                           title_fig="{0} Center {1} - Train V1,V2,V3 Test V4".format(name, centering), domainNames=["V1", "V2", "V3", "V4"])
     plt.figtext(0.5, 0.01,
                 "UMAP Plot\nDimension of train data: rows: {0}; features: {1}\n sample: {2}".format(X_train.shape[0],
@@ -662,10 +663,10 @@ def testIris2():
     # Plotter().plotScatter_multiple(x_lda, [data.target[1]]*len(x_lda), title_lda, [{0: "0", 1: "1", 2: "2"}] * len(x_lda), "KDA Three Domains - {0}".format(kernel))
     title_sca.append("Origina Data")
 
-    Plotter().plotScatter_multiple([*x_sca_train, data.data[0]], [data.target[0]] * (len(x_sca_train) + 1), title_sca,
+    Plotter().plotScatter_multiple([*x_sca_train], [data.target[0]] * (len(x_sca_train)), title_sca,
                                    [{0: "0", 1: "1", 2: "2"}] * (len(x_sca_test) + 1),
                                    title_fig="Train - {1} - {0}".format(kernel, lda.name), markerId=0)
-    Plotter().plotScatter_multiple([*x_sca_test, data.data[1]], [data.target[1]] * (len(x_sca_test) + 1), title_sca,
+    Plotter().plotScatter_multiple([*x_sca_test], [data.target[1]] * (len(x_sca_test)), title_sca,
                                    [{0: "0", 1: "1", 2: "2"}] * (len(x_sca_test) + 1),
                                    title_fig="Test - {1} - {0}".format(kernel, lda.name), markerId=1)
 
@@ -674,8 +675,8 @@ def testIris2():
     for i, x in enumerate(x_sca_train):
         X.append([x_sca_train[i], x_sca_test[i]])
         Y.append([data.target[0], data.target[1]])
-    X.append(data.data)
-    Y.append(data.target)
+    #X.append(data.data)
+    #Y.append(data.target)
 
     print("X ", len(X))
     print("y ", len(y))
@@ -878,15 +879,15 @@ if __name__ == '__main__':
 
     # testIris2()
     n = 100
-    for beta in [ 0.0, 0.25, 0.5, 1.0]:
-       for delta in [0.0, 0.25, 0.5, 1.0]:
-           testDataSets(method="sca-DomainGeneralization", beta=beta, delta=delta, n=n)
-           testDataSets(method="sca-DomainAdaption", beta=beta, delta=delta, n=n)
+    #for beta in [ 0.0, 0.25, 0.5, 1.0]:
+    #   for delta in [0.0, 0.25, 0.5, 1.0]:
+    #       testDataSets(method="sca-DomainGeneralization", beta=beta, delta=delta, n=n)
+    #       testDataSets(method="sca-DomainAdaption", beta=beta, delta=delta, n=n)
 
-    testDataSets(method="kda", n=n)
-    testDataSets(method="kpca", n=n)
-    testDataSets_linear(method="lda", n=n)
-    testDataSets_linear(method="pca", n=n)
+    #testDataSets(method="kda", n=n)
+    #testDataSets(method="kpca", n=n)
+    #testDataSets_linear(method="lda", n=n)
+    #testDataSets_linear(method="pca", n=n)
     # testGauss()
 
     # testGauss_KLDA()
@@ -897,18 +898,19 @@ if __name__ == '__main__':
     # testGauss_kernels()
     # testIris2()
 
-    #for centering in [True, False]:
-    #    test_LDA_Sklearn_split_treatment_dimension("kda", centering=centering)
-    #    test_LDA_Sklearn_split_treatment_dimension("kpca", centering=centering)
-    #    for beta in [0.0, 0.25, 0.5, 1.0]:
-    #        for delta in [0, 0.25, 0.5, 1.0]:
-    #            print("beta ", beta, " delta ", delta)
-    #            test_LDA_Sklearn_split_treatment_dimension("sca-DomainGeneralization", beta=beta, delta=delta,
-    #                                                       centering=centering)
-    #            test_LDA_Sklearn_split_treatment_dimension("sca-DomainAdaption", beta=beta, delta=delta,
-    #                                                       centering=centering)
+
+    for centering in [True, False]:
+        test_LDA_Sklearn_split_treatment_dimension("kda", centering=centering)
+        test_LDA_Sklearn_split_treatment_dimension("kpca", centering=centering)
+        for beta in [0.0, 0.25, 0.5, 1.0]:
+            for delta in [0, 0.25, 0.5, 1.0]:
+                print("beta ", beta, " delta ", delta)
+                test_LDA_Sklearn_split_treatment_dimension("sca-DomainGeneralization", beta=beta, delta=delta,
+                                                          centering=centering)
+                test_LDA_Sklearn_split_treatment_dimension("sca-DomainAdaption", beta=beta, delta=delta,
+                                                           centering=centering)
     #    test_LDA_Sklearn_split_treatment_Linear("lda", centering=centering)
     #    test_LDA_Sklearn_split_treatment_Linear("pca", centering=centering)
     # sca - DomainAdaption
 
-    # test_LDA_Sklearn_split_treatment_PCA("kpca")
+    #test_LDA_Sklearn_split_treatment_PCA("kpca")
