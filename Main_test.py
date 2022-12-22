@@ -307,7 +307,7 @@ def test_LDA_Sklearn_split_treatment_dimension(method="kda", centering=True, bet
         xV2 = model.transform(X_train2)
         xV3 = model.transform(X_train3)
 
-        print("contains NaN ", np.isnan(xV4).any())
+        print("contains NaN ", np.isnan(xV4).any(), " centering  ", centering)
 
         reducer = umap.UMAP()
         xV4 = reducer.fit_transform(xV4)
@@ -899,16 +899,16 @@ if __name__ == '__main__':
     # testIris2()
 
 
-    for centering in [True, False]:
-        test_LDA_Sklearn_split_treatment_dimension("kda", centering=centering)
-        test_LDA_Sklearn_split_treatment_dimension("kpca", centering=centering)
+    for ce in [False, True, False]:
+        test_LDA_Sklearn_split_treatment_dimension("kda", centering=ce)
+        test_LDA_Sklearn_split_treatment_dimension("kpca", centering=ce)
         for beta in [0.0, 0.25, 0.5, 1.0]:
             for delta in [0, 0.25, 0.5, 1.0]:
                 print("beta ", beta, " delta ", delta)
                 test_LDA_Sklearn_split_treatment_dimension("sca-DomainGeneralization", beta=beta, delta=delta,
-                                                          centering=centering)
+                                                          centering=ce)
                 test_LDA_Sklearn_split_treatment_dimension("sca-DomainAdaption", beta=beta, delta=delta,
-                                                           centering=centering)
+                                                           centering=ce)
     #    test_LDA_Sklearn_split_treatment_Linear("lda", centering=centering)
     #    test_LDA_Sklearn_split_treatment_Linear("pca", centering=centering)
     # sca - DomainAdaption
