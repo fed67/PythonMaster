@@ -60,7 +60,7 @@ def pruneDF_treatment_trail_plate_well(df, centerData=False):
             X_new[col] = X_new[col].astype(float)
 
     if centerData:
-        scaler = StandardScaler()
+        scaler = StandardScaler(with_mean=True, with_std=False)
         X = scaler.fit_transform(X_new)
     else:
         X = X_new.to_numpy()

@@ -206,7 +206,7 @@ def test_LDA_Sklearn_split_treatment_dimension(method="kda", centering=True, bet
     matplotlib.use('Agg')
     cwd = os.getcwd()
     print("Current working directory: {0}".format(cwd))
-    # data_name = "sample_130922_105529_n_10000_median.csv"
+    #data_name = "sample_130922_105429_n_1000_median.csv"
     data_name = "sample_130922_105630_n_40000_median.csv"
     treatment = "one_padded_zero_treatments.csv"
     # path = "../../Data/kardio_data/"
@@ -899,16 +899,17 @@ if __name__ == '__main__':
     # testIris2()
 
 
-    for ce in [False, True, False]:
+    for ce in [False, True]:
         test_LDA_Sklearn_split_treatment_dimension("kda", centering=ce)
         test_LDA_Sklearn_split_treatment_dimension("kpca", centering=ce)
         for beta in [0.0, 0.25, 0.5, 1.0]:
             for delta in [0, 0.25, 0.5, 1.0]:
-                print("beta ", beta, " delta ", delta)
+                print("beta ", beta, " delta ", delta, " centering ")
                 test_LDA_Sklearn_split_treatment_dimension("sca-DomainGeneralization", beta=beta, delta=delta,
                                                           centering=ce)
                 test_LDA_Sklearn_split_treatment_dimension("sca-DomainAdaption", beta=beta, delta=delta,
-                                                           centering=ce)
+                                                          centering=ce)
+
     #    test_LDA_Sklearn_split_treatment_Linear("lda", centering=centering)
     #    test_LDA_Sklearn_split_treatment_Linear("pca", centering=centering)
     # sca - DomainAdaption
