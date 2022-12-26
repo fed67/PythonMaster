@@ -725,18 +725,19 @@ def testDataSets(method="sca-DomainAdaption", beta=1.0, delta=1.0, n=10):
         g = np.array(g)
         g = np.median(g)
 
-        for gamma in [0.1, 0.5, 1.0, 10.0]:
+        #for gamma in [0.1, 0.5, 1.0, 10.0]:
+        for gamma in [0.5, 1.0, 5, 10.0, 15]:
             # for gamma in [0.1, 0.2]:
             # lda = MyKerneLDA(n_components=2, kernel=kernel, gamma=gamma)
             # lda = MyKernelPCA(n_components=2, kernel=kernel, gamma=gamma)
 
             if method == "sca-DomainAdaption":
                 lda = SCA2(n_components=2, kernel=kernel, gamma=gamma, beta=beta, delta=delta)
-                name = lda.name + " beta: " + str(beta) + " delta: " + str(delta)
+                name = "sca-DomainAdaption" + " beta: " + str(beta) + " delta: " + str(delta)
                 model = lda.fit([data.data[0]], [data.target[0]], [data.data[1]])
             elif method == "sca-DomainGeneralization":
                 lda = SCA2(n_components=2, kernel=kernel, gamma=gamma, beta=beta, delta=delta)
-                name = lda.name + " beta: " + str(beta) + " delta: " + str(delta)
+                name = "sca-DomainGeneralization" + " beta: " + str(beta) + " delta: " + str(delta)
                 model = lda.fit([data.data[0]], [data.target[0]])
                 print("Mode sca-DomainGeneralization")
             elif method == "kda":
@@ -879,13 +880,13 @@ if __name__ == '__main__':
 
     # testIris2()
     n = 100
-    #for beta in [ 0.0, 0.25, 0.5, 1.0]:
-    #   for delta in [0.0, 0.25, 0.5, 1.0]:
-    #       testDataSets(method="sca-DomainGeneralization", beta=beta, delta=delta, n=n)
-    #       testDataSets(method="sca-DomainAdaption", beta=beta, delta=delta, n=n)
+    for beta in [ 0.0, 0.25, 0.5, 1.0]:
+       for delta in [0.0, 0.25, 0.5, 1.0]:
+           testDataSets(method="sca-DomainGeneralization", beta=beta, delta=delta, n=n)
+           testDataSets(method="sca-DomainAdaption", beta=beta, delta=delta, n=n)
 
-    #testDataSets(method="kda", n=n)
-    #testDataSets(method="kpca", n=n)
+    testDataSets(method="kda", n=n)
+    testDataSets(method="kpca", n=n)
     #testDataSets_linear(method="lda", n=n)
     #testDataSets_linear(method="pca", n=n)
     # testGauss()
@@ -899,16 +900,16 @@ if __name__ == '__main__':
     # testIris2()
 
 
-    for ce in [False, True]:
-        test_LDA_Sklearn_split_treatment_dimension("kda", centering=ce)
-        test_LDA_Sklearn_split_treatment_dimension("kpca", centering=ce)
-        for beta in [0.0, 0.25, 0.5, 1.0]:
-            for delta in [0, 0.25, 0.5, 1.0]:
-                print("beta ", beta, " delta ", delta, " centering ")
-                test_LDA_Sklearn_split_treatment_dimension("sca-DomainGeneralization", beta=beta, delta=delta,
-                                                          centering=ce)
-                test_LDA_Sklearn_split_treatment_dimension("sca-DomainAdaption", beta=beta, delta=delta,
-                                                          centering=ce)
+    #for ce in [False, True]:
+    #    test_LDA_Sklearn_split_treatment_dimension("kda", centering=ce)
+    #    test_LDA_Sklearn_split_treatment_dimension("kpca", centering=ce)
+    #    for beta in [0.0, 0.25, 0.5, 1.0]:
+    #        for delta in [0, 0.25, 0.5, 1.0]:
+    #            print("beta ", beta, " delta ", delta, " centering ")
+    #            test_LDA_Sklearn_split_treatment_dimension("sca-DomainGeneralization", beta=beta, delta=delta,
+    #                                                      centering=ce)
+    #            test_LDA_Sklearn_split_treatment_dimension("sca-DomainAdaption", beta=beta, delta=delta,
+    #                                                      centering=ce)
 
     #    test_LDA_Sklearn_split_treatment_Linear("lda", centering=centering)
     #    test_LDA_Sklearn_split_treatment_Linear("pca", centering=centering)
