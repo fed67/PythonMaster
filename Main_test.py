@@ -905,6 +905,7 @@ if __name__ == '__main__':
 
     #testDataSets(method="sca-DomainGeneralization", beta=1.0, delta=1.0, n=100)
     testIris2()
+    testIris2("beta")
 
     testDataSets(method="kda", n=n)
     testDataSets(method="kpca", n=n)
