@@ -665,10 +665,10 @@ def testIris2():
 
     Plotter().plotScatter_multiple([*x_sca_train], [data.target[0]] * (len(x_sca_train)), title_sca,
                                    [{0: "0", 1: "1", 2: "2"}] * (len(x_sca_test) + 1),
-                                   title_fig="Train - {1} - {0}".format(kernel, lda.name), markerId=0, path="graphics/ToyData")
+                                   title_fig="0 - Train - {1} - {0}".format(kernel, lda.name), markerId=0, path="graphics/ToyData")
     Plotter().plotScatter_multiple([*x_sca_test], [data.target[1]] * (len(x_sca_test)), title_sca,
                                    [{0: "0", 1: "1", 2: "2"}] * (len(x_sca_test) + 1),
-                                   title_fig="Test - {1} - {0}".format(kernel, lda.name), markerId=1, path="graphics/ToyData/")
+                                   title_fig="0 - Test - {1} - {0}".format(kernel, lda.name), markerId=1, path="graphics/ToyData/")
 
     X = []
     Y = []
@@ -682,7 +682,7 @@ def testIris2():
     print("y ", len(y))
 
     Plotter().plotScatter_multipleDomains(X, Y, title_sca, [{0: "0", 1: "1", 2: "2"}] * len(title_sca),
-                                          "ScatterPlot - DomainGeneralization Transformed all Domains - {0}".format(
+                                          "0 - ScatterPlot - DomainGeneralization Transformed all Domains - {0}".format(
                                               kernel), path="graphics/ToyData/",  domainNames=["Domain 0", "Domain 1", "Domain 2"])
 
     plt.show()
@@ -727,7 +727,7 @@ def testDataSets(method="sca-DomainAdaption", beta=1.0, delta=1.0, n=10):
         g = np.median(g)
 
         #for gamma in [0.1, 0.5, 1.0, 10.0]:
-        for gamma in [0.5, 1.0, 5, 10.0]:
+        for gamma in [0.1, 0.3, 1.0, 3, 10.0]:
             # for gamma in [0.1, 0.2]:
             # lda = MyKerneLDA(n_components=2, kernel=kernel, gamma=gamma)
             # lda = MyKernelPCA(n_components=2, kernel=kernel, gamma=gamma)
@@ -777,11 +777,11 @@ def testDataSets(method="sca-DomainAdaption", beta=1.0, delta=1.0, n=10):
     Plotter().plotScatter_multiple([*x_sca_train], [data.target[0]] * (len(x_sca_train)), title_sca,
                                    [{0: "0", 1: "1", 2: "2"}] * (len(x_sca_test) + 1),
                                    title_fig="Train Domain - {1} - {0}".format(kernel, name), markerId=0,
-                                   path="graphics/ToyData/", spalten=5)
+                                   path="graphics/ToyData/", spalten=6)
     Plotter().plotScatter_multiple([*x_sca_test], [data.target[1]] * (len(x_sca_test)), title_sca,
                                    [{0: "0", 1: "1", 2: "2"}] * (len(x_sca_test) + 1),
                                    title_fig="Test Domain - {1} - {0}".format(kernel, name), markerId=1,
-                                   path="graphics/ToyData/", spalten=5)
+                                   path="graphics/ToyData/", spalten=6)
 
     # for i, x in enumerate(x_sca_train):
     #    X.append( [x_sca_train[i], x_sca_test[i]] )
@@ -791,7 +791,7 @@ def testDataSets(method="sca-DomainAdaption", beta=1.0, delta=1.0, n=10):
 
     Plotter().plotScatter_multipleDomains(X, Y, title_sca, [{0: "0", 1: "1", 2: "2"}] * len(title_sca),
                                           "All Domains {1} - {0}".format(kernel, name), path="graphics/ToyData/",
-                                          spalten=5, domainNames=["Domain 0", "Domain 1", "Domain 2"])
+                                          spalten=6, domainNames=["Domain 0", "Domain 1", "Domain 2"])
 
     plt.show()
 
@@ -881,16 +881,16 @@ if __name__ == '__main__':
 
     # testIris2()
     n = 100
-    #for beta in [ 0.0, 0.25, 0.5, 1.0]:
-    #   for delta in [0.0, 0.25, 0.5, 1.0]:
-    #       testDataSets(method="sca-DomainGeneralization", beta=beta, delta=delta, n=n)
-    #       testDataSets(method="sca-DomainAdaption", beta=beta, delta=delta, n=n)
+    for beta in [ 0.0, 0.25, 0.5, 1.0]:
+       for delta in [0.0, 0.25, 0.5, 1.0]:
+           testDataSets(method="sca-DomainGeneralization", beta=beta, delta=delta, n=n)
+           testDataSets(method="sca-DomainAdaption", beta=beta, delta=delta, n=n)
 
     #testDataSets(method="sca-DomainGeneralization", beta=1.0, delta=1.0, n=100)
     testIris2()
 
-    #testDataSets(method="kda", n=n)
-    #testDataSets(method="kpca", n=n)
+    testDataSets(method="kda", n=n)
+    testDataSets(method="kpca", n=n)
     #testDataSets_linear(method="lda", n=n)
     #testDataSets_linear(method="pca", n=n)
     # testGauss()
