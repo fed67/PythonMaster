@@ -726,7 +726,7 @@ def testDataSets(method="sca-DomainAdaption", beta=1.0, delta=1.0, n=10):
         g = np.median(g)
 
         #for gamma in [0.1, 0.5, 1.0, 10.0]:
-        for gamma in [0.5, 1.0, 5, 10.0, 15]:
+        for gamma in [0.5, 1.0, 5, 10.0]:
             # for gamma in [0.1, 0.2]:
             # lda = MyKerneLDA(n_components=2, kernel=kernel, gamma=gamma)
             # lda = MyKernelPCA(n_components=2, kernel=kernel, gamma=gamma)
