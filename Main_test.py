@@ -665,10 +665,10 @@ def testIris2():
 
     Plotter().plotScatter_multiple([*x_sca_train], [data.target[0]] * (len(x_sca_train)), title_sca,
                                    [{0: "0", 1: "1", 2: "2"}] * (len(x_sca_test) + 1),
-                                   title_fig="Train - {1} - {0}".format(kernel, lda.name), markerId=0)
+                                   title_fig="Train - {1} - {0}".format(kernel, lda.name), markerId=0, path="graphics/ToyData/",  domainNames=["Domain 0", "Domain 1", "Domain 2"])
     Plotter().plotScatter_multiple([*x_sca_test], [data.target[1]] * (len(x_sca_test)), title_sca,
                                    [{0: "0", 1: "1", 2: "2"}] * (len(x_sca_test) + 1),
-                                   title_fig="Test - {1} - {0}".format(kernel, lda.name), markerId=1)
+                                   title_fig="Test - {1} - {0}".format(kernel, lda.name), markerId=1, path="graphics/ToyData/",  domainNames=["Domain 0", "Domain 1", "Domain 2"])
 
     X = []
     Y = []
@@ -683,7 +683,7 @@ def testIris2():
 
     Plotter().plotScatter_multipleDomains(X, Y, title_sca, [{0: "0", 1: "1", 2: "2"}] * len(title_sca),
                                           "ScatterPlot - DomainGeneralization Transformed all Domains - {0}".format(
-                                              kernel))
+                                              kernel), path="graphics/ToyData/",  domainNames=["Domain 0", "Domain 1", "Domain 2"])
 
     plt.show()
 
