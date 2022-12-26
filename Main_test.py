@@ -639,11 +639,11 @@ def testIris2():
     g = np.array(g)
     g = np.median(g)
 
-    for gamma in [0.008, 0.01, g, 0.02, 0.03, 0.08, 0.1, 0.3, 0.5, 1.0, 10.0]:
+    for gamma in [0.008, 0.01, g, 0.02, 0.03, 0.08, 0.1, 0.3, 0.5, 1.0, 2.0, 3.0, 5.0, 10.0]:
         # for gamma in [0.1, 0.2]:
         # lda = MyKerneLDA(n_components=2, kernel=kernel, gamma=gamma)
         # lda = MyKernelPCA(n_components=2, kernel=kernel, gamma=gamma)
-        lda = SCA2(n_components=2, kernel=kernel, gamma=gamma)
+        lda = SCA2(n_components=2, kernel=kernel, gamma=gamma, beta=1.0, delta=1.0)
 
         title_lda.append("gamma - {0}".format(gamma))
 
@@ -686,6 +686,7 @@ def testIris2():
                                               kernel))
 
     plt.show()
+
 
 
 def testDataSets(method="sca-DomainAdaption", beta=1.0, delta=1.0, n=10):
@@ -880,13 +881,16 @@ if __name__ == '__main__':
 
     # testIris2()
     n = 100
-    for beta in [ 0.0, 0.25, 0.5, 1.0]:
-       for delta in [0.0, 0.25, 0.5, 1.0]:
-           testDataSets(method="sca-DomainGeneralization", beta=beta, delta=delta, n=n)
-           testDataSets(method="sca-DomainAdaption", beta=beta, delta=delta, n=n)
+    #for beta in [ 0.0, 0.25, 0.5, 1.0]:
+    #   for delta in [0.0, 0.25, 0.5, 1.0]:
+    #       testDataSets(method="sca-DomainGeneralization", beta=beta, delta=delta, n=n)
+    #       testDataSets(method="sca-DomainAdaption", beta=beta, delta=delta, n=n)
 
-    testDataSets(method="kda", n=n)
-    testDataSets(method="kpca", n=n)
+    #testDataSets(method="sca-DomainGeneralization", beta=1.0, delta=1.0, n=100)
+    testIris2()
+
+    #testDataSets(method="kda", n=n)
+    #testDataSets(method="kpca", n=n)
     #testDataSets_linear(method="lda", n=n)
     #testDataSets_linear(method="pca", n=n)
     # testGauss()
