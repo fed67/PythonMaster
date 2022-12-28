@@ -671,7 +671,7 @@ def testIris2(mode="gamma"):
                 x_sca_train.append(model.transform(data.data[0]))
                 x_sca_test.append(model.transform(data.data[1]))
 
-                title_sca.append("gamma - {0}".format(3))
+                title_sca.append("beta {0} delta {1} ".format(beta, delta))
 
     print("X ", X.shape)
     print("y ", y.shape)
