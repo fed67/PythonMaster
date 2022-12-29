@@ -681,6 +681,7 @@ def testIris2(mode="gamma", tp="DomainGeneralization", gamma=3.0):
 
                 title_sca.append("beta {0} delta {1} ".format(beta, delta))
 
+
     print("X ", X.shape)
     print("y ", y.shape)
     # Plotter().plotScatter_multiple([x_lda, x_sca,], [data.target[2], data.target[2]], ["KDA", "SCA"], [{0: "0", 1: "1", 2: "2"}] * 2)
@@ -690,10 +691,10 @@ def testIris2(mode="gamma", tp="DomainGeneralization", gamma=3.0):
 
     Plotter().plotScatter_multiple([*x_sca_train], [data.target[0]] * (len(x_sca_train)), title_sca,
                                    [{0: "0", 1: "1", 2: "2"}] * (len(x_sca_test) + 1),
-                                   title_fig="0 - Train - {1} - {0} - {2}".format(kernel, sca.name, mode), markerId=0, path="graphics/ToyData/")
+                                   title_fig="0 - Train - {1} - {0} - {2}".format(kernel, sca.name, tp), markerId=0, path="graphics/ToyData/")
     Plotter().plotScatter_multiple([*x_sca_test], [data.target[1]] * (len(x_sca_test)), title_sca,
                                    [{0: "0", 1: "1", 2: "2"}] * (len(x_sca_test) + 1),
-                                   title_fig="0 - Test - {1} - {0} - {2}".format(kernel, sca.name, mode), markerId=1, path="graphics/ToyData/")
+                                   title_fig="0 - Test - {1} - {0} - {2}".format(kernel, sca.name, tp), markerId=1, path="graphics/ToyData/")
 
     X = []
     Y = []
