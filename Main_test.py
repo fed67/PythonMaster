@@ -651,6 +651,8 @@ def testIris2(mode="gamma", tp="DomainGeneralization", gamma=3.0):
                 model = sca.fit([data.data[0]], [data.target[0]], [data.data[1]])
                 x_sca_train.append(model.transform(data.data[0]))
                 x_sca_test.append(model.transform(data.data[1]))
+            else:
+                print("Error tp not found")
 
             # model = lda.fit(data.data[0], data.target[0])
             # model = lda.fit( [data.data[0]], [data.target[0]], [data.data[1]])
