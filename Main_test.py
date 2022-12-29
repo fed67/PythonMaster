@@ -609,7 +609,7 @@ def test_iris():
 from DataSets import *
 
 
-def testIris2(mode="gamma"):
+def testIris2(mode="gamma", tp="DomainGeneralization"):
     np.random.seed(20)
 
     data = Gaussian(n=10)
@@ -641,19 +641,25 @@ def testIris2(mode="gamma"):
 
     if mode == "gamma":
         for gamma in [0.008, 0.01, g, 0.02, 0.03, 0.08, 0.1, 0.3, 0.5, 1.0, 2.0, 3.0, 5.0, 10.0]:
-            # lda = MyKerneLDA(n_components=2, kernel=kernel, gamma=gamma)
-            # lda = MyKernelPCA(n_components=2, kernel=kernel, gamma=gamma)
-            lda = SCA2(n_components=2, kernel=kernel, gamma=gamma, beta=1.0, delta=1.0)
+            sca = SCA2(n_components=2, kernel=kernel, gamma=gamma, beta=1.0, delta=1.0)
 
-            title_lda.append("gamma - {0}".format(gamma))
+            if tp == "DomainGeneralization":
+                model = sca.fit([data.data[0]], [data.target[0]])
+                x_sca_train.append(model.transform(data.data[0]))
+                x_sca_test.append(model.transform(data.data[1]))
+            elif tp == "DomainAdaption":
+                model = sca.fit([data.data[0]], [data.target[0]], [data.data[1]])
+                x_sca_train.append(model.transform(data.data[0]))
+                x_sca_test.append(model.transform(data.data[1]))
 
             # model = lda.fit(data.data[0], data.target[0])
             # model = lda.fit( [data.data[0]], [data.target[0]], [data.data[1]])
-            model = lda.fit([data.data[0]], [data.target[0]])
+            #model = lda.fit([data.data[0]], [data.target[0]])
 
             x_sca_train.append(model.transform(data.data[0]))
             x_sca_test.append(model.transform(data.data[1]))
 
+            title_lda.append("gamma - {0}".format(gamma))
             title_sca.append("gamma - {0}".format(gamma))
     elif mode == "beta":
         for beta in [0, 0.25, 0.5, 0.75, 1.0]:
@@ -682,10 +688,10 @@ def testIris2(mode="gamma"):
 
     Plotter().plotScatter_multiple([*x_sca_train], [data.target[0]] * (len(x_sca_train)), title_sca,
                                    [{0: "0", 1: "1", 2: "2"}] * (len(x_sca_test) + 1),
-                                   title_fig="0 - Train - {1} - {0} - {2}".format(kernel, lda.name, mode), markerId=0, path="graphics/ToyData/")
+                                   title_fig="0 - Train - {1} - {0} - {2}".format(kernel, sca.name, mode), markerId=0, path="graphics/ToyData/")
     Plotter().plotScatter_multiple([*x_sca_test], [data.target[1]] * (len(x_sca_test)), title_sca,
                                    [{0: "0", 1: "1", 2: "2"}] * (len(x_sca_test) + 1),
-                                   title_fig="0 - Test - {1} - {0} - {2}".format(kernel, lda.name, mode), markerId=1, path="graphics/ToyData/")
+                                   title_fig="0 - Test - {1} - {0} - {2}".format(kernel, sca.name, mode), markerId=1, path="graphics/ToyData/")
 
     X = []
     Y = []
@@ -699,8 +705,8 @@ def testIris2(mode="gamma"):
     print("y ", len(y))
 
     Plotter().plotScatter_multipleDomains(X, Y, title_sca, [{0: "0", 1: "1", 2: "2"}] * len(title_sca),
-                                          "0 - ScatterPlot - DomainGeneralization Transformed all Domains - {0} - {1}".format(
-                                              kernel, mode), path="graphics/ToyData/",  domainNames=["Domain 0", "Domain 1", "Domain 2"])
+                                          "0 - ScatterPlot - {2} all Domains - {0} - {1}".format(
+                                              kernel, mode, sca.name), path="graphics/ToyData/",  domainNames=["Domain 0", "Domain 1", "Domain 2"])
 
     plt.show()
 
