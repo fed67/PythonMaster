@@ -609,7 +609,7 @@ def test_iris():
 from DataSets import *
 
 
-def testIris2(mode="gamma", tp="DomainGeneralization"):
+def testIris2(mode="gamma", tp="DomainGeneralization", gamma=3.0):
     np.random.seed(20)
 
     data = Gaussian(n=10)
@@ -666,7 +666,7 @@ def testIris2(mode="gamma", tp="DomainGeneralization"):
             for delta in [0, 0.25, 0.5, 0.75, 1.0]:
                 # lda = MyKerneLDA(n_components=2, kernel=kernel, gamma=gamma)
                 # lda = MyKernelPCA(n_components=2, kernel=kernel, gamma=gamma)
-                lda = SCA2(n_components=2, kernel=kernel, gamma=3, beta=beta, delta=delta)
+                lda = SCA2(n_components=2, kernel=kernel, gamma=gamma, beta=beta, delta=delta)
 
                 title_lda.append("gamma - {0} beta {1} delta {2} ".format("3", beta, delta))
 
@@ -911,7 +911,12 @@ if __name__ == '__main__':
 
     #testDataSets(method="sca-DomainGeneralization", beta=1.0, delta=1.0, n=100)
     testIris2()
-    testIris2("beta")
+    testIris2("beta", gamma=0.3)
+    testIris2("beta", gamma=3.0)
+
+    testIris2(tp="DomainAdaption")
+    testIris2("beta", tp="DomainAdaption", gamma=0.3)
+    testIris2("beta", tp="DomainAdaption", gamma=3.0)
 
     testDataSets(method="kda", n=n)
     testDataSets(method="kpca", n=n)
