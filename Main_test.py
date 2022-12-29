@@ -906,10 +906,10 @@ if __name__ == '__main__':
 
     # testIris2()
     n = 100
-    for beta in [ 0.0, 0.25, 0.5, 1.0]:
-       for delta in [0.0, 0.25, 0.5, 1.0]:
-           testDataSets(method="sca-DomainGeneralization", beta=beta, delta=delta, n=n)
-           testDataSets(method="sca-DomainAdaption", beta=beta, delta=delta, n=n)
+    #for beta in [ 0.0, 0.25, 0.5, 1.0]:
+    #   for delta in [0.0, 0.25, 0.5, 1.0]:
+    #       testDataSets(method="sca-DomainGeneralization", beta=beta, delta=delta, n=n)
+    #       testDataSets(method="sca-DomainAdaption", beta=beta, delta=delta, n=n)
 
     #testDataSets(method="sca-DomainGeneralization", beta=1.0, delta=1.0, n=100)
     testIris2()
@@ -920,8 +920,8 @@ if __name__ == '__main__':
     testIris2("beta", tp="DomainAdaption", gamma=0.3)
     testIris2("beta", tp="DomainAdaption", gamma=3.0)
 
-    testDataSets(method="kda", n=n)
-    testDataSets(method="kpca", n=n)
+    #testDataSets(method="kda", n=n)
+    #testDataSets(method="kpca", n=n)
     #testDataSets_linear(method="lda", n=n)
     #testDataSets_linear(method="pca", n=n)
     # testGauss()
