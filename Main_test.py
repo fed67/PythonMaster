@@ -654,31 +654,24 @@ def testIris2(mode="gamma", tp="DomainGeneralization", gamma=3.0):
             else:
                 print("Error tp not found")
 
-            # model = lda.fit(data.data[0], data.target[0])
-            # model = lda.fit( [data.data[0]], [data.target[0]], [data.data[1]])
-            #model = lda.fit([data.data[0]], [data.target[0]])
-
-            x_sca_train.append(model.transform(data.data[0]))
-            x_sca_test.append(model.transform(data.data[1]))
-
             title_lda.append("gamma - {0}".format(gamma))
             title_sca.append("gamma - {0}".format(gamma))
     elif mode == "beta":
         for beta in [0, 0.25, 0.5, 0.75, 1.0]:
             for delta in [0, 0.25, 0.5, 0.75, 1.0]:
-                # lda = MyKerneLDA(n_components=2, kernel=kernel, gamma=gamma)
-                # lda = MyKernelPCA(n_components=2, kernel=kernel, gamma=gamma)
-                lda = SCA2(n_components=2, kernel=kernel, gamma=gamma, beta=beta, delta=delta)
+                sca = SCA2(n_components=2, kernel=kernel, gamma=gamma, beta=beta, delta=delta)
+                if tp == "DomainGeneralization":
+                    model = sca.fit([data.data[0]], [data.target[0]])
+                    x_sca_train.append(model.transform(data.data[0]))
+                    x_sca_test.append(model.transform(data.data[1]))
+                elif tp == "DomainAdaption":
+                    model = sca.fit([data.data[0]], [data.target[0]], [data.data[1]])
+                    x_sca_train.append(model.transform(data.data[0]))
+                    x_sca_test.append(model.transform(data.data[1]))
+                else:
+                    print("Error tp not found")
 
                 title_lda.append("gamma - {0} beta {1} delta {2} ".format("3", beta, delta))
-
-                # model = lda.fit(data.data[0], data.target[0])
-                # model = lda.fit( [data.data[0]], [data.target[0]], [data.data[1]])
-                model = lda.fit([data.data[0]], [data.target[0]])
-
-                x_sca_train.append(model.transform(data.data[0]))
-                x_sca_test.append(model.transform(data.data[1]))
-
                 title_sca.append("beta {0} delta {1} ".format(beta, delta))
 
 
