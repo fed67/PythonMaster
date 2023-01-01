@@ -918,7 +918,7 @@ if __name__ == '__main__':
     #testIris2("beta", tp="DomainAdaption", gamma=3.0)
     #testIris2("beta", tp="DomainAdaption", gamma=5.0)
     #testIris2("beta", tp="DomainAdaption", gamma=10.0)
-    for gamma in [0.1, 0.3, 0.5, 0.8, 1.0, 2.0, 3.0, 5.0, 8.0, 10.0]:
+    for gamma in [0.1, 0.3, 0.5, 0.8, 1.0, 2.0, 3.0, 4.0, 5.0, 8.0, 10.0]:
         testIris2("beta", tp="DomainAdaption", gamma=gamma)
         testIris2("beta", tp="DomainGeneralization", gamma=gamma)
 
