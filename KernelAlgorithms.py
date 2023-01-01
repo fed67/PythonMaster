@@ -123,7 +123,7 @@ class KernelAlgorithms(KernelClass):
 
         for k in range(Y.shape[1]):
             for i in range(Y.shape[0]):
-                Y[i, k] = 1/np.sqrt(self.Lambda[i]+n) * self.E[:, i].dot(K_c[:, k])
+                Y[i, k] = 1.0/np.sqrt(self.Lambda[i]*n) * self.E[:, i].dot(K_c[:, k])
         #Y = K_c.dot(self.E)
 
         return Y
