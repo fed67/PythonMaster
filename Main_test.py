@@ -680,7 +680,7 @@ def testIris2(mode="gamma", tp="DomainGeneralization", gamma=3.0):
     # Plotter().plotScatter_multiple([x_lda, x_sca,], [data.target[2], data.target[2]], ["KDA", "SCA"], [{0: "0", 1: "1", 2: "2"}] * 2)
     # Plotter().plotScatter_multiple([x_lda[2], x_sca[2] ], [data.target[1], data.target[1]], ["KDA", "SCA"],[{0: "0", 1: "1", 2: "2"}] * 2)
     # Plotter().plotScatter_multiple(x_lda, [data.target[1]]*len(x_lda), title_lda, [{0: "0", 1: "1", 2: "2"}] * len(x_lda), "KDA Three Domains - {0}".format(kernel))
-    title_sca.append("Origina Data")
+    title_sca.append("Sample")
 
     Plotter().plotScatter_multiple([*x_sca_train], [data.target[0]] * (len(x_sca_train)), title_sca,
                                    [{0: "0", 1: "1", 2: "2"}] * (len(x_sca_test) + 1),
