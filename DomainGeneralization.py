@@ -689,9 +689,10 @@ class SCA2(KernelClass):
         #eigenValues, eigenVectors = np.linalg.eig(np.linalg.inv(B).dot(A))
 
         #realV = np.logical_and(eigenValues.imag == 0, eigenValues.real != np.inf)
+        realV = eigenValues.real != np.inf
         #realV = eigenValues.imag == 0
-        #eigenValues = eigenValues[realV].real
-        #eigenVectors = eigenVectors[:, realV].real
+        eigenValues = eigenValues[realV].real
+        eigenVectors = eigenVectors[:, realV].real
         eigenValues, eigenVectors = eigenValues.real, eigenVectors.real
 
         idx = (eigenValues).argsort()[::-1]
