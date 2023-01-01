@@ -790,7 +790,7 @@ def testDataSets(method="sca-DomainAdaption", beta=1.0, delta=1.0, n=10):
         x_sca_train.append(data.data[0])
         x_sca_test.append(data.data[1])
 
-        title_sca.append("Origina Data")
+        title_sca.append("Sample")
 
     Plotter().plotScatter_multiple([*x_sca_train], [data.target[0]] * (len(x_sca_train)), title_sca,
                                    [{0: "0", 1: "1", 2: "2"}] * (len(x_sca_test) + 1),
@@ -867,9 +867,9 @@ def testDataSets_linear(method="lda", n=10):
         x_sca_train.append(data.data[0])
         x_sca_test.append(data.data[1])
 
-        title_sca.append("Origina Data")
+        title_sca.append("Sample")
 
-    print("len ", len(x_sca_train), " test ", len(x_sca_test) )
+    #print("len ", len(x_sca_train), " test ", len(x_sca_test) )
     figsize = (10,10)
 
     Plotter().plotScatter_multiple([*x_sca_train], [data.target[0]] * (len(x_sca_train)), title_sca,
@@ -901,10 +901,10 @@ if __name__ == '__main__':
 
     # testIris2()
     n = 100
-    #for beta in [ 0.0, 0.25, 0.5, 0.75, 1.0]:
-    #   for delta in [0.0, 0.25, 0.5, 0.75, 1.0]:
-    #       testDataSets(method="sca-DomainGeneralization", beta=beta, delta=delta, n=n)
-    #       testDataSets(method="sca-DomainAdaption", beta=beta, delta=delta, n=n)
+    for beta in [ 0.0, 0.25, 0.5, 0.75, 1.0]:
+       for delta in [0.0, 0.25, 0.5, 0.75, 1.0]:
+           testDataSets(method="sca-DomainGeneralization", beta=beta, delta=delta, n=n)
+           testDataSets(method="sca-DomainAdaption", beta=beta, delta=delta, n=n)
 
     #testDataSets(method="sca-DomainGeneralization", beta=1.0, delta=1.0, n=100)
     #testIris2()
