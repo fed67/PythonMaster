@@ -85,11 +85,8 @@ class KernelAlgorithms(KernelClass):
 
         self.eigvals = eigvals
 
-        print("eigenvec shape ", eigvecs.shape)
-        print("n ", n, " k ", k)
-
         self.E = eigvecs[:, 0:self.n_components]
-        self.l = eigvals[0:self.n_components]
+        self.Lambda = eigvals[0:self.n_components]
 
         return self
 
