@@ -697,15 +697,13 @@ def testIris2(mode="gamma", tp="DomainGeneralization", gamma=3.0):
     #X.append(data.data)
     #Y.append(data.target)
 
-    print("X ", len(X))
-    print("y ", len(y))
 
     Plotter().plotScatter_multipleDomains(X, Y, title_sca, [{0: "0", 1: "1", 2: "2"}] * len(title_sca),
                                           "0 - ScatterPlot - {2} all Domains - {0} - {1} gamma {3}".format(
                                               kernel, mode, sca.name, gamma), path="graphics/ToyData/",  domainNames=["Domain 0", "Domain 1", "Domain 2"])
 
-    plt.show()
-
+    #plt.show()
+    plt.close()
 
 
 def testDataSets(method="sca-DomainAdaption", beta=1.0, delta=1.0, n=10):
@@ -813,7 +811,8 @@ def testDataSets(method="sca-DomainAdaption", beta=1.0, delta=1.0, n=10):
                                           "All Domains {1} - {0}".format(kernel, name), path="graphics/ToyData/",
                                           spalten=6, domainNames=["Domain 0", "Domain 1", "Domain 2"])
 
-    plt.show()
+    #plt.show()
+    plt.close()
 
 def testDataSets_linear(method="lda", n=10):
     #matplotlib.use('Agg')
@@ -892,7 +891,8 @@ def testDataSets_linear(method="lda", n=10):
                                           "All Domains - {0}".format(name), path="graphics/ToyData/",
                                           spalten=2, domainNames=["Domain 0", "Domain 1", "Domain 2"], figsize=figsize)
 
-    plt.show()
+    #plt.show()
+    plt.close()
 
 
 
