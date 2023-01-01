@@ -66,12 +66,7 @@ class KernelAlgorithms(KernelClass):
         if self.n_components is None:
             self.n_components = X.shape[0]-1
 
-        #print("gamma ", self.gamma)
-        #print("c0 ", self.c0)
         k = self.n_components
-
-        #print("k ", k)
-
 
         self.X = X.T
 
@@ -88,11 +83,6 @@ class KernelAlgorithms(KernelClass):
 
         eigvals, eigvecs = eigvals[::-1], eigvecs[:, ::-1]
 
-        Y = np.zeros((n,k))
-        #print("shape ", Y.shape)
-
-        #X_pc = np.column_stack( eigvecs[:,i] for i in range(k))
-
         self.eigvals = eigvals
 
         print("eigenvec shape ", eigvecs.shape)
@@ -101,19 +91,6 @@ class KernelAlgorithms(KernelClass):
         self.E = eigvecs[:, 0:self.n_components]
         self.l = eigvals[0:self.n_components]
 
-
-        #for g in range(n):
-        #    for j in range(k):
-        #        sum = 0
-        #        for i in range(n):
-        #            sum = sum + eigvecs[i,j] * K[g,i]
-        #            #Y[:,k0] = X_pc.dot(K[:,i])
-        #        Y[g, j] = sum
-
-        #print("Y")
-        #print(Y)
-
-        #return Y
         return self
 
 #https://github.com/scikit-learn/scikit-learn/blob/f3f51f9b611bf873bd5836748647221480071a87/sklearn/preprocessing/_data.py#L2126
@@ -137,27 +114,20 @@ class KernelAlgorithms(KernelClass):
             for j in range(X_new.shape[1]):
                 K_XY[i, j] = self.f(self.X[:, i], X_new[:, j])
 
-        print("K.shape ", K_XY.shape)
-        print("E.shape ", self.E.shape)
+
         n, _ = K_XY.shape
         one_n = np.ones((n, n)) * 1.0 / float(n)
-        print("ones.shape ", one_n.shape)
+
         K_c = np.zeros((self.X.shape[1], X_new.shape[1]))
         a=1.0 / float(n) ** 2 * np.sum(np.sum(self.K_XX, axis=1), axis=0)
         for i in range(self.X.shape[1]):
             for j in range(X_new.shape[1]):
                 K_c[i, j] = self.f(self.X[:, i], X_new[:, j]) + 1.0/float(n) * np.sum(self.K_XX[i,:]) + 1.0/float(n) * np.sum(K_XY[j,:]) + a
 
-        #K =
-
-        #Y = self.E.T.dot(Kc)
         for k in range(Y.shape[1]):
             for i in range(Y.shape[0]):
-                #print("shape ar ", self.E[:,i].dot(Kc[k,:]))
-                #self.E[:, i].dot(Kc[k, :])
-                #Y[i, k] = 1.0/(float(n)*self.l[i]) * self.E[:,i].dot(K_c[:, k])
-                Y[i, k] = self.E[:, i].dot(K_c[:, k])
-
+                Y[i, k] = 1/np.sqrt(self.Lambda[i]+n) * self.E[:, i].dot(K_c[:, k])
+        #Y = K_c.dot(self.E)
 
         return Y
 
@@ -363,10 +333,6 @@ class KernelAlgorithms(KernelClass):
         Xr = self.transform_kernelLDA(Xt)
         m,n = Xr.shape
 
-        #print("xr shape ", Xr.shape)
-        #print("xr shape ", Xr[0,:].shape)
-        #print("xr shape ", Xr[:, 0].shape)
-
         y = []
 
         for i in range(n):
@@ -421,8 +387,8 @@ class MyKerneLDA:
 class MyKernelPCA:
 
     def __init__(self, n_components, kernel="linear", gamma=None, degree=None):
-        #self.pca = KernelAlgorithms(n_components=n_components, kernel=kernel)
-        self.pca = KernelPCA(n_components=n_components, kernel=kernel)
+        self.pca = KernelAlgorithms(n_components=n_components, kernel=kernel)
+        #self.pca = KernelPCA(n_components=n_components, kernel=kernel)
         self.kernel = kernel
         self.name = "KPCA"
 
@@ -433,14 +399,14 @@ class MyKernelPCA:
 
     def fit(self, X, y=None):
         print("kernel ", self.kernel, " X n: ", X.shape[0], " m: ", X.shape[1])
-        #self.model = self.pca.fit_KernelPCA(X)
+        self.model = self.pca.fit_KernelPCA(X)
         #self.model.computeClassifier(X, y)
         #self.model = self.pca.fit(X)
         return self
 
     def transform(self, X):
-        #return self.model.transform_kernelPCA(X).T
-        return self.pca.fit_transform(X)
+        return self.model.transform_kernelPCA(X).T
+        #return self.pca.fit_transform(X)
 
     #def predict(self, X):
     #    return self.model.predict(X)

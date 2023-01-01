@@ -766,7 +766,8 @@ def testDataSets(method="sca-DomainAdaption", beta=1.0, delta=1.0, n=10):
                 model = lda.fit(data.data[0], data.target[0])
                 print("Mode KDA")
             elif method == "kpca":
-                lda = KernelPCA(n_components=2, kernel=kernel, gamma=gamma)
+                #lda = KernelPCA(n_components=2, kernel=kernel, gamma=gamma)
+                lda = MyKernelPCA(n_components=2, kernel=kernel, gamma=gamma)
                 name = "KPCA"
                 model = lda.fit(data.data[0], data.target[0])
                 print("Mode KDA")
@@ -900,26 +901,26 @@ if __name__ == '__main__':
 
     # testIris2()
     n = 100
-    for beta in [ 0.0, 0.25, 0.5, 0.75, 1.0]:
-       for delta in [0.0, 0.25, 0.5, 0.75, 1.0]:
-           testDataSets(method="sca-DomainGeneralization", beta=beta, delta=delta, n=n)
-           testDataSets(method="sca-DomainAdaption", beta=beta, delta=delta, n=n)
+    #for beta in [ 0.0, 0.25, 0.5, 0.75, 1.0]:
+    #   for delta in [0.0, 0.25, 0.5, 0.75, 1.0]:
+    #       testDataSets(method="sca-DomainGeneralization", beta=beta, delta=delta, n=n)
+    #       testDataSets(method="sca-DomainAdaption", beta=beta, delta=delta, n=n)
 
     #testDataSets(method="sca-DomainGeneralization", beta=1.0, delta=1.0, n=100)
-    testIris2()
-    testIris2("beta", gamma=0.3)
-    testIris2("beta", gamma=3.0)
-    testIris2("beta", gamma=5.0)
-    testIris2("beta", gamma=10.0)
+    #testIris2()
+    #testIris2("beta", gamma=0.3)
+    #testIris2("beta", gamma=3.0)
+    #testIris2("beta", gamma=5.0)
+    #testIris2("beta", gamma=10.0)
 
-    testIris2(tp="DomainAdaption")
-    testIris2("beta", tp="DomainAdaption", gamma=0.3)
-    testIris2("beta", tp="DomainAdaption", gamma=3.0)
-    testIris2("beta", tp="DomainAdaption", gamma=5.0)
-    testIris2("beta", tp="DomainAdaption", gamma=10.0)
+    #testIris2(tp="DomainAdaption")
+    #testIris2("beta", tp="DomainAdaption", gamma=0.3)
+    #testIris2("beta", tp="DomainAdaption", gamma=3.0)
+    #testIris2("beta", tp="DomainAdaption", gamma=5.0)
+    #testIris2("beta", tp="DomainAdaption", gamma=10.0)
 
-    #testDataSets(method="kda", n=n)
-    #testDataSets(method="kpca", n=n)
+    testDataSets(method="kda", n=n)
+    testDataSets(method="kpca", n=n)
     #testDataSets_linear(method="lda", n=n)
     #testDataSets_linear(method="pca", n=n)
     # testGauss()
