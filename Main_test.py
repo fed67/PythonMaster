@@ -924,8 +924,8 @@ if __name__ == '__main__':
 
     testDataSets(method="kda", n=n)
     testDataSets(method="kpca", n=n)
-    #testDataSets_linear(method="lda", n=n)
-    #testDataSets_linear(method="pca", n=n)
+    testDataSets_linear(method="lda", n=n)
+    testDataSets_linear(method="pca", n=n)
     # testGauss()
 
     # testGauss_KLDA()
@@ -937,9 +937,9 @@ if __name__ == '__main__':
     # testIris2()
 
 
-    #for ce in [False, True]:
-    #    test_LDA_Sklearn_split_treatment_dimension("kda", centering=ce)
-    #    test_LDA_Sklearn_split_treatment_dimension("kpca", centering=ce)
+    for ce in [False, True]:
+        test_LDA_Sklearn_split_treatment_dimension("kda", centering=ce)
+        test_LDA_Sklearn_split_treatment_dimension("kpca", centering=ce)
     #    for beta in [0.0, 0.25, 0.5, 1.0]:
     #        for delta in [0, 0.25, 0.5, 1.0]:
     #            print("beta ", beta, " delta ", delta, " centering ")
