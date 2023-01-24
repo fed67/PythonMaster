@@ -706,7 +706,7 @@ def testIris2(mode="gamma", tp="DomainGeneralization", gamma=3.0):
     plt.close()
 
 
-def testDataSets(method="sca-DomainAdaption", beta=1.0, delta=1.0, n=10):
+def testDataSets(method="sca-DomainAdaption", beta=1.0, delta=1.0, gamma=3.0, n=10, useBeta_Delta=False):
     matplotlib.use('Agg')
     np.random.seed(20)
 
@@ -733,6 +733,18 @@ def testDataSets(method="sca-DomainAdaption", beta=1.0, delta=1.0, n=10):
     X = []
     Y = []
 
+    gamma_ = [0.1, 0.3, 1.0, 3, 10.0]
+    beta_  = len(gamma)*[beta]
+    delta_ = len(gamma) * [delta]
+    items = zip(gamma_, beta_, delta_)
+    if useBeta_Delta:
+        m = itertools.product(beta, delta)
+        gamma_ = [gamma]*len(m)
+        b,d = zip(*m)
+        items = zip(gamma, b, d)
+    print(items)
+
+
     for counter, tp in enumerate([(0, 1.0, 0.0), (3.14, 1.0, 0.0), (0, 10, 0.0), (3.14, 10, 0.0), (0.0, 1.0, 5.0),
                               (3.14, 1.0, 5.0)]):
         rot, scale, shear = tp
@@ -745,10 +757,8 @@ def testDataSets(method="sca-DomainAdaption", beta=1.0, delta=1.0, n=10):
         g = np.median(g)
 
         #for gamma in [0.1, 0.5, 1.0, 10.0]:
-        for gamma in [0.1, 0.3, 1.0, 3, 10.0]:
-            # for gamma in [0.1, 0.2]:
-            # lda = MyKerneLDA(n_components=2, kernel=kernel, gamma=gamma)
-            # lda = MyKernelPCA(n_components=2, kernel=kernel, gamma=gamma)
+        #for gamma in [0.1, 0.3, 1.0, 3, 10.0]:
+        for gamma,  beta, delta in items:
 
             if method == "sca-DomainAdaption":
                 lda = SCA2(n_components=2, kernel=kernel, gamma=gamma, beta=beta, delta=delta)
@@ -771,6 +781,7 @@ def testDataSets(method="sca-DomainAdaption", beta=1.0, delta=1.0, n=10):
                 model = lda.fit(data.data[0], data.target[0])
                 print("Mode KDA")
 
+
             title_lda.append("$\gamma$={0}".format(gamma))
 
             # model = lda.fit(data.data[0], data.target[0])
@@ -784,7 +795,10 @@ def testDataSets(method="sca-DomainAdaption", beta=1.0, delta=1.0, n=10):
             X.append([train, test])
             Y.append([data.target[0], data.target[1]])
 
-            title_sca.append("$\gamma$={0}".format(gamma))
+            if useBeta_Delta == False:
+                title_sca.append("$\gamma$={0}".format(gamma))
+            else:
+                title_sca.append("$\beta$={0} $\delta$={1}".format(beta, delta))
 
         X.append(data.data)
         Y.append(data.target)
