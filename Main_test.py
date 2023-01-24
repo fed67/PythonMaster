@@ -734,14 +734,14 @@ def testDataSets(method="sca-DomainAdaption", beta=[1.0], delta=[1.0], gamma=[3.
     Y = []
 
     gamma_ = [0.1, 0.3, 1.0, 3, 10.0]
-    beta_  = len(gamma)*[beta]
-    delta_ = len(gamma) * [delta]
+    beta_  = len(gamma)*beta
+    delta_ = len(gamma) * delta
     items = list( zip(gamma_, beta_, delta_) )
     if useBeta_Delta:
         m = itertools.product(beta, delta)
-        gamma_ = [gamma]*len(m)
+        gamma_ = gamma*len(m)
         b,d = zip(*m)
-        items = list( zip(gamma, b, d) )
+        items = list( zip(gamma_, b, d) )
     print(items)
 
 
