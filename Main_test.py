@@ -654,8 +654,8 @@ def testIris2(mode="gamma", tp="DomainGeneralization", gamma=3.0):
             else:
                 print("Error tp not found")
 
-            title_lda.append("gamma - {0}".format(gamma))
-            title_sca.append("gamma - {0}".format(gamma))
+            title_lda.append("$\gamma$={0}".format(gamma))
+            title_sca.append("$\gamma$={0}".format(gamma))
     elif mode == "beta":
         for beta in [0, 0.25, 0.5, 0.75, 1.0]:
             for delta in [0, 0.25, 0.5, 0.75, 1.0]:
@@ -671,8 +671,8 @@ def testIris2(mode="gamma", tp="DomainGeneralization", gamma=3.0):
                 else:
                     print("Error tp not found")
 
-                title_lda.append("gamma - {0} beta {1} delta {2} ".format("3", beta, delta))
-                title_sca.append("beta {0} delta {1} ".format(beta, delta))
+                title_lda.append("$\gamma$={0} $\beta$={1} $\delta$={2} ".format("3", beta, delta))
+                title_sca.append("$\beta$={0} $\delta$={1} ".format(beta, delta))
 
 
     print("X ", X.shape)
@@ -699,7 +699,7 @@ def testIris2(mode="gamma", tp="DomainGeneralization", gamma=3.0):
 
 
     Plotter().plotScatter_multipleDomains(X, Y, title_sca, [{0: "0", 1: "1", 2: "2"}] * len(title_sca),
-                                          "0 - ScatterPlot - {2} all Domains - {0} - {1} gamma {3}".format(
+                                          "0 - ScatterPlot - {2} all Domains - {0} - {1} $\gamma$={3}".format(
                                               kernel, mode, sca.name, gamma), path="graphics/ToyData/",  domainNames=["Domain 0", "Domain 1", "Domain 2"])
 
     #plt.show()
@@ -744,7 +744,7 @@ def testDataSets(method="sca-DomainAdaption", beta=1.0, delta=1.0, n=10):
         g = np.median(g)
 
         #for gamma in [0.1, 0.5, 1.0, 10.0]:
-        for gamma in [0.1, 0.3, 1.0, 3, 10.0]:
+        for couner, gamma in enumerate([0.1, 0.3, 1.0, 3, 10.0]):
             # for gamma in [0.1, 0.2]:
             # lda = MyKerneLDA(n_components=2, kernel=kernel, gamma=gamma)
             # lda = MyKernelPCA(n_components=2, kernel=kernel, gamma=gamma)
@@ -770,7 +770,7 @@ def testDataSets(method="sca-DomainAdaption", beta=1.0, delta=1.0, n=10):
                 model = lda.fit(data.data[0], data.target[0])
                 print("Mode KDA")
 
-            title_lda.append("gamma - {0}".format(gamma))
+            title_lda.append("$\gamma$={0}".format(gamma))
 
             # model = lda.fit(data.data[0], data.target[0])
             # model = lda.fit( [data.data[0]], [data.target[0]], [data.data[1]])
@@ -783,14 +783,14 @@ def testDataSets(method="sca-DomainAdaption", beta=1.0, delta=1.0, n=10):
             X.append([train, test])
             Y.append([data.target[0], data.target[1]])
 
-            title_sca.append("gamma - {0}".format(gamma))
+            title_sca.append("$\gamma$={0}".format(gamma))
 
         X.append(data.data)
         Y.append(data.target)
         x_sca_train.append(data.data[0])
         x_sca_test.append(data.data[1])
 
-        title_sca.append("Sample")
+        title_sca.append("Sample {0}".format(counter))
 
     Plotter().plotScatter_multiple([*x_sca_train], [data.target[0]] * (len(x_sca_train)), title_sca,
                                    [{0: "0", 1: "1", 2: "2"}] * (len(x_sca_test) + 1),
@@ -838,8 +838,9 @@ def testDataSets_linear(method="lda", n=10):
     X = []
     Y = []
 
-    for rot, scale, shear in [(0, 1.0, 0.0), (3.14, 1.0, 0.0), (0, 10, 0.0), (3.14, 10, 0.0), (0.0, 1.0, 5.0), (3.14, 1.0, 5.0)]:
+    for counter, tp in [(0, 1.0, 0.0), (3.14, 1.0, 0.0), (0, 10, 0.0), (3.14, 10, 0.0), (0.0, 1.0, 5.0), (3.14, 1.0, 5.0)]:
     #for rot, scale, shear in [(0, 1.0, 0.0), (3.14, 1.0, 0.0), (0.0, 1.0, 5.0), (3.14, 1.0, 5.0)]:
+        rot, scale, shear = tp
         data.twoDomains2_roate(n=50, rot=rot, scale=scale, shear=shear)
 
         if method == "lda":
@@ -867,7 +868,7 @@ def testDataSets_linear(method="lda", n=10):
         x_sca_train.append(data.data[0])
         x_sca_test.append(data.data[1])
 
-        title_sca.append("Sample")
+        title_sca.append("Sample {0}".format(counter))
 
     #print("len ", len(x_sca_train), " test ", len(x_sca_test) )
     figsize = (10,10)
