@@ -759,6 +759,7 @@ def testDataSets(method="sca-DomainAdaption", beta=[1.0], delta=[1.0], gamma=[3.
         #for gamma in [0.1, 0.5, 1.0, 10.0]:
         #for gamma in [0.1, 0.3, 1.0, 3, 10.0]:
         for gamma,  beta, delta in items:
+            print("gamma ", gamma, " beta ", beta, " delta ", delta)
 
             if method == "sca-DomainAdaption":
                 lda = SCA2(n_components=2, kernel=kernel, gamma=gamma, beta=beta, delta=delta)
