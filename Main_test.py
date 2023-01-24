@@ -706,7 +706,7 @@ def testIris2(mode="gamma", tp="DomainGeneralization", gamma=3.0):
     plt.close()
 
 
-def testDataSets(method="sca-DomainAdaption", beta=1.0, delta=1.0, gamma=3.0, n=10, useBeta_Delta=False):
+def testDataSets(method="sca-DomainAdaption", beta=[1.0], delta=[1.0], gamma=[3.0], n=10, useBeta_Delta=False):
     matplotlib.use('Agg')
     np.random.seed(20)
 
@@ -919,8 +919,11 @@ if __name__ == '__main__':
     n = 100
     for beta in [ 0.0, 0.25, 0.5, 0.75, 1.0]:
        for delta in [0.0, 0.25, 0.5, 0.75, 1.0]:
-           testDataSets(method="sca-DomainGeneralization", beta=beta, delta=delta, n=n)
-           testDataSets(method="sca-DomainAdaption", beta=beta, delta=delta, n=n)
+           testDataSets(method="sca-DomainGeneralization", beta=[beta], delta=[delta], n=n)
+           testDataSets(method="sca-DomainAdaption", beta=[beta], delta=[delta], n=n)
+
+
+    testDataSets(method="sca-DomainGeneralization", beta=[0, 0.3, 0.6, 1.0], delta=[0, 0.3, 0.6, 1.0], gamma=[3.0], n=n)
 
     #testDataSets(method="sca-DomainGeneralization", beta=1.0, delta=1.0, n=100)
     #testIris2()
