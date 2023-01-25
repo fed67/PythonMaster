@@ -654,8 +654,8 @@ def testIris2(mode="gamma", tp="DomainGeneralization", gamma=3.0):
             else:
                 print("Error tp not found")
 
-            title_lda.append("$\gamma$={0}".format(gamma))
-            title_sca.append("$\gamma$={0}".format(gamma))
+            title_lda.append(r"$\gamma$={0}".format(gamma))
+            title_sca.append(r"$\gamma$={0}".format(gamma))
     elif mode == "beta":
         for beta in [0, 0.25, 0.5, 0.75, 1.0]:
             for delta in [0, 0.25, 0.5, 0.75, 1.0]:
@@ -671,8 +671,8 @@ def testIris2(mode="gamma", tp="DomainGeneralization", gamma=3.0):
                 else:
                     print("Error tp not found")
 
-                title_lda.append("$\gamma$={0} $\beta$={1} $\delta$={2} ".format("3", beta, delta))
-                title_sca.append("$\beta$={0} $\delta$={1} ".format(beta, delta))
+                title_lda.append(r"$\gamma$={0} $\beta$={1} $\delta$={2} ".format("3", beta, delta))
+                title_sca.append(r"$\beta$={0} $\delta$={1} ".format(beta, delta))
 
 
     print("X ", X.shape)
@@ -783,7 +783,7 @@ def testDataSets(method="sca-DomainAdaption", beta=[1.0], delta=[1.0], gamma=[3.
                 print("Mode KDA")
 
 
-            title_lda.append("$\gamma$={0}".format(gamma))
+            title_lda.append(r"$\gamma$={0}".format(gamma))
 
             # model = lda.fit(data.data[0], data.target[0])
             # model = lda.fit( [data.data[0]], [data.target[0]], [data.data[1]])
@@ -797,9 +797,9 @@ def testDataSets(method="sca-DomainAdaption", beta=[1.0], delta=[1.0], gamma=[3.
             Y.append([data.target[0], data.target[1]])
 
             if useBeta_Delta == False:
-                title_sca.append("$\gamma$={0}".format(gamma))
+                title_sca.append(r"$\gamma$={0}".format(gamma))
             else:
-                title_sca.append("$\beta$={0} $\delta$={1}".format(beta, delta))
+                title_sca.append(r"$\beta$={0} $\delta$={1}".format(beta, delta))
 
         X.append(data.data)
         Y.append(data.target)
