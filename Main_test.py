@@ -854,7 +854,7 @@ def testDataSets_linear(method="lda", n=10):
     X = []
     Y = []
 
-    for counter, tp in [(0, 1.0, 0.0), (3.14, 1.0, 0.0), (0, 10, 0.0), (3.14, 10, 0.0), (0.0, 1.0, 5.0), (3.14, 1.0, 5.0)]:
+    for counter, tp in enumerate([(0, 1.0, 0.0), (3.14, 1.0, 0.0), (0, 10, 0.0), (3.14, 10, 0.0), (0.0, 1.0, 5.0), (3.14, 1.0, 5.0)]):
     #for rot, scale, shear in [(0, 1.0, 0.0), (3.14, 1.0, 0.0), (0.0, 1.0, 5.0), (3.14, 1.0, 5.0)]:
         rot, scale, shear = tp
         data.twoDomains2_roate(n=50, rot=rot, scale=scale, shear=shear)
