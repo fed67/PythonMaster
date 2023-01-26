@@ -657,8 +657,8 @@ def testIris2(mode="gamma", tp="DomainGeneralization", gamma=3.0):
             title_lda.append(r"$\gamma$={0}".format(gamma))
             title_sca.append(r"$\gamma$={0}".format(gamma))
     elif mode == "beta":
-        for beta in [0, 0.25, 0.5, 0.75, 1.0]:
-            for delta in [0, 0.25, 0.5, 0.75, 1.0]:
+        for beta in [0, 0.3, 0.6, 1.0]:
+            for delta in [0, 0.3, 0.6, 1.0]:
                 sca = SCA2(n_components=2, kernel=kernel, gamma=gamma, beta=beta, delta=delta)
                 if tp == "DomainGeneralization":
                     model = sca.fit([data.data[0]], [data.target[0]])
@@ -744,11 +744,16 @@ def testDataSets(method="sca-DomainAdaption", beta=[1.0], delta=[1.0], gamma=[3.
         items = list( zip(gamma_, b, d) )
     print(items)
 
-
+    samples = []
+    samples_y = []
+    samples_title = []
     for counter, tp in enumerate([(0, 1.0, 0.0), (3.14, 1.0, 0.0), (0, 10, 0.0), (3.14, 10, 0.0), (0.0, 1.0, 5.0),
                               (3.14, 1.0, 5.0)]):
         rot, scale, shear = tp
         data.twoDomains2_roate(n=50, rot=rot, scale=scale, shear=shear)
+        samples.append( [samples.data[0].deepcopy(), samples.data[1].deepcopy()] )
+        samples_y.append([samples.target[0].deepcopy(), samples.target[1].deepcopy()])
+        samples_title.append("Sample {0}".format(counter))
         g = []
         for i in range(data.X.shape[0]):
             for j in range(data.X.shape[0]):
@@ -826,6 +831,10 @@ def testDataSets(method="sca-DomainAdaption", beta=[1.0], delta=[1.0], gamma=[3.
     Plotter().plotScatter_multipleDomains(X, Y, title_sca, [{0: "0", 1: "1", 2: "2"}] * len(title_sca),
                                           "All Domains {1} - {0}".format(kernel, name), path="graphics/ToyData/",
                                           spalten=6, domainNames=["Domain 0", "Domain 1", "Domain 2"])
+
+    Plotter().plotScatter_multipleDomains(samples, samples_y, samples_title, [{0: "0", 1: "1", 2: "2"}] * len(samples_title),
+                                          "Toy Samples", path="graphics/ToyData/",
+                                          spalten=1, domainNames=["Domain 0", "Domain 1", "Domain 2"])
 
     #plt.show()
     plt.close()
