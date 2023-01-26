@@ -7,7 +7,7 @@ from sklearn.decomposition import *
 
 from KernelAlgorithms import *
 from DomainGeneralization import *
-
+import copy
 
 def test_Kernel_LDA_Sklearn_MaxLarge_split_treatment_kernels():
     data_name = "sample_130922_105630_n_40000_median.csv"
@@ -751,8 +751,8 @@ def testDataSets(method="sca-DomainAdaption", beta=[1.0], delta=[1.0], gamma=[3.
                               (3.14, 1.0, 5.0)]):
         rot, scale, shear = tp
         data.twoDomains2_roate(n=50, rot=rot, scale=scale, shear=shear)
-        samples.append( [data.data[0].deepcopy(), data.data[1].deepcopy()] )
-        samples_y.append([data.target[0].deepcopy(), data.target[1].deepcopy()])
+        samples.append( [ copy.deepcopy(data.data[0]), copy.deepcopy(data.data[1])] )
+        samples_y.append([copy.deepcopy(data.target[0]), copy.deepcopy(data.target[1])])
         samples_title.append("Sample {0}".format(counter))
         g = []
         for i in range(data.X.shape[0]):
