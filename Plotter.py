@@ -396,7 +396,7 @@ class Plotter:
         print("s ", s)
         plt.savefig(s)
 
-    def plotScatter_multipleDomains(cls, domains, domainClasses =[], title_=[], labels_=[], title_fig="", path="graphics/", spalten=None, domainNames=None, figsize=(20, 10)):
+    def plotScatter_multipleDomains(cls, domains, domainClasses =[], title_=[], labels_=[], title_fig="", path="graphics/", spalten=None, domainNames=None, figsize=(20, 10), fileName_Append=""):
         import math
 
         if spalten is None:
@@ -481,7 +481,7 @@ class Plotter:
 
         fig.suptitle(title_fig)
         fig.tight_layout()
-        s = path + title_fig+'.svg'
+        s = path + title_fig+fileName_Append+'.svg'
         plt.savefig(fname=s)
 
 def plot_unsupervised_umap_tsne_mds(cls, df, color, titles=[], label=[], title_fig="", write_to_svg=False):

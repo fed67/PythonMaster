@@ -813,6 +813,11 @@ def testDataSets(method="sca-DomainAdaption", beta=[1.0], delta=[1.0], gamma=[3.
 
         title_sca.append("Sample {0}".format(counter))
 
+
+    fileName_Append = "-gamma-"
+    if useBeta_Delta:
+        fileName_Append = "-beta_delt-a"
+
     Plotter().plotScatter_multiple([*x_sca_train], [data.target[0]] * (len(x_sca_train)), title_sca,
                                    [{0: "0", 1: "1", 2: "2"}] * (len(x_sca_test) + 1),
                                    title_fig="Train Domain - {1} - {0}".format(kernel, name), markerId=0,
