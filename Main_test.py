@@ -733,7 +733,7 @@ def testDataSets(method="sca-DomainAdaption", beta=[1.0], delta=[1.0], gamma=[3.
     X = []
     Y = []
 
-    gamma_ = [0.1, 0.3, 1.0, 3, 10.0]
+    gamma_ = [0.1, 0.3, 1.0, 3] # [0.1, 0.3, 1.0, 3, 10.0]
     beta_  = len(gamma_)*beta
     delta_ = len(gamma_) * delta
     items = list( zip(gamma_, beta_, delta_) )
@@ -803,7 +803,7 @@ def testDataSets(method="sca-DomainAdaption", beta=[1.0], delta=[1.0], gamma=[3.
                 for i  in range(0, len(samples)):
                     X.append([samples[i][0], samples[i][1]])
                     Y.append([samples_y[i][0], samples_y[i][1]])
-                    title_sca.append("Sample {0}".format(i))
+                    title_sca.append("Sample {0}".format(i+1))
             else:
                 title_sca.append(r"$\beta$={0} $\delta$={1}".format(beta, delta))
 
