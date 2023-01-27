@@ -734,8 +734,8 @@ def testDataSets(method="sca-DomainAdaption", beta=[1.0], delta=[1.0], gamma=[3.
     Y = []
 
     gamma_ = [0.1, 0.3, 1.0, 3, 10.0]
-    beta_  = len(gamma)*beta
-    delta_ = len(gamma) * delta
+    beta_  = len(gamma_)*beta
+    delta_ = len(gamma_) * delta
     items = list( zip(gamma_, beta_, delta_) )
     if useBeta_Delta:
         m = itertools.product(beta, delta)
@@ -971,9 +971,9 @@ if __name__ == '__main__':
     # testIris2()
 
 
-    for ce in [False, True]:
-        test_LDA_Sklearn_split_treatment_dimension("kda", centering=ce)
-        test_LDA_Sklearn_split_treatment_dimension("kpca", centering=ce)
+    #for ce in [False, True]:
+    #    test_LDA_Sklearn_split_treatment_dimension("kda", centering=ce)
+    #    test_LDA_Sklearn_split_treatment_dimension("kpca", centering=ce)
     #    for beta in [0.0, 0.25, 0.5, 1.0]:
     #        for delta in [0, 0.25, 0.5, 1.0]:
     #            print("beta ", beta, " delta ", delta, " centering ")
