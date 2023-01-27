@@ -744,11 +744,11 @@ def testDataSets(method="sca-DomainAdaption", beta=[1.0], delta=[1.0], gamma=[3.
         items = list( zip(gamma_, b, d) )
     print(items)
 
+    rotations = [(0, 1.0, 0.0), (3.14, 1.0, 0.0), (0, 10, 0.0), (3.14, 10, 0.0), (0.0, 1.0, 5.0), (3.14, 1.0, 5.0)]
     samples = []
     samples_y = []
     samples_title = []
-    for counter, tp in enumerate([(0, 1.0, 0.0), (3.14, 1.0, 0.0), (0, 10, 0.0), (3.14, 10, 0.0), (0.0, 1.0, 5.0),
-                              (3.14, 1.0, 5.0)]):
+    for counter, tp in enumerate(rotations):
         rot, scale, shear = tp
         data.twoDomains2_roate(n=50, rot=rot, scale=scale, shear=shear)
         samples.append( [ copy.deepcopy(data.data[0]), copy.deepcopy(data.data[1])] )
@@ -798,11 +798,12 @@ def testDataSets(method="sca-DomainAdaption", beta=[1.0], delta=[1.0], gamma=[3.
             x_sca_train.append(train)
             x_sca_test.append(test)
 
-            X.append([train, test])
-            Y.append([data.target[0], data.target[1]])
-
             if useBeta_Delta == False:
                 title_sca.append(r"$\gamma$={0}".format(gamma))
+                for i  in range(0, len(samples)):
+                    X.append([samples[i][0], samples[i][1]])
+                    Y.append([samples_y[i][0], samples_y[i][1]])
+                    title_sca.append("Sample {0}".format(i))
             else:
                 title_sca.append(r"$\beta$={0} $\delta$={1}".format(beta, delta))
 
@@ -811,12 +812,13 @@ def testDataSets(method="sca-DomainAdaption", beta=[1.0], delta=[1.0], gamma=[3.
         x_sca_train.append(data.data[0])
         x_sca_test.append(data.data[1])
 
-        title_sca.append("Sample {0}".format(counter))
+
 
 
     fileName_Append = "-gamma-"
     if useBeta_Delta:
         fileName_Append = "-beta_delt-a"
+
 
     Plotter().plotScatter_multiple([*x_sca_train], [data.target[0]] * (len(x_sca_train)), title_sca,
                                    [{0: "0", 1: "1", 2: "2"}] * (len(x_sca_test) + 1),
@@ -839,7 +841,7 @@ def testDataSets(method="sca-DomainAdaption", beta=[1.0], delta=[1.0], gamma=[3.
 
     Plotter().plotScatter_multipleDomains(samples, samples_y, samples_title, [{0: "0", 1: "1", 2: "2"}] * len(samples_title),
                                           "Toy Samples", path="graphics/ToyData/",
-                                          spalten=6, domainNames=["Domain 0", "Domain 1", "Domain 2"], fileName_Append=fileName_Append)
+                                          spalten=6, domainNames=["Domain 0", "Domain 1", "Domain 2"], fileName_Append=fileName_Append, figsize=(4,10))
 
     #plt.show()
     plt.close()
@@ -931,7 +933,7 @@ if __name__ == '__main__':
     # test_Kernel_LDA_Sklearn_MaxLarge_split_treatment_kernels()
 
     # testIris2()
-    n = 100
+    n = 10
     for beta in [ 0.0, 0.25, 0.5, 0.75, 1.0]:
        for delta in [0.0, 0.25, 0.5, 0.75, 1.0]:
            testDataSets(method="sca-DomainGeneralization", beta=[beta], delta=[delta], n=n)
