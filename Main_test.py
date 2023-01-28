@@ -841,7 +841,7 @@ def testDataSets(method="sca-DomainAdaption", beta=[1.0], delta=[1.0], gamma=[3.
 
     Plotter().plotScatter_multipleDomains(samples, samples_y, samples_title, [{0: "0", 1: "1", 2: "2"}] * len(samples_title),
                                           "Toy Samples", path="graphics/ToyData/",
-                                          spalten=6, domainNames=["Domain 0", "Domain 1", "Domain 2"], fileName_Append=fileName_Append, figsize=(4,10))
+                                          spalten=6, domainNames=["Domain 0", "Domain 1", "Domain 2"], fileName_Append=fileName_Append, figsize=(20,2))
 
     #plt.show()
     plt.close()
@@ -932,21 +932,22 @@ def testDataSets_linear(method="lda", n=10):
 if __name__ == '__main__':
     # test_Kernel_LDA_Sklearn_MaxLarge_split_treatment_kernels()
 
+    testDataSets(method="sca-DomainAdaption", beta=[0.0], delta=[0.0], n=10)
     # testIris2()
     n = 10
-    for beta in [ 0.0, 0.25, 0.5, 0.75, 1.0]:
-       for delta in [0.0, 0.25, 0.5, 0.75, 1.0]:
-           testDataSets(method="sca-DomainGeneralization", beta=[beta], delta=[delta], n=n)
-           testDataSets(method="sca-DomainAdaption", beta=[beta], delta=[delta], n=n)
+    #for beta in [ 0.0, 0.25, 0.5, 0.75, 1.0]:
+    #   for delta in [0.0, 0.25, 0.5, 0.75, 1.0]:
+    #       testDataSets(method="sca-DomainGeneralization", beta=[beta], delta=[delta], n=n)
+    #       testDataSets(method="sca-DomainAdaption", beta=[beta], delta=[delta], n=n)
 
 
     #testDataSets(method="sca-DomainGeneralization", beta=[0, 0.3, 0.6, 1.0], delta=[0, 0.3, 0.6, 1.0], gamma=[3.0], n=n)
 
     #testDataSets(method="sca-DomainGeneralization", beta=1.0, delta=1.0, n=100)
     #testIris2()
-    testIris2("beta", gamma=0.3)
-    testIris2("beta", gamma=3.0)
-    testIris2("beta", gamma=5.0)
+    #testIris2("beta", gamma=0.3)
+    #testIris2("beta", gamma=3.0)
+    #testIris2("beta", gamma=5.0)
     #testIris2("beta", gamma=10.0)
 
     #testIris2(tp="DomainAdaption")
