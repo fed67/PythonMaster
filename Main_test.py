@@ -936,14 +936,14 @@ def testDataSets_linear(method="lda", n=10):
 if __name__ == '__main__':
     # test_Kernel_LDA_Sklearn_MaxLarge_split_treatment_kernels()
 
-    testDataSets(method="sca-DomainGeneralization", beta=[0.0], delta=[0.0], n=10)
-    testDataSets(method="sca-DomainAdaption", beta=[0.0], delta=[0.0], n=10)
+    #testDataSets(method="sca-DomainGeneralization", beta=[0.0], delta=[0.0], n=10)
+    #testDataSets(method="sca-DomainAdaption", beta=[0.0], delta=[0.0], n=10)
     # testIris2()
     n = 100
-    for beta in [ 0.0, 0.25, 0.5, 0.75, 1.0]:
-       for delta in [0.0, 0.25, 0.5, 0.75, 1.0]:
-           testDataSets(method="sca-DomainGeneralization", beta=[beta], delta=[delta], n=n)
-           testDataSets(method="sca-DomainAdaption", beta=[beta], delta=[delta], n=n)
+    #for beta in [ 0.0, 0.25, 0.5, 0.75, 1.0]:
+    #   for delta in [0.0, 0.25, 0.5, 0.75, 1.0]:
+    #       testDataSets(method="sca-DomainGeneralization", beta=[beta], delta=[delta], n=n)
+    #       testDataSets(method="sca-DomainAdaption", beta=[beta], delta=[delta], n=n)
 
 
     #testDataSets(method="sca-DomainGeneralization", beta=[0, 0.3, 0.6, 1.0], delta=[0, 0.3, 0.6, 1.0], gamma=[3.0], n=n)
@@ -965,10 +965,10 @@ if __name__ == '__main__':
     #    testIris2("beta", tp="DomainAdaption", gamma=gamma)
     #    testIris2("beta", tp="DomainGeneralization", gamma=gamma)
 
-    #testDataSets(method="kda", n=n)
-    #testDataSets(method="kpca", n=n)
-    #testDataSets_linear(method="lda", n=n)
-    #testDataSets_linear(method="pca", n=n)
+    testDataSets(method="kda", n=n)
+    testDataSets(method="kpca", n=n)
+    testDataSets_linear(method="lda", n=n)
+    testDataSets_linear(method="pca", n=n)
     # testGauss()
 
     # testGauss_KLDA()
