@@ -458,7 +458,7 @@ class Plotter:
                 #red_patch = mpatches.Patch(color='red', label='The red data')
                 #ax[j0].scatter(x=[0], y=[0], c='red', label="cross", alpha=0.0)
 
-            if len(domains) == 1 and isinstance(ax, np.ndarray):
+            if len(domains) == 1:
                 axis = ax
             elif zeilen > 1:
                 axis = ax[i0, j0]
