@@ -1110,8 +1110,3 @@ if __name__ == '__main__':
     #    test_LDA_Sklearn_split_treatment_Linear("lda", centering=centering)
     #    test_LDA_Sklearn_split_treatment_Linear("pca", centering=centering)
     # sca - DomainAdaption
-
-    #test_LDA_Sklearn_split_treatment_PCA("kpca")
-    test_LDA_Sklearn_original(centering=False)
-    #test_LDA_Sklearn_split_treatment_Linear(method="pca", centering=False)
-    #test_LDA_Sklearn_split_treatment_Linear(method="lda", centering=False)
