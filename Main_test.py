@@ -467,9 +467,7 @@ def test_LDA_Sklearn_split_treatment_Linear(method="pca", centering=True):  # sc
         xV4 = model.transform(X_test)
 
         V = model.transform(X_train)
-
-
-    print("contains NaN ", np.isnan(xV4).any())
+    #print("contains NaN ", np.isnan(xV4).any())
 
     reducer = umap.UMAP()
     xV4 = reducer.fit_transform(xV4)

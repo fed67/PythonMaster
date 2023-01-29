@@ -455,7 +455,7 @@ class Plotter:
                     #for key, value in labels_[dpi][c].items():
                     #    label[key] = value+" Domain "+str(i)
                     #print("plotId ", dpi, " domain ", i, " elx ", elx.shape, " ely ", ely.shape)
-                    print("len(domains) ", len(domains))
+                    #print("len(domains) ", len(domains))
                     if len(domains) == 1:
                         ax.scatter(x=elx, y=ely, c=cls.myColors[c], label=label, marker=cls.myMarker[i], alpha=0.4)
                         ax.set_title(title_[dpi])
