@@ -524,7 +524,7 @@ def test_LDA_Sklearn_split_treatment_Linear(method="pca", centering=True):  # sc
     # Plotter().plotScatter_multipleDomains(x_test_list, y_test_list, titles, [inv_map] * len(y_test_list), title_fig="Test - {1} - {0}".format(kernel, alg.name))
 
     Plotter().plotScatter_multipleDomains([x_all[0]], [y_all[0]],
-                                          [titles[0], "Original"], [inv_map] * 1,
+                                          [titles[0]], [inv_map] * 1,
                                           title_fig="{0} Center {1} - Train V1,V2,V3 Test V4".format(name, centering), domainNames=["V1", "V2", "V3", "V4"])
     plt.figtext(0.5, 0.01,
                 "UMAP Plot\nDimension of train data: rows: {0}; features: {1}\n sample: {2}".format(X_train.shape[0],
@@ -1110,3 +1110,5 @@ if __name__ == '__main__':
 
     #test_LDA_Sklearn_split_treatment_PCA("kpca")
     test_LDA_Sklearn_original(centering=False)
+    test_LDA_Sklearn_split_treatment_Linear(method="pca", centering=False)
+    test_LDA_Sklearn_split_treatment_Linear(method="lda", centering=False)
