@@ -340,7 +340,8 @@ class Plotter:
         if spalten is None:
             spalten = max(d, 2)
         zeilen = math.ceil(len(dfs) / spalten)
-        #print("zeilen ", zeilen)
+
+        print("zeilen ", zeilen, " spalten ", spalten)
         #print("spalten ", spalten)
         #print("len(embedding_l)  ", len(embedding_l) )
 
