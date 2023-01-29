@@ -646,7 +646,7 @@ def test_LDA_Sklearn_original(method="pca",  centering=False):  # sca-DomainAdap
     Plotter().plotScatter_multipleDomains([x_all[0]], [y_all[0]],
                                           [titles[0], "Original"], [inv_map] * 1,
                                           title_fig="Sample Domains",
-                                          domainNames=["V1", "V2", "V3", "V4"])
+                                          domainNames=["V1", "V2", "V3", "V4"], spalten=1)
     plt.figtext(0.5, 0.01,
                 "UMAP Plot\nDimension of train data: rows: {0}; features: {1}\n sample: {2}".format(X_train.shape[0],
                                                                                                     X_test.shape[1],
