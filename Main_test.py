@@ -644,7 +644,7 @@ def test_LDA_Sklearn_original(method="pca",  centering=False):  # sca-DomainAdap
     Plotter().plotScatter_multiple([X_V4_list[0]], [y_test_list[0]], [titles[0]], [inv_map] * 1, title_fig="Sample - Center {0}".format(centering))
 
     Plotter().plotScatter_multipleDomains([x_all[0]], [y_all[0]],
-                                          [titles[0], "Original"], [inv_map] * 1,
+                                          [""], [inv_map] * 1,
                                           title_fig="Sample Domains",
                                           domainNames=["V1", "V2", "V3", "V4"], spalten=1)
     plt.figtext(0.5, 0.01,
