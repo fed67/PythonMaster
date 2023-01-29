@@ -364,7 +364,15 @@ class Plotter:
                     #https://matplotlib.org/stable/gallery/color/named_colors.html
                     label = labels[kk][unique[i]]
 
-                    if(zeilen > 1):
+                    if len(dfs) == 1:
+                        ax.scatter(x=elx, y=ely, c=cls.myColors[unique[i]], label=label,  marker=cls.myMarker[markerId], alpha=0.4)
+                        ax.grid(True)
+                        # x.legend(loc='upper right')
+                        lgd = ax[i0, j0].legend(bbox_to_anchor=(1.1, 1.05))
+                        ax.set_xlabel("x")
+                        ax.set_ylabel("y")
+                        ax.set_title(titles[kk])
+                    elif(zeilen > 1):
                         ax[i0, j0].scatter(x=elx, y=ely, c=cls.myColors[unique[i]], label=label, marker=cls.myMarker[markerId], alpha=0.4)
                         ax[i0, j0].grid(True)
                         # ax.legend(loc='upper right')
@@ -398,9 +406,11 @@ class Plotter:
 
     def plotScatter_multipleDomains(cls, domains, domainClasses =[], title_=[], labels_=[], title_fig="", path="graphics/", spalten=None, domainNames=None, figsize=(20, 10), fileName_Append=""):
         import math
+        print("Runs pr9nt Scatter")
 
         if spalten is None:
             spalten = max( math.ceil(len(domains)**0.5), 2)
+
         zeilen = math.ceil(len(domains) / spalten)
         print("spalten ", spalten, " zeilen ", zeilen)
         print("len(domains) ", len(domains), " len(class) ", len(domainClasses), " titles ", len(title_), " label ", len(labels_))
@@ -423,8 +433,6 @@ class Plotter:
                 #print("y.shape ", y.shape)
                 #print("domain.shape ", domain.shape)
 
-                #for c in unique:
-                plts = []
                 for ic in range(len(unique)):
 
                     c = unique[ic]
@@ -443,6 +451,7 @@ class Plotter:
                     #for key, value in labels_[dpi][c].items():
                     #    label[key] = value+" Domain "+str(i)
                     #print("plotId ", dpi, " domain ", i, " elx ", elx.shape, " ely ", ely.shape)
+                    print("len(domains) ", len(domains))
                     if len(domains) == 1:
                         ax.scatter(x=elx, y=ely, c=cls.myColors[c], label=label, marker=cls.myMarker[i], alpha=0.4)
                         ax.set_title(title_[dpi])
