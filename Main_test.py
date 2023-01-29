@@ -468,6 +468,7 @@ def test_LDA_Sklearn_split_treatment_Linear(method="pca", centering=True):  # sc
 
         V = model.transform(X_train)
 
+
     print("contains NaN ", np.isnan(xV4).any())
 
     reducer = umap.UMAP()
@@ -540,6 +541,118 @@ def test_LDA_Sklearn_split_treatment_Linear(method="pca", centering=True):  # sc
     #                                                                                                X_test.shape[1],
     #                                                                                                data_name), wrap=True,
     #            horizontalalignment='center', fontweight='bold')
+    plt.show()
+
+
+def test_LDA_Sklearn_original(method="pca",  centering=False):  # sca-DomainAdaption, sca-DomainGeneralization, kpca
+    cwd = os.getcwd()
+    matplotlib.use('Agg')
+    print("Current working directory: {0}".format(cwd))
+    # data_name = "sample_130922_105529_n_10000_median.csv"
+    data_name = "sample_130922_105630_n_40000_median.csv"
+    treatment = "one_padded_zero_treatments.csv"
+    path = "../../Data/kardio_data/"
+
+    df_data = pd.read_csv(path + data_name)
+
+    variant = ["in groupBy treatment", "in groupBy treatment+trial"]
+    group_size = 25
+
+    X_list = []
+    titles = []
+    y = []
+
+
+    _, dfc = get_table_with_class2(df_data, path + treatment)
+
+    dfc, inv_map = string_column_to_int_class(dfc, "treatment")
+
+    df_train = compute_mean_of_group_size_on_treatment(dfc.loc[dfc["trial"].isin(['V1', 'V2', 'V3'])], group_size)
+    X_train, y_train = pruneDF_treatment_trail_plate_well(df_train)
+
+    df_all = compute_mean_of_group_size_on_treatment(dfc.loc[dfc["trial"].isin(['V1', 'V2', 'V3', 'V4'])], group_size)
+    X_all, y_train = pruneDF_treatment_trail_plate_well(df_train)
+
+    df_train_V1 = compute_mean_of_group_size_on_treatment(dfc.loc[dfc["trial"].isin(['V1'])], group_size)
+    df_train_V2 = compute_mean_of_group_size_on_treatment(dfc.loc[dfc["trial"].isin(['V2'])], group_size)
+    df_train_V3 = compute_mean_of_group_size_on_treatment(dfc.loc[dfc["trial"].isin(['V3'])], group_size)
+    df_train_V4 = compute_mean_of_group_size_on_treatment(dfc.loc[dfc["trial"].isin(['V4'])], group_size)
+
+    X_train1, y_train1 = pruneDF_treatment_trail_plate_well(df_train_V1, centering)
+    X_train2, y_train2 = pruneDF_treatment_trail_plate_well(df_train_V2, centering)
+    X_train3, y_train3 = pruneDF_treatment_trail_plate_well(df_train_V3, centering)
+
+    # df_test = compute_mean_of_group_size_on_treatment(dfc.loc[dfc["trial"] == 'V4'], group_size)
+    df_test = compute_mean_of_group_size_on_treatment(dfc.loc[dfc["trial"].isin(['V4'])], group_size)
+    X_test, y_test = pruneDF_treatment_trail_plate_well(df_test, centering)
+
+    X_V1_list = []
+    X_V2_list = []
+    X_V3_list = []
+    X_V4_list = []
+
+    x_train_list = []
+    x_test_list = []
+    y_train_list = []
+    y_test_list = []
+
+    x_all = []
+    y_all = []
+
+
+    xV1 = X_train1
+    xV2 = X_train2
+    xV3 = X_train3
+    xV4 = X_test
+    V = X_train
+
+    print("contains NaN ", np.isnan(xV4).any())
+
+    reducer = umap.UMAP()
+    xV4 = reducer.fit_transform(xV4)
+    xV1 = reducer.fit_transform(xV1)
+    xV2 = reducer.fit_transform(xV2)
+    xV3 = reducer.fit_transform(xV3)
+    V = reducer.fit_transform(V)
+
+    X_V4_list.append(xV4)
+    X_V1_list.append(xV1)
+    X_V2_list.append(xV2)
+    X_V3_list.append(xV3)
+
+    x_test_list.append([xV4])
+    x_train_list.append(V)
+    x_all.append([xV1, xV2, xV3, xV4])
+
+    y_test_list.append(y_test)
+    y_train_list.append(y_train)
+    # y_train_list.append(y_test)
+    y_all.append([y_train1, y_train2, y_train3, y_test])
+
+    y.append([*y_train1, *y_train2, *y_train3, *y_test])
+    titles.append("")
+
+    reducer = umap.UMAP()
+    original_all = [reducer.fit_transform(X_train1)]
+    original_all.append(reducer.fit_transform(X_train2))
+    original_all.append(reducer.fit_transform(X_train3))
+    original_all.append(reducer.fit_transform(X_test))
+
+    original_all_y = [y_train1, y_train2, y_train3, y_test]
+
+
+    Plotter().plotScatter_multiple([X_V4_list[0]], [y_test_list[0]], [titles[0]], [inv_map] * 1, title_fig="Sample - Center {0}".format(centering))
+
+    Plotter().plotScatter_multipleDomains([x_all[0]], [y_all[0]],
+                                          [titles[0], "Original"], [inv_map] * 1,
+                                          title_fig="Sample Domains",
+                                          domainNames=["V1", "V2", "V3", "V4"])
+    plt.figtext(0.5, 0.01,
+                "UMAP Plot\nDimension of train data: rows: {0}; features: {1}\n sample: {2}".format(X_train.shape[0],
+                                                                                                    X_test.shape[1],
+                                                                                                    data_name),
+                wrap=True, horizontalalignment='center', fontweight='bold')
+
     plt.show()
 
 
@@ -996,3 +1109,4 @@ if __name__ == '__main__':
     # sca - DomainAdaption
 
     #test_LDA_Sklearn_split_treatment_PCA("kpca")
+    test_LDA_Sklearn_original(centering=False)
