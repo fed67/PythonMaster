@@ -366,6 +366,9 @@ class Plotter:
                     label = labels[kk][unique[i]]
 
                     if len(dfs) == 1:
+
+                        print("len(ax) ", ax.size)
+                        ax[0,0].scatter(x=elx, y=ely, c=cls.myColors[unique[i]], label=label, marker=cls.myMarker[markerId], alpha=0.4)
                         ax[0].scatter(x=elx, y=ely, c=cls.myColors[unique[i]], label=label,  marker=cls.myMarker[markerId], alpha=0.4)
                         ax[0].grid(True)
                         # x.legend(loc='upper right')
