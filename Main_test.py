@@ -515,7 +515,7 @@ def test_LDA_Sklearn_split_treatment_Linear(method="pca", centering=True):  # sc
     # Plotter().plotUmap_multiple(X_list , y, titles, [inv_map]*len(X_list))
     # Plotter().scatter(X_list[0], y, titles[0], inv_map)
     Plotter().plotScatter_multiple([X_V4_list[0]], [y_test_list[0]], [titles[0]],
-                                   [inv_map] * 1, title_fig="{0} Center {1} V4-Only".format(name, centering))
+                                   [inv_map] * 1, title_fig="{0} Center {1} V4-Only".format(name, centering), spalten=1)
     #Plotter().plotScatter_multiple([*X_V4_list[8:16], X_test], [*y_test_list[8:16], y_test], [*titles[0:8], "Original"],
     #                               [inv_map] * len(X_V4_list), title_fig="{0} Center {1} V4-Only".format(name, center))
 
@@ -525,7 +525,7 @@ def test_LDA_Sklearn_split_treatment_Linear(method="pca", centering=True):  # sc
 
     Plotter().plotScatter_multipleDomains([x_all[0]], [y_all[0]],
                                           [titles[0]], [inv_map] * 1,
-                                          title_fig="{0} Center {1} - Train V1,V2,V3 Test V4".format(name, centering), domainNames=["V1", "V2", "V3", "V4"])
+                                          title_fig="{0} Center {1} - Train V1,V2,V3 Test V4".format(name, centering), domainNames=["V1", "V2", "V3", "V4"], spalten=1)
     plt.figtext(0.5, 0.01,
                 "UMAP Plot\nDimension of train data: rows: {0}; features: {1}\n sample: {2}".format(X_train.shape[0],
                                                                                                     X_test.shape[1],
