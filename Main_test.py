@@ -381,7 +381,7 @@ def test_LDA_Sklearn_split_treatment_Linear(method="pca", centering=True):  # sc
     # data_name = "sample_130922_105529_n_10000_median.csv"
     data_name = "sample_130922_105630_n_40000_median.csv"
     treatment = "one_padded_zero_treatments.csv"
-    path = "../../Data/kardio_data/"
+    path = "../Data/"
 
     df_data = pd.read_csv(path + data_name)
 
@@ -551,7 +551,7 @@ def test_LDA_Sklearn_original(method="pca",  centering=False):  # sca-DomainAdap
     # data_name = "sample_130922_105529_n_10000_median.csv"
     data_name = "sample_130922_105630_n_40000_median.csv"
     treatment = "one_padded_zero_treatments.csv"
-    path = "../../Data/kardio_data/"
+    path = "../Data/"
 
     df_data = pd.read_csv(path + data_name)
 
