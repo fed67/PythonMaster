@@ -366,8 +366,8 @@ class Plotter:
                     label = labels[kk][unique[i]]
 
                     if len(dfs) == 1:
-                        ax.scatter(x=elx, y=ely, c=cls.myColors[unique[i]], label=label,  marker=cls.myMarker[markerId], alpha=0.4)
-                        ax.grid(True)
+                        ax[0,0].scatter(x=elx, y=ely, c=cls.myColors[unique[i]], label=label,  marker=cls.myMarker[markerId], alpha=0.4)
+                        ax[0,0].grid(True)
                         # x.legend(loc='upper right')
                         lgd = ax[i0, j0].legend(bbox_to_anchor=(1.1, 1.05))
                         ax.set_xlabel("x")

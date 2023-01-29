@@ -1078,11 +1078,11 @@ if __name__ == '__main__':
     #    testIris2("beta", tp="DomainAdaption", gamma=gamma)
     #    testIris2("beta", tp="DomainGeneralization", gamma=gamma)
 
-    testDataSets(method="kda", n=n)
-    testDataSets(method="kpca", n=n)
-    testDataSets_linear(method="lda", n=n)
-    testDataSets_linear(method="pca", n=n)
-    # testGauss()
+    #testDataSets(method="kda", n=n)
+    #testDataSets(method="kpca", n=n)
+    #testDataSets_linear(method="lda", n=n)
+    #testDataSets_linear(method="pca", n=n)
+
 
     # testGauss_KLDA()
     # testGauss_kernels()
