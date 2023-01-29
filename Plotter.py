@@ -443,7 +443,10 @@ class Plotter:
                     #for key, value in labels_[dpi][c].items():
                     #    label[key] = value+" Domain "+str(i)
                     #print("plotId ", dpi, " domain ", i, " elx ", elx.shape, " ely ", ely.shape)
-                    if zeilen > 1:
+                    if len(domains) == 1:
+                        ax.scatter(x=elx, y=ely, c=cls.myColors[c], label=label, marker=cls.myMarker[i], alpha=0.4)
+                        ax.set_title(title_[dpi])
+                    elif zeilen > 1:
                         ax[i0, j0].scatter(x=elx, y=ely, c=cls.myColors[c], label=label, marker=cls.myMarker[i], alpha=0.4)
                         ax[i0, j0].set_title(title_[dpi])
                         #lgd = ax[i0, j0].legend(bbox_to_anchor=(1.1, 1.05))
@@ -455,7 +458,9 @@ class Plotter:
                 #red_patch = mpatches.Patch(color='red', label='The red data')
                 #ax[j0].scatter(x=[0], y=[0], c='red', label="cross", alpha=0.0)
 
-            if zeilen > 1:
+            if len(domains) == 1:
+                axis = ax
+            elif zeilen > 1:
                 axis = ax[i0, j0]
             else:
                 axis = ax[j0]
