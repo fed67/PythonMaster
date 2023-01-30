@@ -1047,6 +1047,7 @@ def testDataSets_linear(method="lda", n=10):
 if __name__ == '__main__':
 
     n = 50
+    testDataSets(method="sca-DomainGeneralization", beta=[0], delta=[0], n=n)
     #for beta in [ 0.0, 0.25, 0.5, 0.75, 1.0]:
     #   for delta in [0.0, 0.25, 0.5, 0.75, 1.0]:
     #       testDataSets(method="sca-DomainGeneralization", beta=[beta], delta=[delta], n=n)
