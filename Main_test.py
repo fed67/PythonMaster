@@ -956,7 +956,7 @@ def testDataSets(method="sca-DomainAdaption", beta=[1.0], delta=[1.0], gamma=[3.
 
     Plotter().plotScatter_multipleDomains(samples, samples_y, samples_title, [{0: "0", 1: "1", 2: "2"}] * len(samples_title),
                                           "Toy Samples", path="graphics/ToyData/",
-                                          spalten=6, domainNames=["Domain 0", "Domain 1", "Domain 2"], fileName_Append=fileName_Append, figsize=(20,2))
+                                          spalten=3, domainNames=["Domain 0", "Domain 1", "Domain 2"], fileName_Append=fileName_Append, figsize=(20,2))
 
     #plt.show()
     plt.close()
