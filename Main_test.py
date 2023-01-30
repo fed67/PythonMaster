@@ -1015,7 +1015,7 @@ def testDataSets_linear(method="lda", n=10):
         x_sca_train.append(data.data[0])
         x_sca_test.append(data.data[1])
 
-        title_sca.append("Sample {0}".format(counter))
+        title_sca.append("Sample {0}".format(counter+1))
 
     #print("len ", len(x_sca_train), " test ", len(x_sca_test) )
     figsize = (10,10)
@@ -1078,8 +1078,8 @@ if __name__ == '__main__':
 
     #testDataSets(method="kda", n=n)
     #testDataSets(method="kpca", n=n)
-    #testDataSets_linear(method="lda", n=n)
-    #testDataSets_linear(method="pca", n=n)
+    testDataSets_linear(method="lda", n=n)
+    testDataSets_linear(method="pca", n=n)
 
 
     # testGauss_KLDA()
@@ -1091,12 +1091,13 @@ if __name__ == '__main__':
     # testIris2()
 
 
-    for ce in [False, True]:
-        test_LDA_Sklearn_original(centering=ce)
-        test_LDA_Sklearn_split_treatment_Linear(method="pca", centering=ce)
-        test_LDA_Sklearn_split_treatment_Linear(method="lda", centering=ce)
-        test_LDA_Sklearn_split_treatment_dimension("kda", centering=ce)
-        test_LDA_Sklearn_split_treatment_dimension("kpca", centering=ce)
+    #for ce in [False, True]:
+    #    test_LDA_Sklearn_original(centering=ce)
+    #    test_LDA_Sklearn_split_treatment_Linear(method="pca", centering=ce)
+    #    test_LDA_Sklearn_split_treatment_Linear(method="lda", centering=ce)
+    #    test_LDA_Sklearn_split_treatment_dimension("kda", centering=ce)
+    #    test_LDA_Sklearn_split_treatment_dimension("kpca", centering=ce)
+
     #    for beta in [0.0, 0.25, 0.5, 1.0]:
     #        for delta in [0, 0.25, 0.5, 1.0]:
     #            print("beta ", beta, " delta ", delta, " centering ")
