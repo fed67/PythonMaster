@@ -1045,11 +1045,7 @@ def testDataSets_linear(method="lda", n=10):
 
 
 if __name__ == '__main__':
-    # test_Kernel_LDA_Sklearn_MaxLarge_split_treatment_kernels()
 
-    #testDataSets(method="sca-DomainGeneralization", beta=[0.0], delta=[0.0], n=10)
-    #testDataSets(method="sca-DomainAdaption", beta=[0.0], delta=[0.0], n=10)
-    # testIris2()
     n = 50
     #for beta in [ 0.0, 0.25, 0.5, 0.75, 1.0]:
     #   for delta in [0.0, 0.25, 0.5, 0.75, 1.0]:
