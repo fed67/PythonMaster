@@ -988,7 +988,7 @@ def testDataSets_linear(method="lda", n=10):
     for counter, tp in enumerate([(0, 1.0, 0.0), (3.14, 1.0, 0.0), (0, 10, 0.0), (3.14, 10, 0.0), (0.0, 1.0, 5.0), (3.14, 1.0, 5.0)]):
     #for rot, scale, shear in [(0, 1.0, 0.0), (3.14, 1.0, 0.0), (0.0, 1.0, 5.0), (3.14, 1.0, 5.0)]:
         rot, scale, shear = tp
-        data.twoDomains2_roate(n=50, rot=rot, scale=scale, shear=shear)
+        data.twoDomains2_roate(n=n, rot=rot, scale=scale, shear=shear)
 
         if method == "lda":
             lda = LinearDiscriminantAnalysis(n_components=2)
@@ -1050,7 +1050,7 @@ if __name__ == '__main__':
     #testDataSets(method="sca-DomainGeneralization", beta=[0.0], delta=[0.0], n=10)
     #testDataSets(method="sca-DomainAdaption", beta=[0.0], delta=[0.0], n=10)
     # testIris2()
-    n = 100
+    n = 50
     #for beta in [ 0.0, 0.25, 0.5, 0.75, 1.0]:
     #   for delta in [0.0, 0.25, 0.5, 0.75, 1.0]:
     #       testDataSets(method="sca-DomainGeneralization", beta=[beta], delta=[delta], n=n)
