@@ -10,6 +10,8 @@ class Gaussian:
         self.init_twoDomains2(n)
         self.init_threeDomains2(n)
 
+        self.map = { 0: "0", 1: "1", 2: "2"}
+
         #self.plot()
 
     def init_twoDomains(self, n: int = 10):
@@ -194,8 +196,6 @@ class Gaussian:
         #x2 = np.concatenate((c0_, c1_, c2_), axis=0)
 
         C0 = np.concatenate((C0_, C1_, C2_), axis=0)
-
-
 
         s = np.sin(rot)
         c = np.cos(rot)

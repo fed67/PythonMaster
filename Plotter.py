@@ -413,7 +413,10 @@ class Plotter:
         print("Runs pr9nt Scatter")
 
         if spalten is None:
-            spalten = max( math.ceil(len(domains)**0.5), 2)
+            if len(domains) > 1:
+                spalten = max( math.ceil(len(domains)**0.5), 2)
+            else:
+                spalten = 1
 
         zeilen = math.ceil(len(domains) / spalten)
         print("spalten ", spalten, " zeilen ", zeilen)
@@ -434,12 +437,14 @@ class Plotter:
                 #print( "i ", i, " marker ", cls.myMarker[i] )
                 unique = np.unique( dC[i] )
                 y = dC[i]
-                #print("y.shape ", y.shape)
-                #print("domain.shape ", domain.shape)
 
-                for ic in range(len(unique)):
+                print("y.shape ", y.shape)
+                print("domain.shape ", domain.shape)
+                print("unique ", unique)
 
-                    c = unique[ic]
+                for c in unique:
+
+                    #c = unique[ic]
                     elx = domain[ c == y, 0]
                     ely = domain[c == y, 1]
 
@@ -467,7 +472,6 @@ class Plotter:
                         ax[j0].scatter(x=elx, y=ely, c=cls.myColors[c], label=label, marker=cls.myMarker[i], alpha=0.4)
                         ax[j0].set_title(title_[dpi])
 
-
                 #red_patch = mpatches.Patch(color='red', label='The red data')
                 #ax[j0].scatter(x=[0], y=[0], c='red', label="cross", alpha=0.0)
 
@@ -480,8 +484,7 @@ class Plotter:
 
             unique = np.unique( dC[i] )
             patches = []
-            for ic in unique:
-                c = unique[ic]
+            for c in unique:
                 label = labels_[dpi][c]
             #    #plots.append(ax[j0].scatter(x=[], y=[], c=cls.myColors[c], label=label, alpha=1.0) )
                 patches.append(mpatches.Patch(color=cls.myColors[c], label=label, alpha=0.4))
@@ -490,12 +493,30 @@ class Plotter:
                     patches.append( axis.scatter( [], [], color='black', marker=cls.myMarker[i], label="Domain "+str(i), alpha=0.4) )
                 else:
                     patches.append(axis.scatter([], [], color='black', marker=cls.myMarker[i], label=domainNames[i], alpha=0.4))
-            lgd = axis.legend(handles=patches, bbox_to_anchor=(1.1, 1.05))
+            #lgd = axis.legend(handles=patches, bbox_to_anchor=(1.1, 1.05))
+            #lgd = fig.legend(handles=patches, bbox_to_anchor=(1.1, 1.05))
+            #lgd = fig.legend(handles=patches)
 
             j0 = j0 + 1
             if j0 == spalten:
                 j0 = 0
                 i0 = i0 + 1
+
+        #for i in range(len(domains[0]) ):
+        unique = np.unique(domainClasses[0])
+        patches = []
+        for c in unique:
+            print("c ", c)
+            label = labels_[0][c]
+            #    #plots.append(ax[j0].scatter(x=[], y=[], c=cls.myColors[c], label=label, alpha=1.0) )
+            patches.append(mpatches.Patch(color=cls.myColors[c], label=label, alpha=0.4))
+        for k, _ in enumerate(domains[0]):
+            if domainNames is None:
+                patches.append(axis.scatter([], [], color='black', marker=cls.myMarker[k], label="Domain " + str(k), alpha=0.4))
+            else:
+                patches.append(
+                        axis.scatter([], [], color='black', marker=cls.myMarker[k], label=domainNames[k], alpha=0.4))
+        lgd = fig.legend(handles=patches)
 
         fig.suptitle(title_fig)
         fig.tight_layout()
