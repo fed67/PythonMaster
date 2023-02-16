@@ -39,5 +39,20 @@ def testDomains(tp="RandomForest"):
 
     plt.show()
 
+def testDomains2():
+
+    n = 10
+    gen = Gaussian(n)
+
+    gen.twoDomains2_roate(n)
+
+    X = gen.data
+    y = gen.target
+
+    Plotter().plotScatter_multipleDomains(domains=[X, X], domainClasses=[y, y], title_=["Train Domain", "Test Domain"], labels_=[gen.map]*2, title_fig="plotter")
+
+    plt.show()
+
 if __name__ == '__main__':
-    testDomains("RandomForest")
+    #testDomains("RandomForest")
+    testDomains2()
