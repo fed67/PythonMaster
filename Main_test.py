@@ -1020,14 +1020,14 @@ def testDataSets_linear(method="lda", n=10):
     #print("len ", len(x_sca_train), " test ", len(x_sca_test) )
     figsize = (10,10)
 
-    Plotter().plotScatter_multiple([*x_sca_train], [data.target[0]] * (len(x_sca_train)), title_sca,
-                                   [{0: "0", 1: "1", 2: "2"}] * (len(x_sca_test) + 1),
-                                   title_fig="Train Domain - {0}".format(name), markerId=0,
-                                   path="graphics/ToyData/", spalten=2, figsize=figsize)
-    Plotter().plotScatter_multiple([*x_sca_test], [data.target[1]] * (len(x_sca_test)), title_sca,
-                                   [{0: "0", 1: "1", 2: "2"}] * (len(x_sca_test) + 1),
-                                   title_fig="Test Domain - {0}".format(name), markerId=1,
-                                   path="graphics/ToyData/", spalten=2, figsize=figsize)
+    #Plotter().plotScatter_multiple([*x_sca_train], [data.target[0]] * (len(x_sca_train)), title_sca,
+    #                               [{0: "0", 1: "1", 2: "2"}] * (len(x_sca_test) + 1),
+    #                               title_fig="Train Domain - {0}".format(name), markerId=0,
+    #                               path="graphics/ToyData/", spalten=2, figsize=figsize)
+    #Plotter().plotScatter_multiple([*x_sca_test], [data.target[1]] * (len(x_sca_test)), title_sca,
+    #                               [{0: "0", 1: "1", 2: "2"}] * (len(x_sca_test) + 1),
+    #                               title_fig="Test Domain - {0}".format(name), markerId=1,
+    #                               path="graphics/ToyData/", spalten=2, figsize=figsize)
 
     # for i, x in enumerate(x_sca_train):
     #    X.append( [x_sca_train[i], x_sca_test[i]] )
@@ -1037,22 +1037,75 @@ def testDataSets_linear(method="lda", n=10):
 
     Plotter().plotScatter_multipleDomains(X, Y, title_sca, [{0: "0", 1: "1", 2: "2"}] * len(title_sca),
                                           "All Domains - {0}".format(name), path="graphics/ToyData/",
-                                          spalten=2, domainNames=["Domain 0", "Domain 1", "Domain 2"], figsize=figsize)
+                                          spalten=2, domainNames=["Domain 0", "Domain 1", "Domain 2"], figsize=(4, 8) )
 
-    #plt.show()
-    plt.close()
+    plt.show()
+    #plt.close()
 
+
+def testLegend():
+    import matplotlib.pyplot as plt
+    import numpy as np
+
+    # some data
+    x = np.arange(0, 10, 0.1)
+    y1 = np.sin(x)
+    y2 = np.cos(x)
+
+    # plot of the data
+    fig, ax = plt.subplots(2,1, gridspec_kw={'width_ratios': [1], 'height_ratios': [1, 1]}, figsize=(5, 10))
+    ax[0].plot(x, y1, '-k', lw=2, label='black sin(x)')
+    ax[1].plot(x, y2, '-r', lw=2, label='red cos(x)')
+    #ax[.set_xlabel('x', size=22)
+    #ax.set_ylabel('y', size=22)
+    #ax.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
+    ax[0].legend(bbox_to_anchor=(1.05, 1) )
+
+    plt.show()
+
+def testPlotly():
+    from plotly.subplots import make_subplots
+    import plotly.graph_objects as go
+    import plotly.express as px
+    df = px.data.iris()
+
+    #print(df.schema)
+    df.info(verbose=True)
+
+    df1 = df.sample(10)
+    df2 = df.sample(10)
+
+    fig = make_subplots(rows=1, cols=2)
+
+    #fig.add_trace(
+    #    go.Scatter(x=[1, 2, 3], y=[4, 5, 6]),
+    #    row=1, col=1
+    #)
+
+    #fig.add_trace(
+    #    go.Scatter(x=[20, 30, 40], y=[50, 60, 70]),
+    #    row=1, col=2
+    #)
+
+    fig.add_trace(
+        px.scatter(df1, x="sepal_width", y="sepal_length", color="species", size='petal_length', hover_data=['petal_width'])
+    )
+
+    fig.update_layout(height=600, width=800, title_text="Side By Side Subplots")
+    fig.show()
 
 
 if __name__ == '__main__':
+    #testLegend()
+    #testPlotly()
 
     n = 50
     testDataSets_linear(method="lda", n=10)
     #testDataSets(method="sca-DomainGeneralization", beta=[0], delta=[0], n=n)
-    for beta in [ 0.0, 0.25, 0.5, 0.75, 1.0]:
-       for delta in [0.0, 0.25, 0.5, 0.75, 1.0]:
-           testDataSets(method="sca-DomainGeneralization", beta=[beta], delta=[delta], n=n)
-           testDataSets(method="sca-DomainAdaption", beta=[beta], delta=[delta], n=n)
+    #for beta in [ 0.0, 0.25, 0.5, 0.75, 1.0]:
+    #   for delta in [0.0, 0.25, 0.5, 0.75, 1.0]:
+    #       testDataSets(method="sca-DomainGeneralization", beta=[beta], delta=[delta], n=n)
+    #       testDataSets(method="sca-DomainAdaption", beta=[beta], delta=[delta], n=n)
 
 
     #testDataSets(method="sca-DomainGeneralization", beta=[0, 0.3, 0.6, 1.0], delta=[0, 0.3, 0.6, 1.0], gamma=[3.0], n=n)
@@ -1074,10 +1127,11 @@ if __name__ == '__main__':
     #    testIris2("beta", tp="DomainAdaption", gamma=gamma)
     #    testIris2("beta", tp="DomainGeneralization", gamma=gamma)
 
-    testDataSets(method="kda", n=n)
-    testDataSets(method="kpca", n=n)
-    testDataSets_linear(method="lda", n=n)
-    testDataSets_linear(method="pca", n=n)
+
+    #testDataSets(method="kda", n=n)
+    #testDataSets(method="kpca", n=n)
+    #testDataSets_linear(method="lda", n=n)
+    #testDataSets_linear(method="pca", n=n)
 
 
     # testGauss_KLDA()
@@ -1107,3 +1161,4 @@ if __name__ == '__main__':
     #    test_LDA_Sklearn_split_treatment_Linear("lda", centering=centering)
     #    test_LDA_Sklearn_split_treatment_Linear("pca", centering=centering)
     # sca - DomainAdaption
+    #plt.show()

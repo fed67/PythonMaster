@@ -408,9 +408,8 @@ class Plotter:
         print("s ", s)
         plt.savefig(s)
 
-    def plotScatter_multipleDomains(cls, domains, domainClasses =[], title_=[], labels_=[], title_fig="", path="graphics/", spalten=None, domainNames=None, figsize=(20, 10), fileName_Append=""):
+    def plotScatter_multipleDomains(cls, domains, domainClasses =[], title_=[], labels_=[], title_fig="", path="graphics/", spalten=None, domainNames=None, figsize=(4, 8), fileName_Append=""):
         import math
-        print("Runs pr9nt Scatter")
 
         if spalten is None:
             if len(domains) > 1:
@@ -422,6 +421,8 @@ class Plotter:
         print("spalten ", spalten, " zeilen ", zeilen)
         print("len(domains) ", len(domains), " len(class) ", len(domainClasses), " titles ", len(title_), " label ", len(labels_))
 
+        plt.rcParams['figure.constrained_layout.use'] = True
+        #fig, ax = plt.subplots(zeilen, spalten, figsize=(figsize[0]*spalten, figsize[1]*zeilen))
         fig, ax = plt.subplots(zeilen, spalten, figsize=figsize)
         i0 = 0
         j0 = 0
@@ -464,13 +465,16 @@ class Plotter:
                     if len(domains) == 1:
                         ax.scatter(x=elx, y=ely, c=cls.myColors[c], label=label, marker=cls.myMarker[i], alpha=0.4)
                         ax.set_title(title_[dpi])
+                        #ax.figure.set_size_inches(10,10)
                     elif zeilen > 1:
                         ax[i0, j0].scatter(x=elx, y=ely, c=cls.myColors[c], label=label, marker=cls.myMarker[i], alpha=0.4)
                         ax[i0, j0].set_title(title_[dpi])
+                        #ax[i0, j0].figure.set_size_inches(10, 10)
                         #lgd = ax[i0, j0].legend(bbox_to_anchor=(1.1, 1.05))
                     else:
                         ax[j0].scatter(x=elx, y=ely, c=cls.myColors[c], label=label, marker=cls.myMarker[i], alpha=0.4)
                         ax[j0].set_title(title_[dpi])
+                        #ax[j0].figure.set_size_inches(10, 10)
 
                 #red_patch = mpatches.Patch(color='red', label='The red data')
                 #ax[j0].scatter(x=[0], y=[0], c='red', label="cross", alpha=0.0)
@@ -514,12 +518,21 @@ class Plotter:
             if domainNames is None:
                 patches.append(axis.scatter([], [], color='black', marker=cls.myMarker[k], label="Domain " + str(k), alpha=0.4))
             else:
-                patches.append(
-                        axis.scatter([], [], color='black', marker=cls.myMarker[k], label=domainNames[k], alpha=0.4))
-        lgd = fig.legend(handles=patches)
+                patches.append(axis.scatter([], [], color='black', marker=cls.myMarker[k], label=domainNames[k], alpha=0.4))
 
-        fig.suptitle(title_fig)
-        fig.tight_layout()
+        if spalten > 1 and zeilen > 1:
+            # lgd = fig.legend(handles=patches, loc='upper right', bbox_to_anchor=[1.1, 0.9])
+            print("here lgd")
+            lgd = ax[0, spalten-1].legend(handles=patches, bbox_to_anchor=(1.1, 1.05), borderaxespad=0. )
+        elif spalten > 1 and zeilen == 1:
+            #lgd = fig.legend(handles=patches, loc='upper right', bbox_to_anchor=[1.1, 0.9])
+            lgd = ax[0].legend(handles=patches, loc='upper right', bbox_to_anchor=(1.1, 0.9))
+        elif spalten == 1 and zeilen == 1:
+            #lgd = fig.legend(handles=patches, loc='upper right', bbox_to_anchor=[1.1, 0.9])
+            lgd = ax.legend(handles=patches, loc='upper right', bbox_to_anchor=(1.1, 0.9))
+
+        #fig.suptitle(title_fig)
+        #fig.tight_layout()
         s = path + title_fig+fileName_Append+'.svg'
         plt.savefig(fname=s)
 
