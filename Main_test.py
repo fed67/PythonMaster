@@ -811,10 +811,10 @@ def testIris2(mode="gamma", tp="DomainGeneralization", gamma=3.0):
 
     Plotter().plotScatter_multipleDomains(X, Y, title_sca, [{0: "0", 1: "1", 2: "2"}] * len(title_sca),
                                           "0 - ScatterPlot - {2} all Domains - {0} - {1} $\gamma$={3}".format(
-                                              kernel, mode, sca.name, gamma), path="graphics/ToyData/",  domainNames=["Domain 0", "Domain 1", "Domain 2"])
+                                              kernel, mode, sca.name, gamma), path="graphics/ToyData/",  domainNames=["Domain 0", "Domain 1", "Domain 2"], figsize=(12, 10))
 
-    #plt.show()
-    plt.close()
+    plt.show()
+    #plt.close()
 
 
 def testDataSets(method="sca-DomainAdaption", beta=[1.0], delta=[1.0], gamma=[3.0], n=10, useBeta_Delta=False):
@@ -952,14 +952,14 @@ def testDataSets(method="sca-DomainAdaption", beta=[1.0], delta=[1.0], gamma=[3.
 
     Plotter().plotScatter_multipleDomains(X, Y, title_sca, [{0: "0", 1: "1", 2: "2"}] * len(title_sca),
                                           "All Domains {1} - {0}".format(kernel, name), path="graphics/ToyData/",
-                                          spalten=5, domainNames=["Domain 0", "Domain 1", "Domain 2"], fileName_Append=fileName_Append)
+                                          spalten=5, domainNames=["Domain 0", "Domain 1", "Domain 2"], fileName_Append=fileName_Append, figsize=(12,10))
 
     Plotter().plotScatter_multipleDomains(samples, samples_y, samples_title, [{0: "0", 1: "1", 2: "2"}] * len(samples_title),
                                           "Toy Samples", path="graphics/ToyData/",
-                                          spalten=3, domainNames=["Domain 0", "Domain 1", "Domain 2"], fileName_Append=fileName_Append, figsize=(5,5))
+                                          spalten=3, domainNames=["Domain 0", "Domain 1", "Domain 2"], fileName_Append=fileName_Append, figsize=(6, 4))
 
-    #plt.show()
-    plt.close()
+    plt.show()
+    #plt.close()
 
 def testDataSets_linear(method="lda", n=10):
     #matplotlib.use('Agg')
@@ -1101,6 +1101,9 @@ if __name__ == '__main__':
 
     n = 50
     #testDataSets_linear(method="lda", n=10)
+    #testDataSets(method="sca-DomainGeneralization", beta=[0], delta=[0], n=10)
+    testIris2()
+    exit(0)
     #testDataSets(method="sca-DomainGeneralization", beta=[0], delta=[0], n=n)
     for beta in [ 0.0, 0.25, 0.5, 0.75, 1.0]:
        for delta in [0.0, 0.25, 0.5, 0.75, 1.0]:
