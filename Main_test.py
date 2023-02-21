@@ -1102,8 +1102,8 @@ if __name__ == '__main__':
     n = 50
     #testDataSets_linear(method="lda", n=10)
     #testDataSets(method="sca-DomainGeneralization", beta=[0], delta=[0], n=10)
-    testIris2()
-    exit(0)
+    #testIris2()
+    #exit(0)
     #testDataSets(method="sca-DomainGeneralization", beta=[0], delta=[0], n=n)
     for beta in [ 0.0, 0.25, 0.5, 0.75, 1.0]:
        for delta in [0.0, 0.25, 0.5, 0.75, 1.0]:
