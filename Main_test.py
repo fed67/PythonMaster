@@ -844,7 +844,8 @@ def testDataSets(method="sca-DomainAdaption", beta=[1.0], delta=[1.0], gamma=[3.
     X = []
     Y = []
 
-    gamma_ = [0.1, 0.3, 1.0, 3] # [0.1, 0.3, 1.0, 3, 10.0]
+    #gamma_ = [0.1, 0.3, 1.0, 3] # [0.1, 0.3, 1.0, 3, 10.0]
+    gamma_ = [0.3, 1.0, 3]  # [0.1, 0.3, 1.0, 3, 10.0]
     beta_  = len(gamma_)*beta
     delta_ = len(gamma_) * delta
     items = list( zip(gamma_, beta_, delta_) )
@@ -855,7 +856,8 @@ def testDataSets(method="sca-DomainAdaption", beta=[1.0], delta=[1.0], gamma=[3.
         items = list( zip(gamma_, b, d) )
     print(items)
 
-    rotations = [(0, 1.0, 0.0), (3.14, 1.0, 0.0), (0, 10, 0.0), (3.14, 10, 0.0), (0.0, 1.0, 5.0), (3.14, 1.0, 5.0)]
+    #rotations = [(0, 1.0, 0.0), (3.14, 1.0, 0.0), (0, 10, 0.0), (3.14, 10, 0.0), (0.0, 1.0, 5.0), (3.14, 1.0, 5.0)]
+    rotations = [(0, 1.0, 0.0), (3.14, 1.0, 0.0), (0, 10, 0.0), (3.14, 10, 0.0), (0.0, 1.0, 5.0)]
     samples = []
     samples_y = []
     samples_title = []
