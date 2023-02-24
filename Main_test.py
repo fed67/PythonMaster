@@ -288,8 +288,6 @@ def test_split_V3(method="kda", centering=True, beta=1.0,
         elif method == "sca-DomainGeneralization":
             model = alg.fit([X_train], [y_train])
         elif method == "kda" or method == "lda":
-            X_train = np.concatenate((X_train))
-            y_train = np.concatenate((y_train))
             model = alg.fit(X_train, y_train)
         elif method == "pca" or method == "kpca":
             model = alg.fit(X_train, y_train)
