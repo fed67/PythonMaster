@@ -256,6 +256,7 @@ class KernelAlgorithms(KernelClass):
         self.E = eigenVectors[:, 0:self.n_components]
         #print("eigenvals ", self.eigvals)
         #print("KDA eigenvals ", self.eigvals[0:self.n_components])
+
         if (self.eigvals == np.inf).any():
             import warnings
             #warnings.simplefilter("One eigenvalues is INF", UserWarning)
