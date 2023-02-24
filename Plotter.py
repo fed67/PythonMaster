@@ -356,8 +356,6 @@ class Plotter:
 
             print("data ", data.shape)
             print("y ", y.shape)
-            print("type ", data.type)
-
             for i in range(0, len(unique)):
 
                 if len(data) > 0:
