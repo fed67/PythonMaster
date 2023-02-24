@@ -506,6 +506,7 @@ class Plotter:
                 i0 = i0 + 1
 
         #for i in range(len(domains[0]) ):
+        print("domainClass ", len(domainClasses[0]))
         unique = np.unique(domainClasses[0])
         patches = []
         for c in unique:
