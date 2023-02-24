@@ -317,9 +317,9 @@ def test_split_V3(method="kda", centering=True, beta=1.0,
         # print(f'{AC_test=}')
 
 
-    Plotter().plotScatter_multiple([*X_V4_list[0:9]], [*y[0:9]], [*titles[0:9]],
-                                   [inv_map] * (len(X_V4_list) + 0),
-                                   title_fig="{0} Center {1} V4-Only".format(name, centering))
+    Plotter().plotScatter_multiple(x_train_list, y_train_list, titles,
+                                   [inv_map] * (len(y_train_list) + 0),
+                                   title_fig="{0} Center {1} V3-Train".format(name, centering))
 
     Plotter().plotScatter_multipleDomains([*x_all[0:9]], [*y_all[0:9]],
                                           [*titles[0:9]], [inv_map] * (len(y_train_list) + 0),
