@@ -301,8 +301,8 @@ def test_split_V3(method="kda", centering=True, beta=1.0,
         xtrain = reducer.fit_transform(xtrain)
 
 
-        x_test_list.append([xtest])
-        x_train_list.append([xtrain])
+        x_test_list.append(xtest)
+        x_train_list.append(xtrain)
         x_all.append([xtrain, xtest])
 
         y_test_list.append([y_test])
