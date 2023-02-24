@@ -354,8 +354,8 @@ class Plotter:
             y = classes[kk]
             unique = np.unique(classes[kk])
 
-            print("data ", data.shape)
-            print("y ", y.shape)
+            #print("data ", data.shape)
+            #print("y ", y.shape)
             for i in range(0, len(unique)):
 
                 if len(data) > 0:
@@ -438,9 +438,9 @@ class Plotter:
                 unique = np.unique( dC[i] )
                 y = dC[i]
 
-                print("y.shape ", y.shape)
-                print("domain.shape ", domain.shape)
-                print("unique ", unique)
+                #print("y.shape ", y.shape)
+                #print("domain.shape ", domain.shape)
+                #print("unique ", unique)
 
                 for c in unique:
 
@@ -517,7 +517,7 @@ class Plotter:
         unique_ = np.unique(dC)
         patches = []
         for c in unique_:
-            print("c ", c)
+            #print("c ", c)
             label = labels_[0][c]
             #    #plots.append(ax[j0].scatter(x=[], y=[], c=cls.myColors[c], label=label, alpha=1.0) )
             patches.append(mpatches.Patch(color=cls.myColors[c], label=label, alpha=0.4))
