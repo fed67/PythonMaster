@@ -209,8 +209,8 @@ def test_split_V3(method="kda", centering=True, beta=1.0,
     matplotlib.use('Agg')
     cwd = os.getcwd()
     print("Current working directory: {0}".format(cwd))
-    #data_name = "sample_130922_105429_n_1000_median.csv"
-    data_name = "sample_130922_105630_n_40000_median.csv"
+    data_name = "sample_130922_105429_n_1000_median.csv"
+    #data_name = "sample_130922_105630_n_40000_median.csv"
     treatment = "one_padded_zero_treatments.csv"
     # path = "../../Data/kardio_data/"
     path = "../Data/"
@@ -317,7 +317,7 @@ def test_split_V3(method="kda", centering=True, beta=1.0,
         # print(f'{AC_test=}')
 
 
-    Plotter().plotScatter_multiple(x_train_list, y_train_list, titles,
+    Plotter().plotScatter_multiple([*x_train_list[0:9]], [*y_train_list[0:9]], [*titles[0:9]],
                                    [inv_map] * (len(y_train_list) + 0),
                                    title_fig="{0} Center {1} V3-Train".format(name, centering))
 
