@@ -305,8 +305,8 @@ def test_split_V3(method="kda", centering=True, beta=1.0,
         x_train_list.append(xtrain)
         x_all.append([xtrain, xtest])
 
-        y_test_list.append([y_test])
-        y_train_list.append([y_train])
+        y_test_list.append(y_test)
+        y_train_list.append(y_train)
         y_all.append([y_train, y_test])
 
         y.append(y_test)
