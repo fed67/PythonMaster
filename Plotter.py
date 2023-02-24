@@ -507,12 +507,13 @@ class Plotter:
 
         #for i in range(len(domains[0]) ):
         dC = []
+        #merge the labels of the domains
         for el in domainClasses:
             dC.append(np.concatenate(el))
-        print("domainClasses ", domainClasses)
+        #print("domainClasses ", domainClasses)
         #print("flattern ", np.array(domainClasses).flat() )
-        print("dC ", len(dC) )
-        print("dc ", dC)
+        #print("dC ", len(dC) )
+        #print("dc ", dC)
         unique_ = np.unique(dC)
         patches = []
         for c in unique_:
