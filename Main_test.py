@@ -1243,36 +1243,36 @@ if __name__ == '__main__':
     #testIris2()
     #exit(0)
     #testDataSets(method="sca-DomainGeneralization", beta=[0], delta=[0], n=n)
-    for beta in [ 0.0, 0.25, 0.5, 0.75, 1.0]:
-       for delta in [0.0, 0.25, 0.5, 0.75, 1.0]:
-           testDataSets(method="sca-DomainGeneralization", beta=[beta], delta=[delta], n=n)
-           testDataSets(method="sca-DomainAdaption", beta=[beta], delta=[delta], n=n)
+    #for beta in [ 0.0, 0.25, 0.5, 0.75, 1.0]:
+    #   for delta in [0.0, 0.25, 0.5, 0.75, 1.0]:
+    #       testDataSets(method="sca-DomainGeneralization", beta=[beta], delta=[delta], n=n)
+    #       testDataSets(method="sca-DomainAdaption", beta=[beta], delta=[delta], n=n)
 
 
     #testDataSets(method="sca-DomainGeneralization", beta=[0, 0.3, 0.6, 1.0], delta=[0, 0.3, 0.6, 1.0], gamma=[3.0], n=n)
 
     #testDataSets(method="sca-DomainGeneralization", beta=1.0, delta=1.0, n=100)
-    testIris2()
-    testIris2("beta", gamma=0.3)
-    testIris2("beta", gamma=3.0)
-    testIris2("beta", gamma=5.0)
-    testIris2("beta", gamma=10.0)
+    #testIris2()
+    #testIris2("beta", gamma=0.3)
+    #testIris2("beta", gamma=3.0)
+    #testIris2("beta", gamma=5.0)
+    #testIris2("beta", gamma=10.0)
 
-    testIris2(tp="DomainAdaption")
-    testIris2("beta", tp="DomainAdaption", gamma=0.3)
-    testIris2("beta", tp="DomainAdaption", gamma=3.0)
-    testIris2("beta", tp="DomainAdaption", gamma=5.0)
-    testIris2("beta", tp="DomainAdaption", gamma=10.0)
+    #testIris2(tp="DomainAdaption")
+    #testIris2("beta", tp="DomainAdaption", gamma=0.3)
+    #testIris2("beta", tp="DomainAdaption", gamma=3.0)
+    #testIris2("beta", tp="DomainAdaption", gamma=5.0)
+    #testIris2("beta", tp="DomainAdaption", gamma=10.0)
 
     #for gamma in [0.1, 0.3, 0.5, 0.8, 1.0, 2.0, 3.0, 4.0, 5.0, 8.0, 10.0]:
     #    testIris2("beta", tp="DomainAdaption", gamma=gamma)
     #    testIris2("beta", tp="DomainGeneralization", gamma=gamma)
 
 
-    testDataSets(method="kda", n=n)
-    testDataSets(method="kpca", n=n)
-    testDataSets_linear(method="lda", n=n)
-    testDataSets_linear(method="pca", n=n)
+    #testDataSets(method="kda", n=n)
+    #testDataSets(method="kpca", n=n)
+    #testDataSets_linear(method="lda", n=n)
+    #testDataSets_linear(method="pca", n=n)
 
 
     # testGauss_KLDA()
