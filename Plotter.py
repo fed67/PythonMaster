@@ -354,14 +354,15 @@ class Plotter:
             y = classes[kk]
             unique = np.unique(classes[kk])
 
-            #print("data ", data)
-            #print("y ", data)
-            #print("type ", data.type)
+            print("data ", data.shape)
+            print("y ", y.shape)
+            print("type ", data.type)
+
             for i in range(0, len(unique)):
 
                 if len(data) > 0:
                     elx = data[ unique[i] == y, 0 ]
-                    ely = data[ unique[i] == y, 1]
+                    ely = data[ unique[i] == y, 1 ]
                     #https://matplotlib.org/stable/gallery/color/named_colors.html
                     label = labels[kk][unique[i]]
 
