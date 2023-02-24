@@ -234,8 +234,8 @@ class KernelAlgorithms(KernelClass):
         #print("N.T ", N)
 
 
-        #eigenValues, eigenVectors = scipy.linalg.eig(M, N)  # i.th columnn contains the i-th eigenvector sci.linalg.eig(
-        eigenValues, eigenVectors = np.linalg.eig(np.linalg.inv(N).dot(M))
+        eigenValues, eigenVectors = scipy.linalg.eig(M, N)  # i.th columnn contains the i-th eigenvector sci.linalg.eig(
+        #eigenValues, eigenVectors = np.linalg.eig(np.linalg.inv(N).dot(M))
 
         #eigenValues, eigenVectors = scipy.linalg.eig( np.linalg.inv(N).dot(M) )
         #eigenValues, eigenVectors = np.linalg.eigh( np.linalg.inv(N).dot(M) )
