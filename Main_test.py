@@ -266,7 +266,7 @@ def test_split_V3(method="kda", centering=True, beta=1.0,
     # for kern in kernel:
     #for gamma in [10, 100, 500, 1000, 5000, 1e4, 1e5, 1e6]:
     #for gamma in [0.01, 0.1, 1, 10, 100, 1000, 1e4, 1e5, 1e6]:
-    for gamma in [0.1, 0.1, 1, 10, 100, 1000, 1e4, 1e5, 1e6]:
+    for gamma in [10, 100, 1000, 1e4, 1e5, 1e6]:
         if method == "sca-DomainAdaption" or method == "sca-DomainGeneralization":
             alg = SCA2(n_components=2, kernel=kern, gamma=gamma, beta=beta, delta=delta)
             name = method + " beta: " + str(beta) + " delta: " + str(delta)
