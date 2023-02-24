@@ -239,7 +239,7 @@ def test_split_V3(method="kda", centering=True, beta=1.0,
 
     df_V3 = compute_mean_of_group_size_on_treatment(dfc.loc[dfc["trial"].isin(['V3'])], group_size)
 
-    df_train, df_test = train_test_split(df_V3, train_size=0.9, random_state=43)
+    df_train, df_test = train_test_split(df_V3, train_size=0.6, random_state=43)
 
     X_train, y_train = pruneDF_treatment_trail_plate_well(df_train, centering)
     X_test, y_test = pruneDF_treatment_trail_plate_well(df_test, centering)
@@ -265,7 +265,8 @@ def test_split_V3(method="kda", centering=True, beta=1.0,
     # for dim in [2]:
     # for kern in kernel:
     #for gamma in [10, 100, 500, 1000, 5000, 1e4, 1e5, 1e6]:
-    for gamma in [0.01, 0.1, 1, 10, 100, 1000, 1e4, 1e5, 1e6]:
+    #for gamma in [0.01, 0.1, 1, 10, 100, 1000, 1e4, 1e5, 1e6]:
+    for gamma in [0.1, 0.1, 1, 10, 100, 1000, 1e4, 1e5, 1e6]:
         if method == "sca-DomainAdaption" or method == "sca-DomainGeneralization":
             alg = SCA2(n_components=2, kernel=kern, gamma=gamma, beta=beta, delta=delta)
             name = method + " beta: " + str(beta) + " delta: " + str(delta)
