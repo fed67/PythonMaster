@@ -506,9 +506,11 @@ class Plotter:
                 i0 = i0 + 1
 
         #for i in range(len(domains[0]) ):
-        dC = np.concatenate(domainClasses)
+        dC = []
+        for el in domainClasses:
+            dC.append(np.concatenate(el))
         print("domainClasses ", domainClasses)
-        print("flattern ", np.array(domainClasses).flat() )
+        #print("flattern ", np.array(domainClasses).flat() )
         print("dC ", dC.shape)
         print("dc ", dC)
         unique_ = np.unique(dC)
