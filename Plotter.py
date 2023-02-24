@@ -507,10 +507,10 @@ class Plotter:
 
         #for i in range(len(domains[0]) ):
         dC = np.concatenate(domainClasses)
-        #print("domainClass ", len(domainClasses[0]))
-        unique = np.unique(dC)
+        print("dC ", dC.shape)
+        unique_ = np.unique(dC)
         patches = []
-        for c in unique:
+        for c in unique_:
             print("c ", c)
             label = labels_[0][c]
             #    #plots.append(ax[j0].scatter(x=[], y=[], c=cls.myColors[c], label=label, alpha=1.0) )
