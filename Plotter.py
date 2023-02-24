@@ -511,7 +511,7 @@ class Plotter:
             dC.append(np.concatenate(el))
         print("domainClasses ", domainClasses)
         #print("flattern ", np.array(domainClasses).flat() )
-        print("dC ", dC.shape)
+        print("dC ", len(dC) )
         print("dc ", dC)
         unique_ = np.unique(dC)
         patches = []
