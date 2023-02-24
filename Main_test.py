@@ -209,8 +209,8 @@ def test_split_V3(method="kda", centering=True, beta=1.0,
     matplotlib.use('Agg')
     cwd = os.getcwd()
     print("Current working directory: {0}".format(cwd))
-    data_name = "sample_130922_105429_n_1000_median.csv"
-    #data_name = "sample_130922_105630_n_40000_median.csv"
+    #data_name = "sample_130922_105429_n_1000_median.csv"
+    data_name = "sample_130922_105630_n_40000_median.csv"
     treatment = "one_padded_zero_treatments.csv"
     # path = "../../Data/kardio_data/"
     path = "../Data/"
@@ -1309,7 +1309,7 @@ if __name__ == '__main__':
         test_split_V3(method="lda", centering=ce)
         test_split_V3(method="pca", centering=ce)
         test_split_V3("kda", centering=ce)
-        test_split_V3("kpca", centering=ce)
+        #test_split_V3("kpca", centering=ce)
 
         for beta in [0.0, 0.25, 0.5, 1.0]:
             for delta in [0, 0.25, 0.5, 1.0]:
