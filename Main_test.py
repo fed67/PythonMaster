@@ -1,7 +1,7 @@
 import unittest
 
 import numpy as np
-from sklearn.cross_validation import train_test_split
+from sklearn.model_selection import train_test_split
 
 import DimensionReduction
 from sklearn.discriminant_analysis import *
