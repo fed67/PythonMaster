@@ -205,7 +205,7 @@ import matplotlib
 def test_split_V3(method="kda", centering=True, beta=1.0,
                                                delta=1.0):  # sca-DomainAdaption, sca-DomainGeneralization, kpca
 
-    import sklearn.model_selection.train_test_split
+    from sklearn.model_selection import train_test_split
     matplotlib.use('Agg')
     cwd = os.getcwd()
     print("Current working directory: {0}".format(cwd))
