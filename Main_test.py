@@ -312,8 +312,8 @@ def test_split_V3(method="kda", centering=True, beta=1.0,
         y_all.append([y_train, y_test])
 
         y.append(y_test)
-        #titles.append("\gamma {1} - Test Merge {0} - Kernel {2}\n ".format(group_size, gamma, kern))
         titles.append(r"$\gamma$ {1}".format(Decimal(gamma).log10().to_integral_exact()))
+        #titles.append("\gamma {1} - Test Merge {0} - Kernel {2}\n ".format(group_size, gamma, kern))
 
         # AC_train = model.score(X_train, y_train)
         # print(f'{AC_train=}')
