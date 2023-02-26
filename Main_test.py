@@ -206,6 +206,7 @@ def test_split_V3(method="kda", centering=True, beta=1.0,
                                                delta=1.0):  # sca-DomainAdaption, sca-DomainGeneralization, kpca
 
     from sklearn.model_selection import train_test_split
+    from decimal import *
     matplotlib.use('Agg')
     cwd = os.getcwd()
     print("Current working directory: {0}".format(cwd))
@@ -310,7 +311,8 @@ def test_split_V3(method="kda", centering=True, beta=1.0,
         y_all.append([y_train, y_test])
 
         y.append(y_test)
-        titles.append("Gamma {1} - Test Merge {0} - Kernel {2}\n ".format(group_size, gamma, kern))
+        #titles.append("\gamma {1} - Test Merge {0} - Kernel {2}\n ".format(group_size, gamma, kern))
+        titles.append(r"$\gamma$ {1}".format(Decimal(gamma).log10().to_integral_exact()))
 
         # AC_train = model.score(X_train, y_train)
         # print(f'{AC_train=}')
@@ -320,18 +322,18 @@ def test_split_V3(method="kda", centering=True, beta=1.0,
 
     Plotter().plotScatter_multiple([*x_train_list[0:9]], [*y_train_list[0:9]], [*titles[0:9]],
                                    [inv_map] * (len(y_train_list) + 0),
-                                   title_fig="{0} Center {1} V3-Train".format(name, centering))
+                                   title_fig="{0} Center {1} V3-Train".format(name, centering), figsize=(12, 12))
 
     Plotter().plotScatter_multipleDomains([*x_all[0:9]], [*y_all[0:9]],
                                           [*titles[0:9]], [inv_map] * (len(y_train_list) + 0),
-                                          title_fig="{1}-{0}-Center {2}- Train V1,V2,V3 Test V4 ".format(kern, name,
-                                                                                                         centering),
-                                          domainNames=["V1", "V2", "V3", "V4"])
-    plt.figtext(0.5, 0.01,
-                "UMAP Plot\nDimension of train data: rows: {0}; features: {1}\n sample: {2}".format(X_train.shape[0],
-                                                                                                    X_test.shape[1],
-                                                                                                    data_name),
-                wrap=True, horizontalalignment='center', fontweight='bold')
+                                          title_fig="{1}-{0}-Center {2}- Train V3 Test V3 - kernel - {3} - Merge - {4}".format(kern, name,
+                                                                                                         centering, kern, group_size),
+                                          domainNames=["V1", "V2", "V3", "V4"], figsize=(12, 12))
+    #plt.figtext(0.5, 0.01,
+    #            "UMAP Plot\nDimension of train data: rows: {0}; features: {1}\n sample: {2}".format(X_train.shape[0],
+    #                                                                                                X_test.shape[1],
+    #                                                                                                data_name),
+    #           wrap=True, horizontalalignment='center', fontweight='bold')
 
     plt.show()
 
