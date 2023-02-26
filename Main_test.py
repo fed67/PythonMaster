@@ -10,6 +10,8 @@ from sklearn.decomposition import *
 from KernelAlgorithms import *
 from DomainGeneralization import *
 import copy
+from decimal import *
+
 
 def test_Kernel_LDA_Sklearn_MaxLarge_split_treatment_kernels():
     data_name = "sample_130922_105630_n_40000_median.csv"
@@ -206,7 +208,6 @@ def test_split_V3(method="kda", centering=True, beta=1.0,
                                                delta=1.0):  # sca-DomainAdaption, sca-DomainGeneralization, kpca
 
     from sklearn.model_selection import train_test_split
-    from decimal import *
     matplotlib.use('Agg')
     cwd = os.getcwd()
     print("Current working directory: {0}".format(cwd))
