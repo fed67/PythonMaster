@@ -326,7 +326,7 @@ def test_split_V3(method="kda", centering=True, beta=1.0,
         # print(f'{AC_test=}')
 
     spalten = None
-    if method == "pca" or method=="lda":
+    if method == "pca" or method == "lda":
         spalten=1
 
     Plotter().plotScatter_multiple([*x_train_list[0:9]], [*y_train_list[0:9]], [*titles[0:9]],
@@ -1321,7 +1321,7 @@ if __name__ == '__main__':
         #test_split_V3(method="pca", centering=ce)
         test_split_V3(method="lda", centering=ce)
         test_split_V3(method="pca", centering=ce)
-        test_split_V3("kda", centering=ce)
+        #test_split_V3("kda", centering=ce)
         #test_split_V3("kpca", centering=ce)
 
         #for beta in [0.0, 0.25, 0.5, 1.0]:
