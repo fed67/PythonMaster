@@ -312,8 +312,11 @@ def test_split_V3(method="kda", centering=True, beta=1.0,
         y_all.append([y_train, y_test])
 
         y.append(y_test)
-        gamma_log10 = Decimal(gamma).log10().to_integral_exact()
-        titles.append(r"$\gamma$=10^{0}".format(gamma_log10))
+        if method == "pca" or method=="lda":
+            titles.append("")
+        else:
+            gamma_log10 = Decimal(gamma).log10().to_integral_exact()
+            titles.append(r"$\gamma$=10^{0}".format(gamma_log10))
         #titles.append("\gamma {1} - Test Merge {0} - Kernel {2}\n ".format(group_size, gamma, kern))
 
         # AC_train = model.score(X_train, y_train)
