@@ -314,6 +314,7 @@ def test_split_V3(method="kda", centering=True, beta=1.0,
         y.append(y_test)
         if method == "pca" or method=="lda":
             titles.append("")
+            break
         else:
             gamma_log10 = Decimal(gamma).log10().to_integral_exact()
             titles.append(r"$\gamma$=10^{0}".format(gamma_log10))
