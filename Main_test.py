@@ -325,6 +325,9 @@ def test_split_V3(method="kda", centering=True, beta=1.0,
         # AC_test = model.score(X_test, y_test)
         # print(f'{AC_test=}')
 
+    spalten = None
+    if method == "pca" or method=="lda":
+        spalten=1
 
     Plotter().plotScatter_multiple([*x_train_list[0:9]], [*y_train_list[0:9]], [*titles[0:9]],
                                    [inv_map] * (len(y_train_list) + 0),
@@ -334,7 +337,7 @@ def test_split_V3(method="kda", centering=True, beta=1.0,
                                           [*titles[0:9]], [inv_map] * (len(y_train_list) + 0),
                                           title_fig="{1}-{0}-Center {2}- Train V3 Test V3 - kernel - {3} - Merge - {4}".format(kern, name,
                                                                                                          centering, kern, group_size),
-                                          domainNames=["V1", "V2", "V3", "V4"], figsize=(12, 12))
+                                          domainNames=["V1", "V2", "V3", "V4"], figsize=(12, 12), spalten=spalten)
     #plt.figtext(0.5, 0.01,
     #            "UMAP Plot\nDimension of train data: rows: {0}; features: {1}\n sample: {2}".format(X_train.shape[0],
     #                                                                                                X_test.shape[1],
@@ -488,6 +491,8 @@ def test_LDA_Sklearn_split_treatment_dimension(method="kda", centering=True, bet
     original_all.append(reducer.fit_transform(X_test))
 
     original_all_y = [y_train1, y_train2, y_train3, y_test]
+
+
 
     print(len(X_list))
     print(len(X_V4_list))
@@ -1319,10 +1324,10 @@ if __name__ == '__main__':
         test_split_V3("kda", centering=ce)
         #test_split_V3("kpca", centering=ce)
 
-        for beta in [0.0, 0.25, 0.5, 1.0]:
-            for delta in [0, 0.25, 0.5, 1.0]:
-                print("beta ", beta, " delta ", delta, " centering ")
-                test_split_V3("sca-DomainGeneralization", beta=beta, delta=delta,
-                                                          centering=ce)
-                test_split_V3("sca-DomainAdaption", beta=beta, delta=delta,
-                                                          centering=ce)
+        #for beta in [0.0, 0.25, 0.5, 1.0]:
+        #    for delta in [0, 0.25, 0.5, 1.0]:
+        #        print("beta ", beta, " delta ", delta, " centering ")
+        #        test_split_V3("sca-DomainGeneralization", beta=beta, delta=delta,
+        #                                                  centering=ce)
+        #        test_split_V3("sca-DomainAdaption", beta=beta, delta=delta,
+        #                                                  centering=ce)
