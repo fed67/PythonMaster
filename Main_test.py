@@ -337,7 +337,7 @@ def test_split_V3(method="kda", centering=True, beta=1.0,
                                           [*titles[0:9]], [inv_map] * (len(y_train_list) + 0),
                                           title_fig="{1}-{0}-Center {2}- Train V3 Test V3 - kernel - {3} - Merge - {4}".format(kern, name,
                                                                                                          centering, kern, group_size),
-                                          domainNames=["V1", "V2", "V3", "V4"], figsize=(12, 12), spalten=spalten)
+                                          domainNames=["Train", "Test"], figsize=(12, 12), spalten=spalten)
     #plt.figtext(0.5, 0.01,
     #            "UMAP Plot\nDimension of train data: rows: {0}; features: {1}\n sample: {2}".format(X_train.shape[0],
     #                                                                                                X_test.shape[1],
