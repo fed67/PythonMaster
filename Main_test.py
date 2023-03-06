@@ -329,9 +329,9 @@ def test_split_V3(method="kda", centering=True, beta=1.0,
     if method == "pca" or method == "lda":
         spalten=1
 
-    Plotter().plotScatter_multiple([*x_train_list[0:9]], [*y_train_list[0:9]], [*titles[0:9]],
-                                   [inv_map] * (len(y_train_list) + 0),
-                                   title_fig="{0} Center {1} V3-Train".format(name, centering), figsize=(12, 12))
+    #Plotter().plotScatter_multiple([*x_train_list[0:9]], [*y_train_list[0:9]], [*titles[0:9]],
+    #                               [inv_map] * (len(y_train_list) + 0),
+    #                               title_fig="{0} Center {1} V3-Train".format(name, centering), figsize=(12, 12))
 
     Plotter().plotScatter_multipleDomains([*x_all[0:9]], [*y_all[0:9]],
                                           [*titles[0:9]], [inv_map] * (len(y_train_list) + 0),
@@ -498,9 +498,10 @@ def test_LDA_Sklearn_split_treatment_dimension(method="kda", centering=True, bet
     print(len(X_V4_list))
     # Plotter().plotUmap_multiple(X_list , y, titles, [inv_map]*len(X_list))
     # Plotter().scatter(X_list[0], y, titles[0], inv_map)
-    Plotter().plotScatter_multiple([*X_V4_list[0:9]], [*y[0:9]], [*titles[0:9]],
-                                   [inv_map] * (len(X_V4_list) + 0),
-                                   title_fig="{0} Center {1} V4-Only".format(name, centering))
+    #Plotter().plotScatter_multiple([*X_V4_list[0:9]], [*y[0:9]], [*titles[0:9]],
+    #                               [inv_map] * (len(X_V4_list) + 0),
+    #                               title_fig="{0} Center {1} V4-Only".format(name, centering))
+
     # Plotter().plotScatter_multiple([*X_V4_list[8:16], X_test], [*y[8:16], y_test], [*titles[8:16], "Original"], [inv_map] * len(X_V4_list), title_fig="{0} Center {1} V4-Only2".format(name, center))
     # Plotter().plotScatter_multipleDomains( x_train_list, y_train_list, titles, [inv_map]*len(y_train_list), title_fig="Train - {1} - {0}".format(kernel, alg.name))
     # Plotter().plotScatter_multipleDomains(x_test_list, y_test_list, titles, [inv_map] * len(y_test_list), title_fig="Test - {1} - {0}".format(kernel, alg.name))
@@ -1318,9 +1319,9 @@ if __name__ == '__main__':
 
 
     for ce in [False, True]:
-        #test_split_V3(method="pca", centering=ce)
-        test_split_V3(method="lda", centering=ce)
         test_split_V3(method="pca", centering=ce)
+        test_split_V3(method="lda", centering=ce)
+        #test_split_V3(method="pca", centering=ce)
         #test_split_V3("kda", centering=ce)
         #test_split_V3("kpca", centering=ce)
 
