@@ -1297,20 +1297,20 @@ if __name__ == '__main__':
     # testIris2()
 
 
-    #for ce in [False, True]:
-    #    test_LDA_Sklearn_original(centering=ce)
-    #    test_LDA_Sklearn_split_treatment_Linear(method="pca", centering=ce)
-    #    test_LDA_Sklearn_split_treatment_Linear(method="lda", centering=ce)
-    #    test_LDA_Sklearn_split_treatment_dimension("kda", centering=ce)
-    #    test_LDA_Sklearn_split_treatment_dimension("kpca", centering=ce)
+    for ce in [False, True]:
+        test_LDA_Sklearn_original(centering=ce)
+        test_LDA_Sklearn_split_treatment_Linear(method="pca", centering=ce)
+        test_LDA_Sklearn_split_treatment_Linear(method="lda", centering=ce)
+        test_LDA_Sklearn_split_treatment_dimension("kda", centering=ce)
+        test_LDA_Sklearn_split_treatment_dimension("kpca", centering=ce)
 
-    #    for beta in [0.0, 0.25, 0.5, 1.0]:
-    #        for delta in [0, 0.25, 0.5, 1.0]:
-    #            print("beta ", beta, " delta ", delta, " centering ")
-    #            test_LDA_Sklearn_split_treatment_dimension("sca-DomainGeneralization", beta=beta, delta=delta,
-    #                                                      centering=ce)
-    #            test_LDA_Sklearn_split_treatment_dimension("sca-DomainAdaption", beta=beta, delta=delta,
-    #                                                      centering=ce)
+        for beta in [0.0, 0.25, 0.5, 1.0]:
+            for delta in [0, 0.25, 0.5, 1.0]:
+                print("beta ", beta, " delta ", delta, " centering ")
+                test_LDA_Sklearn_split_treatment_dimension("sca-DomainGeneralization", beta=beta, delta=delta,
+                                                          centering=ce)
+                test_LDA_Sklearn_split_treatment_dimension("sca-DomainAdaption", beta=beta, delta=delta,
+                                                          centering=ce)
 
     #    test_LDA_Sklearn_split_treatment_Linear("lda", centering=centering)
     #    test_LDA_Sklearn_split_treatment_Linear("pca", centering=centering)
@@ -1318,9 +1318,9 @@ if __name__ == '__main__':
     #plt.show()
 
 
-    for ce in [False, True]:
-        test_split_V3(method="pca", centering=ce)
-        test_split_V3(method="lda", centering=ce)
+    #for ce in [False, True]:
+    #    test_split_V3(method="pca", centering=ce)
+    #    test_split_V3(method="lda", centering=ce)
         #test_split_V3(method="pca", centering=ce)
         #test_split_V3("kda", centering=ce)
         #test_split_V3("kpca", centering=ce)
