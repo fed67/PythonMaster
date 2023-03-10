@@ -267,7 +267,8 @@ def test_split_V3(method="kda", centering=True, beta=1.0,
     # for dim in [2]:
     # for kern in kernel:
     #for gamma in [10, 100, 500, 1000, 5000, 1e4, 1e5, 1e6]:
-    for gamma in [0.01, 0.1, 1, 10, 100, 1000, 1e4, 1e5, 1e6]:
+    #for gamma in [0.01, 0.1, 1, 10, 100, 1000, 1e4, 1e5, 1e6]:
+    for gamma in [100, 500, 750, 900, 1000, 1050, 2500, 5000, 1e4]:
     #for gamma in [10, 100, 1000, 1e4, 1e5, 1e6]:
         if method == "sca-DomainAdaption" or method == "sca-DomainGeneralization":
             alg = SCA2(n_components=2, kernel=kern, gamma=gamma, beta=beta, delta=delta)
@@ -316,7 +317,8 @@ def test_split_V3(method="kda", centering=True, beta=1.0,
             titles.append("")
             break
         else:
-            gamma_log10 = Decimal(gamma).log10().to_integral_exact()
+            #gamma_log10 = Decimal(gamma).log10().to_integral_exact()
+            gamma_log10 = Decimal(gamma).log10()
             titles.append(r"$\gamma$=10^{0}".format(gamma_log10))
         #titles.append("\gamma {1} - Test Merge {0} - Kernel {2}\n ".format(group_size, gamma, kern))
 
@@ -1322,15 +1324,15 @@ if __name__ == '__main__':
     #    test_split_V3(method="pca", centering=ce)
     #    test_split_V3(method="lda", centering=ce)
         #test_split_V3(method="pca", centering=ce)
-        test_split_V3("kda", centering=ce)
+        #test_split_V3("kda", centering=ce)
         #test_split_V3("kpca", centering=ce)
-        test_split_V3("sca-DomainGeneralization", beta=1.0, delta=1.0, centering=ce)
-        test_split_V3("sca-DomainAdaption", beta=1.0, delta=1.0, centering=ce)
+        #test_split_V3("sca-DomainGeneralization", beta=1.0, delta=1.0, centering=ce)
+        #test_split_V3("sca-DomainAdaption", beta=1.0, delta=1.0, centering=ce)
 
-        #for beta in [0.0, 0.25, 0.5, 1.0]:
-        #    for delta in [0, 0.25, 0.5, 1.0]:
+        for beta in [0.0, 0.25, 0.5, 1.0]:
+            for delta in [0, 0.25, 0.5, 1.0]:
         #        print("beta ", beta, " delta ", delta, " centering ")
         #        test_split_V3("sca-DomainGeneralization", beta=beta, delta=delta,
         #                                                  centering=ce)
-        #        test_split_V3("sca-DomainAdaption", beta=beta, delta=delta,
-        #                                                  centering=ce)
+                test_split_V3("sca-DomainAdaption", beta=beta, delta=delta,
+                                                          centering=ce)
