@@ -211,6 +211,7 @@ def test_split_V3(method="kda", centering=True, beta=1.0,
     matplotlib.use('Agg')
     cwd = os.getcwd()
     print("Current working directory: {0}".format(cwd))
+    print("beta {0} delta {1}".format(beta, delta) )
     #data_name = "sample_130922_105429_n_1000_median.csv"
     data_name = "sample_130922_105630_n_40000_median.csv"
     treatment = "one_padded_zero_treatments.csv"
