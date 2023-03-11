@@ -1333,7 +1333,7 @@ if __name__ == '__main__':
         for beta in [0.0, 0.25, 0.5, 1.0]:
             for delta in [0, 0.25, 0.5, 1.0]:
         #        print("beta ", beta, " delta ", delta, " centering ")
-        #        test_split_V3("sca-DomainGeneralization", beta=beta, delta=delta,
-        #                                                  centering=ce)
+                test_split_V3("sca-DomainGeneralization", beta=beta, delta=delta,
+                                                          centering=ce)
                 test_split_V3("sca-DomainAdaption", beta=beta, delta=delta,
                                                           centering=ce)
