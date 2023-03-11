@@ -320,7 +320,7 @@ def test_split_V3(method="kda", centering=True, beta=1.0,
         else:
             #gamma_log10 = Decimal(gamma).log10().to_integral_exact()
             gamma_log10 = Decimal(gamma).log10()
-            titles.append(r"$\gamma$=10^{0}".format(gamma_log10))
+            titles.append(r"$\gamma$=10^{0:2.3f}".format(gamma_log10))
         #titles.append("\gamma {1} - Test Merge {0} - Kernel {2}\n ".format(group_size, gamma, kern))
 
         # AC_train = model.score(X_train, y_train)
