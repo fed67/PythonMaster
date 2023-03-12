@@ -513,7 +513,7 @@ def test_LDA_Sklearn_split_treatment_dimension(method="kda", centering=True, bet
                                           [*titles[0:9]], [inv_map] * (len(y_train_list) + 0),
                                           title_fig="{1}-{0}-Center {2}- Train V1,V2,V3 Test V4 ".format(kern, name,
                                                                                                          centering),
-                                          domainNames=["V1", "V2", "V3", "V4"])
+                                          domainNames=["V1", "V2", "V3", "V4"], path="graphics/v1v2v3v4")
     plt.figtext(0.5, 0.01,
                 "UMAP Plot\nDimension of train data: rows: {0}; features: {1}\n sample: {2}".format(X_train.shape[0],
                                                                                                     X_test.shape[1],
@@ -1300,20 +1300,20 @@ if __name__ == '__main__':
     # testIris2()
 
 
-    #for ce in [False, True]:
+    for ce in [False, True]:
     #    test_LDA_Sklearn_original(centering=ce)
     #    test_LDA_Sklearn_split_treatment_Linear(method="pca", centering=ce)
     #    test_LDA_Sklearn_split_treatment_Linear(method="lda", centering=ce)
-    #    test_LDA_Sklearn_split_treatment_dimension("kda", centering=ce)
-    #    test_LDA_Sklearn_split_treatment_dimension("kpca", centering=ce)
+        test_LDA_Sklearn_split_treatment_dimension("kda", centering=ce)
+        test_LDA_Sklearn_split_treatment_dimension("kpca", centering=ce)
 
-    #    for beta in [0.0, 0.25, 0.5, 1.0]:
-    #        for delta in [0, 0.25, 0.5, 1.0]:
-    #            print("beta ", beta, " delta ", delta, " centering ")
-    #            test_LDA_Sklearn_split_treatment_dimension("sca-DomainGeneralization", beta=beta, delta=delta,
-    #                                                      centering=ce)
-    #            test_LDA_Sklearn_split_treatment_dimension("sca-DomainAdaption", beta=beta, delta=delta,
-    #                                                      centering=ce)
+        for beta in [0.0, 0.25, 0.5, 1.0]:
+            for delta in [0, 0.25, 0.5, 1.0]:
+                print("beta ", beta, " delta ", delta, " centering ")
+                test_LDA_Sklearn_split_treatment_dimension("sca-DomainGeneralization", beta=beta, delta=delta,
+                                                          centering=ce)
+                test_LDA_Sklearn_split_treatment_dimension("sca-DomainAdaption", beta=beta, delta=delta,
+                                                          centering=ce)
 
     #    test_LDA_Sklearn_split_treatment_Linear("lda", centering=centering)
     #    test_LDA_Sklearn_split_treatment_Linear("pca", centering=centering)
@@ -1321,13 +1321,13 @@ if __name__ == '__main__':
     #plt.show()
 
 
-    for ce in [False, True]:
+    #for ce in [False, True]:
     #    test_split_V3(method="pca", centering=ce)
     #    test_split_V3(method="lda", centering=ce)
         #test_split_V3(method="pca", centering=ce)
         #test_split_V3("kda", centering=ce)
         #test_split_V3("kpca", centering=ce)
-        test_split_V3("sca-DomainGeneralization", beta=1.0, delta=1.0, centering=ce)
+        #test_split_V3("sca-DomainGeneralization", beta=1.0, delta=1.0, centering=ce)
         #test_split_V3("sca-DomainAdaption", beta=1.0, delta=1.0, centering=ce)
 
         #for beta in [0.0, 0.25, 0.5, 1.0]:

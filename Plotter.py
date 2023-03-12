@@ -540,6 +540,9 @@ class Plotter:
 
         #fig.suptitle(title_fig)
         #fig.tight_layout()
+        if not os.path.exists(path):
+            os.makedirs(path)
+
         s = path + title_fig+fileName_Append+'.svg'
         plt.savefig(fname=s)
 
