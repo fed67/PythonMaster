@@ -251,11 +251,6 @@ def test_split_V3(method="kda", centering=True, beta=1.0, delta=1.0):  # sca-Dom
     df_test = compute_mean_of_group_size_on_treatment(dfc.loc[dfc["trial"].isin(['V4'])], group_size)
     X_test, y_test = pruneDF_treatment_trail_plate_well(df_test, centering)
 
-    X_V1_list = []
-    X_V2_list = []
-    X_V3_list = []
-    X_V4_list = []
-
     x_train_list = []
     x_test_list = []
     y_train_list = []
@@ -300,7 +295,7 @@ def test_split_V3(method="kda", centering=True, beta=1.0, delta=1.0):  # sca-Dom
         xtest = model.transform(X_test)
         xtrain = model.transform(X_train)
 
-        reducer = umap.UMAP()
+        reducer = umap.UMAP(random_state=42)
         xtest = reducer.fit_transform(xtest)
         xtrain = reducer.fit_transform(xtrain)
 
@@ -405,7 +400,7 @@ def test_split_V3_UMAP(method="kda", centering=True, beta=1.0, delta=1.0, gamma=
     x_all = []
     y_all = []
 
-    for neighbours in [2, 5, 10, 40]:
+    for neighbours in [2, 3, 5, 8, 10, 15, 20, 40, 100]:
     #for gamma in [10, 100, 1000, 1e4, 1e5, 1e6]:
         if method == "sca-DomainAdaption" or method == "sca-DomainGeneralization":
             alg = SCA2(n_components=2, kernel=kern, gamma=gamma, beta=beta, delta=delta)
@@ -436,7 +431,7 @@ def test_split_V3_UMAP(method="kda", centering=True, beta=1.0, delta=1.0, gamma=
         xtest = model.transform(X_test)
         xtrain = model.transform(X_train)
 
-        reducer = umap.UMAP(n_neighbors=neighbours)
+        reducer = umap.UMAP(n_neighbors=neighbours, random_state=42)
         xtest = reducer.fit_transform(xtest)
         xtrain = reducer.fit_transform(xtrain)
 
@@ -1467,10 +1462,14 @@ if __name__ == '__main__':
     print(config["UMAP"].get("SCA-DomainGeneralization"))
     #print(config["UMAP"].get("KDA"))
     print( list(config["UMAP"].keys()) )
+
+    if config["UMAP"].getboolean("KDA"):
+        test_split_V3_UMAP("kda", beta=1.0, delta=1.0, centering=False, gamma=1000)
+
     if config["UMAP"].getboolean("SCA-DomainGeneralization"):
-        test_split_V3_UMAP("sca-DomainGeneralization", beta=beta, delta=delta, centering=ce, gamma=1000)
+        test_split_V3_UMAP("sca-DomainGeneralization", beta=1.0, delta=1.0, centering=False, gamma=1000)
 
     if config["UMAP"].getboolean("SCA-DomainAdaption"):
-        test_split_V3_UMAP("sca-DomainAdaption", beta=beta, delta=delta, centering=ce, gamma=1000)
+        test_split_V3_UMAP("sca-DomainAdaption", beta=0.0, delta=0.0, centering=False, gamma=1000)
 
         
