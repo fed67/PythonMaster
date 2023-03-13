@@ -346,7 +346,7 @@ def test_split_V3(method="kda", centering=True, beta=1.0, delta=1.0):  # sca-Dom
 
 
 
-def test_split_V3_UMAP(method="kda", centering=True, beta=1.0, delta=1.0, gamma=1000):  # sca-DomainAdaption, sca-DomainGeneralization, kpca
+def test_split_V3_UMAP(method="kda", centering=True, beta=1.0, delta=1.0, gamma=1000, neighbours_=[2, 3, 5, 8, 10, 15, 20, 40, 100], spread_=[1.0], min_dist_=[1.0]):  # sca-DomainAdaption, sca-DomainGeneralization, kpca
 
     from sklearn.model_selection import train_test_split
     matplotlib.use('Agg')
@@ -400,53 +400,55 @@ def test_split_V3_UMAP(method="kda", centering=True, beta=1.0, delta=1.0, gamma=
     x_all = []
     y_all = []
 
-    for neighbours in [2, 3, 5, 8, 10, 15, 20, 40, 100]:
-    #for gamma in [10, 100, 1000, 1e4, 1e5, 1e6]:
-        if method == "sca-DomainAdaption" or method == "sca-DomainGeneralization":
-            alg = SCA2(n_components=2, kernel=kern, gamma=gamma, beta=beta, delta=delta)
-            name = method + " beta: " + str(beta) + " delta: " + str(delta)
-        elif method == "kda":
-            alg = MyKerneLDA(n_components=None, kernel=kern, degree=degree)
-            name = "KDA"
-        elif method == "kpca":
-            name = "K-PCA"
-            alg = MyKernelPCA(n_components=None, kernel=kern, degree=degree)
-        elif method == "pca":
-            alg = PCA()
-            name = "PCA"
-        elif method == "lda":
-            # alg = LinearDiscriminantAnalysis(n_components=None)
-            alg = LinearDiscriminantAnalysis(solver="svd")
-            name = "LDA"
+    for neighbours in neighbours_:
+        for min_dist in spread_:
+            for spread in spread_:
+            #for gamma in [10, 100, 1000, 1e4, 1e5, 1e6]:
+                if method == "sca-DomainAdaption" or method == "sca-DomainGeneralization":
+                    alg = SCA2(n_components=2, kernel=kern, gamma=gamma, beta=beta, delta=delta)
+                    name = method + " beta: " + str(beta) + " delta: " + str(delta)
+                elif method == "kda":
+                    alg = MyKerneLDA(n_components=None, kernel=kern, degree=degree)
+                    name = "KDA"
+                elif method == "kpca":
+                    name = "K-PCA"
+                    alg = MyKernelPCA(n_components=None, kernel=kern, degree=degree)
+                elif method == "pca":
+                    alg = PCA()
+                    name = "PCA"
+                elif method == "lda":
+                    # alg = LinearDiscriminantAnalysis(n_components=None)
+                    alg = LinearDiscriminantAnalysis(solver="svd")
+                    name = "LDA"
 
-        if method == "sca-DomainAdaption":
-            model = alg.fit([X_train], [y_train], [X_test])
-        elif method == "sca-DomainGeneralization":
-            model = alg.fit([X_train], [y_train])
-        elif method == "kda" or method == "lda":
-            model = alg.fit(X_train, y_train)
-        elif method == "pca" or method == "kpca":
-            model = alg.fit(X_train, y_train)
+                if method == "sca-DomainAdaption":
+                    model = alg.fit([X_train], [y_train], [X_test])
+                elif method == "sca-DomainGeneralization":
+                    model = alg.fit([X_train], [y_train])
+                elif method == "kda" or method == "lda":
+                    model = alg.fit(X_train, y_train)
+                elif method == "pca" or method == "kpca":
+                    model = alg.fit(X_train, y_train)
 
-        xtest = model.transform(X_test)
-        xtrain = model.transform(X_train)
+                xtest = model.transform(X_test)
+                xtrain = model.transform(X_train)
 
-        reducer = umap.UMAP(n_neighbors=neighbours, random_state=42)
-        xtest = reducer.fit_transform(xtest)
-        xtrain = reducer.fit_transform(xtrain)
+                reducer = umap.UMAP(n_neighbors=neighbours, min_dist=min_dist, spread=spread, random_state=42)
+                xtest = reducer.fit_transform(xtest)
+                xtrain = reducer.fit_transform(xtrain)
 
 
-        x_test_list.append(xtest)
-        x_train_list.append(xtrain)
-        x_all.append([xtrain, xtest])
+                x_test_list.append(xtest)
+                x_train_list.append(xtrain)
+                x_all.append([xtrain, xtest])
 
-        y_test_list.append(y_test)
-        y_train_list.append(y_train)
-        y_all.append([y_train, y_test])
+                y_test_list.append(y_test)
+                y_train_list.append(y_train)
+                y_all.append([y_train, y_test])
 
-        y.append(y_test)
-        titles.append(r"neighbours={0}".format(neighbours))
-        #titles.append("\gamma {1} - Test Merge {0} - Kernel {2}\n ".format(group_size, gamma, kern))
+                y.append(y_test)
+                titles.append(r"neighbours={0}, spread={1}, min_dist={2}".format(neighbours, spread, min_dist))
+                #titles.append("\gamma {1} - Test Merge {0} - Kernel {2}\n ".format(group_size, gamma, kern))
 
     spalten = None
     if method == "pca" or method == "lda":
@@ -1465,6 +1467,8 @@ if __name__ == '__main__':
 
     if config["UMAP"].getboolean("KDA"):
         test_split_V3_UMAP("kda", beta=1.0, delta=1.0, centering=False, gamma=1000)
+        test_split_V3_UMAP("kda", beta=1.0, delta=1.0, centering=False, gamma=1000, neighbours_=[2], spread_=[0.1, 0.5, 1.0, 1.5])
+        test_split_V3_UMAP("kda", beta=1.0, delta=1.0, centering=False, gamma=1000, neighbours_=[2], min_dist_=[0.05, 0.1, 0.5, 1.0])
 
     if config["UMAP"].getboolean("SCA-DomainGeneralization"):
         test_split_V3_UMAP("sca-DomainGeneralization", beta=1.0, delta=1.0, centering=False, gamma=1000)
