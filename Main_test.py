@@ -11,6 +11,7 @@ from KernelAlgorithms import *
 from DomainGeneralization import *
 import copy
 from decimal import *
+import configparser
 
 
 def test_Kernel_LDA_Sklearn_MaxLarge_split_treatment_kernels():
@@ -204,8 +205,7 @@ def test_KernelPCA_Sklearn_split_treatment_dimension():
 
 import matplotlib
 
-def test_split_V3(method="kda", centering=True, beta=1.0,
-                                               delta=1.0):  # sca-DomainAdaption, sca-DomainGeneralization, kpca
+def test_split_V3(method="kda", centering=True, beta=1.0, delta=1.0):  # sca-DomainAdaption, sca-DomainGeneralization, kpca
 
     from sklearn.model_selection import train_test_split
     matplotlib.use('Agg')
@@ -347,6 +347,121 @@ def test_split_V3(method="kda", centering=True, beta=1.0,
     #                                                                                                data_name),
     #           wrap=True, horizontalalignment='center', fontweight='bold')
 
+    plt.show()
+
+
+
+def test_split_V3_UMAP(method="kda", centering=True, beta=1.0, delta=1.0, gamma=1000):  # sca-DomainAdaption, sca-DomainGeneralization, kpca
+
+    from sklearn.model_selection import train_test_split
+    matplotlib.use('Agg')
+    cwd = os.getcwd()
+    print("Current working directory: {0}".format(cwd))
+    print("beta {0} delta {1}".format(beta, delta) )
+    #data_name = "sample_130922_105429_n_1000_median.csv"
+    data_name = "sample_130922_105630_n_40000_median.csv"
+    treatment = "one_padded_zero_treatments.csv"
+    # path = "../../Data/kardio_data/"
+    path = "../Data/"
+
+    df_data = pd.read_csv(path + data_name)
+
+    variant = ["in groupBy treatment", "in groupBy treatment+trial"]
+    # kernel = ["linear", "poly", "rbf", "sigmoid", "cosine"]
+    kernel = ["linear", "poly", "cosine"]
+    group_size = 25
+
+    X_list = []
+    titles = []
+    y = []
+    degree = 3
+    dim = 2
+    kern = "rbf"
+
+    _, dfc = get_table_with_class2(df_data, path + treatment)
+
+    dfc, inv_map = string_column_to_int_class(dfc, "treatment")
+
+    df_train = compute_mean_of_group_size_on_treatment(dfc.loc[dfc["trial"].isin(['V1', 'V2', 'V3'])], group_size)
+    X_train, y_train = pruneDF_treatment_trail_plate_well(df_train)
+
+
+    df_V3 = compute_mean_of_group_size_on_treatment(dfc.loc[dfc["trial"].isin(['V3'])], group_size)
+
+    df_train, df_test = train_test_split(df_V3, train_size=0.6, random_state=43)
+
+    X_train, y_train = pruneDF_treatment_trail_plate_well(df_train, centering)
+    X_test, y_test = pruneDF_treatment_trail_plate_well(df_test, centering)
+
+    # df_test = compute_mean_of_group_size_on_treatment(dfc.loc[dfc["trial"] == 'V4'], group_size)
+    df_test = compute_mean_of_group_size_on_treatment(dfc.loc[dfc["trial"].isin(['V4'])], group_size)
+    X_test, y_test = pruneDF_treatment_trail_plate_well(df_test, centering)
+
+    x_train_list = []
+    x_test_list = []
+    y_train_list = []
+    y_test_list = []
+
+    x_all = []
+    y_all = []
+
+    for neighbours in [2, 5, 10, 40]:
+    #for gamma in [10, 100, 1000, 1e4, 1e5, 1e6]:
+        if method == "sca-DomainAdaption" or method == "sca-DomainGeneralization":
+            alg = SCA2(n_components=2, kernel=kern, gamma=gamma, beta=beta, delta=delta)
+            name = method + " beta: " + str(beta) + " delta: " + str(delta)
+        elif method == "kda":
+            alg = MyKerneLDA(n_components=None, kernel=kern, degree=degree)
+            name = "KDA"
+        elif method == "kpca":
+            name = "K-PCA"
+            alg = MyKernelPCA(n_components=None, kernel=kern, degree=degree)
+        elif method == "pca":
+            alg = PCA()
+            name = "PCA"
+        elif method == "lda":
+            # alg = LinearDiscriminantAnalysis(n_components=None)
+            alg = LinearDiscriminantAnalysis(solver="svd")
+            name = "LDA"
+
+        if method == "sca-DomainAdaption":
+            model = alg.fit([X_train], [y_train], [X_test])
+        elif method == "sca-DomainGeneralization":
+            model = alg.fit([X_train], [y_train])
+        elif method == "kda" or method == "lda":
+            model = alg.fit(X_train, y_train)
+        elif method == "pca" or method == "kpca":
+            model = alg.fit(X_train, y_train)
+
+        xtest = model.transform(X_test)
+        xtrain = model.transform(X_train)
+
+        reducer = umap.UMAP(n_neighbors=neighbours)
+        xtest = reducer.fit_transform(xtest)
+        xtrain = reducer.fit_transform(xtrain)
+
+
+        x_test_list.append(xtest)
+        x_train_list.append(xtrain)
+        x_all.append([xtrain, xtest])
+
+        y_test_list.append(y_test)
+        y_train_list.append(y_train)
+        y_all.append([y_train, y_test])
+
+        y.append(y_test)
+        titles.append(r"neighbours={0}".format(neighbours))
+        #titles.append("\gamma {1} - Test Merge {0} - Kernel {2}\n ".format(group_size, gamma, kern))
+
+    spalten = None
+    if method == "pca" or method == "lda":
+        spalten=1
+
+    Plotter().plotScatter_multipleDomains([*x_all[0:9]], [*y_all[0:9]],
+                                          [*titles[0:9]], [inv_map] * (len(y_train_list) + 0),
+                                          title_fig=r"{1}-{0}-Center {2}- Train V3 Test V3 - kernel - {3} - Merge - {4} $\gamma$ {5}".format(kern, name,
+                                                                                                         centering, kern, group_size, gamma),
+                                          domainNames=["Train", "Test"], figsize=(12, 12), spalten=spalten, path="graphics/UMAP/")
     plt.show()
 
 
@@ -1252,6 +1367,8 @@ def testPlotly():
 if __name__ == '__main__':
     #testLegend()
     #testPlotly()
+    config = configparser.ConfigParser()
+    config.read("config.ini")
 
     n = 50
     #testDataSets_linear(method="lda", n=10)
@@ -1300,40 +1417,56 @@ if __name__ == '__main__':
     # testIris2()
 
 
+    #V1,V2,V3,V4
     for ce in [False, True]:
     #    test_LDA_Sklearn_original(centering=ce)
-    #    test_LDA_Sklearn_split_treatment_Linear(method="pca", centering=ce)
-    #    test_LDA_Sklearn_split_treatment_Linear(method="lda", centering=ce)
-        test_LDA_Sklearn_split_treatment_dimension("kda", centering=ce)
-        test_LDA_Sklearn_split_treatment_dimension("kpca", centering=ce)
+        if config["V1-V4"].getboolean("PCA"):
+            test_LDA_Sklearn_split_treatment_Linear(method="pca", centering=ce)
+        if config["V1-V4"].getboolean("LDA"):
+            test_LDA_Sklearn_split_treatment_Linear(method="lda", centering=ce)
+        if config["V1-V4"].getboolean("KDA"):
+            test_LDA_Sklearn_split_treatment_dimension("kda", centering=ce)
+        if config["V1-V4"].getboolean("KPCA"):
+            test_LDA_Sklearn_split_treatment_dimension("kpca", centering=ce)
 
         for beta in [0.0, 0.25, 0.5, 1.0]:
             for delta in [0, 0.25, 0.5, 1.0]:
-                print("beta ", beta, " delta ", delta, " centering ")
-                test_LDA_Sklearn_split_treatment_dimension("sca-DomainGeneralization", beta=beta, delta=delta,
-                                                          centering=ce)
-                test_LDA_Sklearn_split_treatment_dimension("sca-DomainAdaption", beta=beta, delta=delta,
-                                                          centering=ce)
+                #print("beta ", beta, " delta ", delta, " centering ")
+                if config["V1-V4"].getboolean("SCA-DomainGeneralization"):
+                    test_LDA_Sklearn_split_treatment_dimension("sca-DomainGeneralization", beta=beta, delta=delta, centering=ce)
+                if config["V1-V4"].getboolean("SCA-DomainAdaption"):
+                    test_LDA_Sklearn_split_treatment_dimension("sca-DomainAdaption", beta=beta, delta=delta, centering=ce)
 
     #    test_LDA_Sklearn_split_treatment_Linear("lda", centering=centering)
     #    test_LDA_Sklearn_split_treatment_Linear("pca", centering=centering)
     # sca - DomainAdaption
     #plt.show()
 
-
-    #for ce in [False, True]:
-    #    test_split_V3(method="pca", centering=ce)
-    #    test_split_V3(method="lda", centering=ce)
-        #test_split_V3(method="pca", centering=ce)
-        #test_split_V3("kda", centering=ce)
-        #test_split_V3("kpca", centering=ce)
+    #V3
+    for ce in [False, True]:
+        if config["V3"].getboolean("LDA"):
+            test_split_V3(method="lda", centering=ce)
+        if config["V3"].getboolean("PCA"):
+            test_split_V3(method="pca", centering=ce)
+        if config["V3"].getboolean("KDA"):
+            test_split_V3("kda", centering=ce)
+        if config["V3"].getboolean("KPCA"):
+            test_split_V3("kpca", centering=ce)
         #test_split_V3("sca-DomainGeneralization", beta=1.0, delta=1.0, centering=ce)
         #test_split_V3("sca-DomainAdaption", beta=1.0, delta=1.0, centering=ce)
 
-        #for beta in [0.0, 0.25, 0.5, 1.0]:
-        #    for delta in [0, 0.25, 0.5, 1.0]:
+        for beta in [0.0, 0.25, 0.5, 1.0]:
+            for delta in [0, 0.25, 0.5, 1.0]:
         #        print("beta ", beta, " delta ", delta, " centering ")
-        #        test_split_V3("sca-DomainGeneralization", beta=beta, delta=delta,
-        #                                                  centering=ce)
-        #        test_split_V3("sca-DomainAdaption", beta=beta, delta=delta,
-        #                                                  centering=ce)
+                if config["V3"].getboolean("SCA-DomainGeneralization"):
+                    test_split_V3("sca-DomainGeneralization", beta=beta, delta=delta, centering=ce)
+                if config["V3"].getboolean("SCA-DomainAdaption"):
+                    test_split_V3("sca-DomainAdaption", beta=beta, delta=delta, centering=ce)
+
+    if config["UMAP"].getboolean("SCA-DomainGeneralization"):
+        test_split_V3_UMAP("sca-DomainGeneralization", beta=beta, delta=delta, centering=ce, gamma=1000)
+
+    if config["UMAP"].getboolean("SCA-DomainAdaption"):
+        test_split_V3_UMAP("sca-DomainAdaption", beta=beta, delta=delta, centering=ce, gamma=1000)
+
+        
