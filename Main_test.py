@@ -1463,6 +1463,10 @@ if __name__ == '__main__':
                 if config["V3"].getboolean("SCA-DomainAdaption"):
                     test_split_V3("sca-DomainAdaption", beta=beta, delta=delta, centering=ce)
 
+    print(config["UMAP"].getboolean("SCA-DomainGeneralization"))
+    print(config["UMAP"].get("SCA-DomainGeneralization"))
+    #print(config["UMAP"].get("KDA"))
+    print( list(config["UMAP"].keys()) )
     if config["UMAP"].getboolean("SCA-DomainGeneralization"):
         test_split_V3_UMAP("sca-DomainGeneralization", beta=beta, delta=delta, centering=ce, gamma=1000)
 
