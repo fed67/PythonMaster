@@ -401,7 +401,7 @@ def test_split_V3_UMAP(method="kda", centering=True, beta=1.0, delta=1.0, gamma=
     y_all = []
 
     for neighbours in neighbours_:
-        for min_dist in spread_:
+        for min_dist in min_dist_:
             for spread in spread_:
             #for gamma in [10, 100, 1000, 1e4, 1e5, 1e6]:
                 print("neighbours {0} min_dist {1} spread {2}".format(neighbours, min_dist,spread) )
