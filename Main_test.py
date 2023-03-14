@@ -1467,7 +1467,7 @@ if __name__ == '__main__':
 
     if config["UMAP"].getboolean("KDA"):
         #test_split_V3_UMAP("kda", beta=1.0, delta=1.0, centering=False, gamma=1000)
-        #test_split_V3_UMAP("kda", beta=1.0, delta=1.0, centering=False, gamma=1000, neighbours_=[2], spread_=[0.3, 0.5, 1.0, 1.5])
+        test_split_V3_UMAP("kda", beta=1.0, delta=1.0, centering=False, gamma=1000, neighbours_=[2], spread_=[0.3, 0.5, 1.0, 1.5], min_dist_=[0.1])
         test_split_V3_UMAP("kda", beta=1.0, delta=1.0, centering=False, gamma=1000, neighbours_=[2], spread_=[1.0], min_dist_=[0.05, 0.1, 0.5, 0.9])
 
     #if config["UMAP"].getboolean("SCA-DomainGeneralization"):
