@@ -765,7 +765,7 @@ def test_LDA_Sklearn_split_treatment_Linear(method="pca", centering=True):  # sc
         X_train = np.concatenate((X_train1, X_train2, X_train3, X_test))
         y_train = np.concatenate((y_train1, y_train2, y_train3, y_test))
         model = alg.fit(X_train, y_train)
-        feature_rank_list.append(["pca", feature_importance(model.components_, X_train.columns)])
+        feature_rank_list.append(["pca", feature_importance(model.components_, X_train[0].columns)])
 
         xV1 = model.transform(X_train1)
         xV2 = model.transform(X_train2)
@@ -779,7 +779,7 @@ def test_LDA_Sklearn_split_treatment_Linear(method="pca", centering=True):  # sc
         y_train = np.concatenate((y_train1, y_train2, y_train3))
         model = alg.fit(X_train, y_train)
 
-        feature_rank_list.append(["LDA", feature_importance(model.coef_, X_train.columns)])
+        feature_rank_list.append(["LDA", feature_importance(model.coef_, X_train[0].columns)])
 
         xV1 = model.transform(X_train1)
         xV2 = model.transform(X_train2)
