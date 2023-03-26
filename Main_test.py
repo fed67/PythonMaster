@@ -516,7 +516,7 @@ def test_LDA_Sklearn_split_treatment_dimension(method="kda", centering=True, bet
     df_train_V3 = compute_mean_of_group_size_on_treatment(dfc.loc[dfc["trial"].isin(['V3'])], group_size)
     df_train_V4 = compute_mean_of_group_size_on_treatment(dfc.loc[dfc["trial"].isin(['V4'])], group_size)
 
-    print("df_train_V1 ", df_train_V1.shape)
+    print(" df_train_V1 ", df_train_V1.shape)
 
     X_train1, y_train1 = pruneDF_treatment_trail_plate_well(df_train_V1, centering)
     X_train2, y_train2 = pruneDF_treatment_trail_plate_well(df_train_V2, centering)
