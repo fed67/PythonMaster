@@ -509,14 +509,23 @@ def test_LDA_Sklearn_split_treatment_dimension(method="kda", centering=True, bet
     df_all = compute_mean_of_group_size_on_treatment(dfc.loc[dfc["trial"].isin(['V1', 'V2', 'V3', 'V4'])], group_size)
     X_all, y_train = pruneDF_treatment_trail_plate_well(df_train)
 
+    print("df_all ", df_all.shape)
+
     df_train_V1 = compute_mean_of_group_size_on_treatment(dfc.loc[dfc["trial"].isin(['V1'])], group_size)
     df_train_V2 = compute_mean_of_group_size_on_treatment(dfc.loc[dfc["trial"].isin(['V2'])], group_size)
     df_train_V3 = compute_mean_of_group_size_on_treatment(dfc.loc[dfc["trial"].isin(['V3'])], group_size)
     df_train_V4 = compute_mean_of_group_size_on_treatment(dfc.loc[dfc["trial"].isin(['V4'])], group_size)
 
+    print("df_train_V1 ", df_train_V1.shape)
+
     X_train1, y_train1 = pruneDF_treatment_trail_plate_well(df_train_V1, centering)
     X_train2, y_train2 = pruneDF_treatment_trail_plate_well(df_train_V2, centering)
     X_train3, y_train3 = pruneDF_treatment_trail_plate_well(df_train_V3, centering)
+
+    print("X_train1 ", X_train1.shape)
+
+    return
+
 
     # df_test = compute_mean_of_group_size_on_treatment(dfc.loc[dfc["trial"] == 'V4'], group_size)
     df_test = compute_mean_of_group_size_on_treatment(dfc.loc[dfc["trial"].isin(['V4'])], group_size)
@@ -657,7 +666,7 @@ def test_split_treatment(entering=True):
     _, dfc = get_table_with_class2(df_data, path + treatment)
 
     dfc, inv_map = string_column_to_int_class(dfc, "treatment")
-
+    columnsnames_to_file(dfc.dtypes, "dfc_cols.csv")
 
     df_train = compute_mean_of_group_size_on_treatment(dfc.loc[dfc["trial"].isin(['V1', 'V2', 'V3'])], group_size)
     X_train, y_train = pruneDF_treatment_trail_plate_well(df_train)
@@ -676,7 +685,7 @@ def test_split_treatment(entering=True):
     dfr = d.sort_values(0, axis=1, ascending=False)
     print(dfr)
 
-    write_Feature_Score_ToFile([["gamma -1", dfr]], "output.txt")
+    #write_Feature_Score_ToFile([["gamma -1", dfr]], "output.txt")
 
     #df_all = compute_mean_of_group_size_on_treatment(dfc.loc[dfc["trial"].isin(['V1', 'V2', 'V3', 'V4'])], group_size)
     #X_all, y_train = pruneDF_treatment_trail_plate_well(df_train)
@@ -1501,7 +1510,7 @@ if __name__ == '__main__':
         test_split_V3_UMAP("kda", beta=1.0, delta=1.0, centering=False, gamma=1000, neighbours_=[2], spread_=[0.3, 0.5, 1.0, 1.5], min_dist_=[0.1])
         test_split_V3_UMAP("kda", beta=1.0, delta=1.0, centering=False, gamma=1000, neighbours_=[2], spread_=[1.0], min_dist_=[0.05, 0.1, 0.5, 0.9])
 
-    #test_split_treatment()
+    test_split_treatment()
 
     #if config["UMAP"].getboolean("SCA-DomainGeneralization"):
     #    test_split_V3_UMAP("sca-DomainGeneralization", beta=1.0, delta=1.0, centering=False, gamma=1000)
