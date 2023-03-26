@@ -523,6 +523,9 @@ def test_LDA_Sklearn_split_treatment_dimension(method="kda", centering=True, bet
     X_train3, y_train3 = pruneDF_treatment_trail_plate_well(df_train_V3, centering)
 
     print("X_train1 ", X_train1.shape)
+    X_train1["treatment"]
+    X_train1["trail"]
+    X_train1["plate"]
 
     return
 
@@ -646,8 +649,8 @@ def test_split_treatment(entering=True):
     cwd = os.getcwd()
     matplotlib.use('Agg')
     print("Current working directory: {0}".format(cwd))
-    data_name = "sample_130922_105429_n_1000_median.csv"
-    #data_name = "sample_130922_105630_n_40000_median.csv"
+    #data_name = "sample_130922_105429_n_1000_median.csv"
+    data_name = "sample_130922_105630_n_40000_median.csv"
     treatment = "one_padded_zero_treatments.csv"
     path = "../Data/"
 
