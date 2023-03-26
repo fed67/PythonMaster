@@ -2,8 +2,21 @@ import numpy as np
 import pandas as pd
 import os
 import itertools
+import csv
 
 from sklearn.preprocessing import StandardScaler
+
+def columnsnames_to_file(cols, filename):
+    f = open(filename, "w")
+    writer = csv.writer(f)
+    content = ""
+    for index,value in cols.items():
+        #content += str(c) + "\n"
+        writer.writerow([index, value])
+
+    #sed -i 's/_/-/g' Features.csv
+    #f.write(content)
+    f.close()
 
 
 def string_column_to_int_class(df, col):
@@ -61,13 +74,15 @@ def pruneDF_treatment_trail_plate_well(df, centerData=False):
 
     if centerData:
         scaler = StandardScaler(with_mean=True, with_std=False)
-        X = scaler.fit_transform(X_new)
+        X_new = scaler.fit_transform(X_new)
+        X = pd.DataFrame(data=X_new, columns=X.columns)
     else:
-        X = X_new.to_numpy()
+        X = X_new
 
     return X, y
 
 def get_table_with_class2(df, treatmentPath_str='../../Data/treatments.csv') -> [pd.DataFrame, pd.DataFrame]:
+
 
     remove_prim_cyto_nucl = False
 
@@ -75,6 +90,8 @@ def get_table_with_class2(df, treatmentPath_str='../../Data/treatments.csv') -> 
     df = df.dropna()
 
     types = df.dtypes
+
+    columnsnames_to_file(types, "types.csv")
 
     types_set = set()
     for t in types:
@@ -91,14 +108,10 @@ def get_table_with_class2(df, treatmentPath_str='../../Data/treatments.csv') -> 
     conc_id_df = pd.read_csv(treatmentPath_str, usecols=['trial', 'plate', 'well', 'treatment'])
 
     print("classes ", conc_id_df["treatment"].unique())
-    #print("number of classes ", len(conc_id_df["treatment"].unique()))
 
-    #df = df.replace([np.inf, -np.inf], np.nan).dropna(axis=1)#drop columns containing Inf, -Inf, NaN
+
     df = df.replace([np.inf, -np.inf], np.nan).dropna(axis=0)  # drop rows containing Inf, -Inf, NaN
-    #df.replace([np.inf, -np.inf], np.nan, inplace=True)
 
-
-    # df2 = df.filter(regex="$_Prim").filter(regex="$_Cyto").filter(regex="$_Nucl")
     if remove_prim_cyto_nucl:
         # remove columns containing regular expression  *_Prim, *_Cyto, *_Nucl
         cols_bool = df.columns.str.contains("_Prim") | df.columns.str.contains("_Cyto") | df.columns.str.contains("_Nucl")
@@ -106,7 +119,6 @@ def get_table_with_class2(df, treatmentPath_str='../../Data/treatments.csv') -> 
         #df.columns.str is of type Pandas.Series.str
         cols_bool = df.columns.str.fullmatch('(field)|(object_id)|(concentration)|(unit)|(conc_id)|(class)|(class_label)')
     c2 = np.vectorize(lambda x: not x)(cols_bool)
-    #cols2 = df.columns.where(c2)
 
     c3 = []
     for i in range(0, c2.size):
@@ -122,12 +134,12 @@ def get_table_with_class2(df, treatmentPath_str='../../Data/treatments.csv') -> 
 
     df2_ = df2.drop(['trial', 'plate', 'well'], axis=1)
 
-    #print("shape final ", df2_.shape)
+    print("shape final ", df2_.shape)
 
     return df2_, df2
 
 
-def compute_mean_of_group_size_on_group_well_plate(df, group_size):
+def compute_mean_of_group_size_on_group_well_platecompute_mean_of_group_size_on_group_well_plate(df, group_size):
     col = [df['plate'].unique(), df['well'].unique()]
 
     if 'treatment' not in df:
@@ -339,3 +351,30 @@ def score_classification(y, ground_truth):
     l = zip(y, ground_truth)
 
     return sum(map( lambda x : x(0)==x(1) , l))/len(l)
+
+#cef is sorted by the eigenvalues
+def feature_importance(coef, feature_names):
+    #coef is n_components x n_features
+
+    _, n_features = coef.shape
+    print("coeef.shape ", coef.shape)
+
+    s = np.zeros( n_features )
+    for j in range(n_features):
+        coef[:, j]
+        np.abs(coef[:, j])
+        #print(np.sum( np.absolute( coef[:,j] ) ))
+        s[j] += np.sum( np.absolute( coef[:,j] ) )
+
+    return pd.DataFrame(data=s.reshape((1,-1)), columns=feature_names).sort_values(0, axis=1, ascending=False)
+
+
+def write_Feature_Score_ToFile(feature_score, file_name):
+    f = open(file_name, "w")
+    for el in feature_score:
+        f.writelines(el[0]+"\n")
+        df = el[1]
+        f.writelines( df.iloc[0].to_string() + "\n")
+        f.writelines("--END--\n\n\n")
+
+    f.close()

@@ -63,6 +63,7 @@ class KernelAlgorithms(KernelClass):
     #n data, m features
     #nach https://odsc.medium.com/implementing-a-kernel-principal-component-analysis-in-python-495f04a7f85f
     def fit_KernelPCA(self, X):
+        X = X.to_numpy()
         if self.n_components is None:
             self.n_components = X.shape[0]-1
 
@@ -83,7 +84,8 @@ class KernelAlgorithms(KernelClass):
 
         eigvals, eigvecs = eigvals[::-1], eigvecs[:, ::-1]
 
-        self.eigvals = eigvals
+        self.coef_ = eigvecs
+        self.eigvals = eigvals[0:self.n_components]
 
         self.E = eigvecs[:, 0:self.n_components]
         self.Lambda = eigvals[0:self.n_components]
@@ -92,7 +94,7 @@ class KernelAlgorithms(KernelClass):
 
 #https://github.com/scikit-learn/scikit-learn/blob/f3f51f9b611bf873bd5836748647221480071a87/sklearn/preprocessing/_data.py#L2126
     def transform_kernelPCA(self, Xt):
-        X_new = Xt.T #m features, n samples
+        X_new = Xt.to_numpy().T #m features, n samples
 
         Y = np.zeros((self.n_components, X_new.shape[1]))
         for g in range(X_new.shape[1]):
@@ -119,7 +121,7 @@ class KernelAlgorithms(KernelClass):
         a=1.0 / float(n) ** 2 * np.sum(np.sum(self.K_XX, axis=1), axis=0)
         for i in range(self.X.shape[1]):
             for j in range(X_new.shape[1]):
-                K_c[i, j] = self.f(self.X[:, i], X_new[:, j]) + 1.0/float(n) * np.sum(self.K_XX[i,:]) + 1.0/float(n) * np.sum(K_XY[j,:]) + a
+                K_c[i, j] = self.f(self.X[:, i], X_new[:, j]) - 1.0/float(n) * np.sum(K_XY[:, j]) - 1.0/float(n) * np.sum(self.K_XX[i,:]) + a
 
         for k in range(Y.shape[1]):
             for i in range(Y.shape[0]):
@@ -132,6 +134,7 @@ class KernelAlgorithms(KernelClass):
         return np.eye(n) - 1/n * np.outer(np.ones((n,1)), np.ones((1,n)))
 
     def fit_KernelLDA(self, Xt, y):
+        Xt = Xt.to_numpy()
 
 
         #print("gamma ", self.gamma)
@@ -251,6 +254,7 @@ class KernelAlgorithms(KernelClass):
         eigenVectors = eigenVectors[:, idx]
 
 
+        self.coef_ = eigenVectors
         #print("self.n_components ", self.n_components)
         self.eigvals = eigenValues[0:self.n_components]
         self.E = eigenVectors[:, 0:self.n_components]
@@ -262,14 +266,13 @@ class KernelAlgorithms(KernelClass):
             #warnings.simplefilter("One eigenvalues is INF", UserWarning)
             print("warning One eigenvalues is INF")
 
-
-        #print("eigenvec shape ", eigvecs)
-        #print("n ", n, " k ", k, " n_components ", self.n_components)
+        print("M shape ", M.shape)
+        print("eigenvector shape ", eigenVectors.shape)
 
         return self
 
     def transform_kernelLDA(self, Xt):
-        X_new = Xt.T
+        X_new = Xt.to_numpy().T
 
         #print("transform_kernelLDA X_new ", X_new.shape)
         #print("E ", self.E.shape)
@@ -371,6 +374,7 @@ class MyKerneLDA:
     def fit(self, X, y):
         print("kernel ", self.kernel, " X n: ", X.shape[0], " m: ", X.shape[1])
         self.model = self.lda.fit_KernelLDA(X, y)
+        self.E = self.lda.coef_
         #self.model.computeClassifier(X, y)
         return self
 

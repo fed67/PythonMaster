@@ -1,6 +1,7 @@
 import unittest
 
 import numpy as np
+import pandas as pd
 from sklearn.model_selection import train_test_split
 
 import DimensionReduction
@@ -213,6 +214,7 @@ def test_split_V3(method="kda", centering=True, beta=1.0, delta=1.0):  # sca-Dom
     print("Current working directory: {0}".format(cwd))
     print("beta {0} delta {1}".format(beta, delta) )
     #data_name = "sample_130922_105429_n_1000_median.csv"
+
     data_name = "sample_130922_105630_n_40000_median.csv"
     treatment = "one_padded_zero_treatments.csv"
     # path = "../../Data/kardio_data/"
@@ -259,6 +261,10 @@ def test_split_V3(method="kda", centering=True, beta=1.0, delta=1.0):  # sca-Dom
     x_all = []
     y_all = []
 
+    feature_rank_list = []
+
+    print("X_train.shape ", X_train.shape, " X_test ", X_test.shape)
+
     # for dim in [2, 4, 5, 6, 7, 8]:
     # for dim in [2]:
     # for kern in kernel:
@@ -287,10 +293,18 @@ def test_split_V3(method="kda", centering=True, beta=1.0, delta=1.0):  # sca-Dom
             model = alg.fit([X_train], [y_train], [X_test])
         elif method == "sca-DomainGeneralization":
             model = alg.fit([X_train], [y_train])
-        elif method == "kda" or method == "lda":
+        elif method == "kda":
             model = alg.fit(X_train, y_train)
-        elif method == "pca" or method == "kpca":
+            #feature_rank_list.append( ["gamma {0}".format(gamma), feature_importance(model.E.T, X_train.columns)] )
+        elif method == "lda":
             model = alg.fit(X_train, y_train)
+            feature_rank_list.append( ["gamma {0}".format(gamma), feature_importance(model.coef_, X_train.columns)])
+        elif method == "pca":
+            model = alg.fit(X_train, y_train)
+            feature_rank_list.append(["gamma {0}".format(gamma), feature_importance(model.components_, X_train.columns)])
+        elif method == "kpca":
+            model = alg.fit(X_train, y_train)
+            #feature_rank_list.append(["gamma {0}".format(gamma), feature_importance(model.E.T, X_train.columns)])
 
         xtest = model.transform(X_test)
         xtrain = model.transform(X_train)
@@ -327,15 +341,12 @@ def test_split_V3(method="kda", centering=True, beta=1.0, delta=1.0):  # sca-Dom
     if method == "pca" or method == "lda":
         spalten=1
 
-    #Plotter().plotScatter_multiple([*x_train_list[0:9]], [*y_train_list[0:9]], [*titles[0:9]],
-    #                               [inv_map] * (len(y_train_list) + 0),
-    #                               title_fig="{0} Center {1} V3-Train".format(name, centering), figsize=(12, 12))
-
+    title = "{1}-{0}-Center {2}- Train V3 Test V3 - kernel - {3} - Merge - {4}".format(kern, name, centering, kern, group_size)
     Plotter().plotScatter_multipleDomains([*x_all[0:9]], [*y_all[0:9]],
                                           [*titles[0:9]], [inv_map] * (len(y_train_list) + 0),
-                                          title_fig="{1}-{0}-Center {2}- Train V3 Test V3 - kernel - {3} - Merge - {4}".format(kern, name,
-                                                                                                         centering, kern, group_size),
-                                          domainNames=["Train", "Test"], figsize=(12, 12), spalten=spalten)
+                                          title_fig=title,
+                                          domainNames=["Train", "Test"], figsize=(12, 12), spalten=spalten, path="graphics/V3/")
+    write_Feature_Score_ToFile(feature_rank_list, "graphics/V3/"+title)
     #plt.figtext(0.5, 0.01,
     #            "UMAP Plot\nDimension of train data: rows: {0}; features: {1}\n sample: {2}".format(X_train.shape[0],
     #                                                                                                X_test.shape[1],
@@ -346,7 +357,7 @@ def test_split_V3(method="kda", centering=True, beta=1.0, delta=1.0):  # sca-Dom
 
 
 
-def test_split_V3_UMAP(method="kda", centering=True, beta=1.0, delta=1.0, gamma=1000, neighbours_=[2, 3, 5, 8, 10, 15, 20, 40, 100], spread_=[1.0], min_dist_=[1.0]):  # sca-DomainAdaption, sca-DomainGeneralization, kpca
+def test_split_V3_UMAP(method="kda", centering=True, beta=1.0, delta=1.0, gamma=1000, neighbours_=[2, 3, 5, 8, 10, 15, 20, 40, 100], spread_=[1.0], min_dist_=[1.0], st=""):  # sca-DomainAdaption, sca-DomainGeneralization, kpca
 
     from sklearn.model_selection import train_test_split
     matplotlib.use('Agg')
@@ -457,8 +468,8 @@ def test_split_V3_UMAP(method="kda", centering=True, beta=1.0, delta=1.0, gamma=
 
     Plotter().plotScatter_multipleDomains([*x_all[0:9]], [*y_all[0:9]],
                                           [*titles[0:9]], [inv_map] * (len(y_train_list) + 0),
-                                          title_fig=r"{1}-{0}-Center {2}- Train V3 Test V3 - kernel - {3} - Merge - {4} $\gamma$ {5}".format(kern, name,
-                                                                                                         centering, kern, group_size, gamma),
+                                          title_fig=r"{1}-{0}-Center {2}- Train V3 Test V3 - kernel - {3} - Merge - {4} $\gamma$ {5} {6}".format(kern, name,
+                                                                                                         centering, kern, group_size, gamma, st),
                                           domainNames=["Train", "Test"], figsize=(12, 12), spalten=spalten, path="graphics/UMAP/")
     plt.show()
 
@@ -638,6 +649,60 @@ def test_LDA_Sklearn_split_treatment_dimension(method="kda", centering=True, bet
     # plt.figtext(0.5, 0.01, "UMAP Plot\nDimension of train data: rows: {0}; features: {1}\n sample: {2}".format(X_train.shape[0], X_test.shape[1], data_name), wrap=True, horizontalalignment='center', fontweight='bold')
     plt.show()
 
+def test_split_treatment(entering=True):
+    cwd = os.getcwd()
+    matplotlib.use('Agg')
+    print("Current working directory: {0}".format(cwd))
+    data_name = "sample_130922_105429_n_1000_median.csv"
+    #data_name = "sample_130922_105630_n_40000_median.csv"
+    treatment = "one_padded_zero_treatments.csv"
+    path = "../Data/"
+
+    df_data = pd.read_csv(path + data_name)
+
+    variant = ["in groupBy treatment", "in groupBy treatment+trial"]
+    group_size = 25
+
+    X_list = []
+    titles = []
+    y = []
+    degree = 3
+    dim = 2
+    kern = "rbf"
+
+    _, dfc = get_table_with_class2(df_data, path + treatment)
+
+    dfc, inv_map = string_column_to_int_class(dfc, "treatment")
+
+
+    df_train = compute_mean_of_group_size_on_treatment(dfc.loc[dfc["trial"].isin(['V1', 'V2', 'V3'])], group_size)
+    X_train, y_train = pruneDF_treatment_trail_plate_well(df_train)
+
+    model = LinearDiscriminantAnalysis()
+    m = model.fit(X_train, y_train)
+    df_train.columns
+
+    print( model.classes_ )
+    print(df_train.columns)
+    #print(model.coef_)
+    d = pd.DataFrame(data=model.coef_, columns=X_train.columns)
+
+    d = feature_importance(model.scalings_.T, X_train.columns)
+
+    dfr = d.sort_values(0, axis=1, ascending=False)
+    print(dfr)
+
+    write_Feature_Score_ToFile([["gamma -1", dfr]], "output.txt")
+
+    #df_all = compute_mean_of_group_size_on_treatment(dfc.loc[dfc["trial"].isin(['V1', 'V2', 'V3', 'V4'])], group_size)
+    #X_all, y_train = pruneDF_treatment_trail_plate_well(df_train)
+
+    #df_train_V1 = compute_mean_of_group_size_on_treatment(dfc.loc[dfc["trial"].isin(['V1'])], group_size)
+    #df_train_V2 = compute_mean_of_group_size_on_treatment(dfc.loc[dfc["trial"].isin(['V2'])], group_size)
+    #df_train_V3 = compute_mean_of_group_size_on_treatment(dfc.loc[dfc["trial"].isin(['V3'])], group_size)
+    #df_train_V4 = compute_mean_of_group_size_on_treatment(dfc.loc[dfc["trial"].isin(['V4'])], group_size)
+
+
 
 def test_LDA_Sklearn_split_treatment_Linear(method="pca", centering=True):  # sca-DomainAdaption, sca-DomainGeneralization, kpca
     cwd = os.getcwd()
@@ -696,6 +761,8 @@ def test_LDA_Sklearn_split_treatment_Linear(method="pca", centering=True):  # sc
     x_all = []
     y_all = []
 
+    feature_rank_list = []
+
     # for dim in [2, 4, 5, 6, 7, 8]:
     if method == "lda":
         name = "LDA"
@@ -714,6 +781,8 @@ def test_LDA_Sklearn_split_treatment_Linear(method="pca", centering=True):  # sc
         X_train = np.concatenate((X_train1, X_train2, X_train3, X_test))
         y_train = np.concatenate((y_train1, y_train2, y_train3, y_test))
         model = alg.fit(X_train, y_train)
+        feature_rank_list.append(["pca", feature_importance(model.components_, X_train.columns)])
+
         xV1 = model.transform(X_train1)
         xV2 = model.transform(X_train2)
         xV3 = model.transform(X_train3)
@@ -725,6 +794,8 @@ def test_LDA_Sklearn_split_treatment_Linear(method="pca", centering=True):  # sc
         X_train = np.concatenate((X_train1, X_train2, X_train3))
         y_train = np.concatenate((y_train1, y_train2, y_train3))
         model = alg.fit(X_train, y_train)
+
+        feature_rank_list.append(["LDA", feature_importance(model.coef_, X_train.columns)])
 
         xV1 = model.transform(X_train1)
         xV2 = model.transform(X_train2)
@@ -769,41 +840,16 @@ def test_LDA_Sklearn_split_treatment_Linear(method="pca", centering=True):  # sc
 
     original_all_y = [y_train1, y_train2, y_train3, y_test]
 
-    print(len(X_list))
-    print("X_V4_list ", X_V4_list[0].shape)
-    print("X_V4_list ", y_test_list[0].shape)
-
-    print("x_train_list ", x_train_list[0].shape)
-    print("y_train_list ", y_train_list[0].shape)
-    # Plotter().plotUmap_multiple(X_list , y, titles, [inv_map]*len(X_list))
-    # Plotter().scatter(X_list[0], y, titles[0], inv_map)
-    #Plotter().plotScatter_multiple([X_V4_list[0]], [y_test_list[0]], [titles[0]],
-    #                               [inv_map] * 1, title_fig="{0} Center {1} V4-Only".format(name, centering), spalten=1)
-    #Plotter().plotScatter_multiple([*X_V4_list[8:16], X_test], [*y_test_list[8:16], y_test], [*titles[0:8], "Original"],
-    #                               [inv_map] * len(X_V4_list), title_fig="{0} Center {1} V4-Only".format(name, center))
-
-    # Plotter().plotScatter_multiple([*x_train_list[8:16], X_train], [*y_train_list[8:16], y_train], [*titles[8:16], "Original"], [inv_map] * len(X_V4_list), title_fig="{0} V4-Only2".format(name))
-    # Plotter().plotScatter_multipleDomains( x_train_list, y_train_list, titles, [inv_map]*len(y_train_list), title_fig="Train - {1} - {0}".format(kernel, alg.name))
-    # Plotter().plotScatter_multipleDomains(x_test_list, y_test_list, titles, [inv_map] * len(y_test_list), title_fig="Test - {1} - {0}".format(kernel, alg.name))
-
+    title = "{0} Center {1} - Train V1,V2,V3 Test V4".format(name, centering)
     Plotter().plotScatter_multipleDomains([x_all[0]], [y_all[0]],
                                           [titles[0]], [inv_map] * 1,
-                                          title_fig="{0} Center {1} - Train V1,V2,V3 Test V4".format(name, centering), domainNames=["V1", "V2", "V3", "V4"], spalten=1)
+                                          title_fig=title, domainNames=["V1", "V2", "V3", "V4"], spalten=1, path="graphics/V1V2V3V4/")
     plt.figtext(0.5, 0.01,
                 "UMAP Plot\nDimension of train data: rows: {0}; features: {1}\n sample: {2}".format(X_train.shape[0],
                                                                                                     X_test.shape[1],
                                                                                                     data_name), wrap=True, horizontalalignment='center', fontweight='bold')
+    write_Feature_Score_ToFile(feature_rank_list, "graphics/V1V2V3V4/" + title)
 
-    #Plotter().plotScatter_multipleDomains([*x_all[8:16], original_all], [*y_all[8:16], original_all_y],
-    #                                      [*titles[8:16], "Original"], [inv_map] * len(y_train_list),
-    #                                      title_fig="{1} {0} Center {2} - Train V1,V2,V3 Test V4 -2".format(kern, name, center), domainNames=["V1", "V2", "V3", "V4"])
-
-    # Plotter().plotUmap(x_sk, y, "PCA Kernel {3} - Dimension {2} - Merge {0} samples {1}".format(group_size, variant[variant_num], dim, kern), inv_map, self.writeToSVG)
-    #plt.figtext(0.5, 0.01,
-    #            "UMAP Plot\nDimension of train data: rows: {0}; features: {1}\n sample: {2}".format(X_train.shape[0],
-    #                                                                                                X_test.shape[1],
-    #                                                                                                data_name), wrap=True,
-    #            horizontalalignment='center', fontweight='bold')
     plt.show()
 
 
@@ -1470,6 +1516,8 @@ if __name__ == '__main__':
         #test_split_V3_UMAP("kda", beta=1.0, delta=1.0, centering=False, gamma=1000)
         test_split_V3_UMAP("kda", beta=1.0, delta=1.0, centering=False, gamma=1000, neighbours_=[2], spread_=[0.3, 0.5, 1.0, 1.5], min_dist_=[0.1])
         test_split_V3_UMAP("kda", beta=1.0, delta=1.0, centering=False, gamma=1000, neighbours_=[2], spread_=[1.0], min_dist_=[0.05, 0.1, 0.5, 0.9])
+
+    #test_split_treatment()
 
     #if config["UMAP"].getboolean("SCA-DomainGeneralization"):
     #    test_split_V3_UMAP("sca-DomainGeneralization", beta=1.0, delta=1.0, centering=False, gamma=1000)
