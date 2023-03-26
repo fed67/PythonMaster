@@ -567,12 +567,12 @@ def test_LDA_Sklearn_split_treatment_dimension(method="kda", centering=True, bet
         elif method == "sca-DomainGeneralization":
             model = alg.fit([X_train1, X_train2, X_train3], [y_train1, y_train2, y_train3])
         elif method == "kda" or method == "lda":
-            X_train = np.concatenate((X_train1, X_train2, X_train3))
-            y_train = np.concatenate((y_train1, y_train2, y_train3))
+            X_train = pd.concat((X_train1, X_train2, X_train3))
+            y_train = pd.concat((y_train1, y_train2, y_train3))
             model = alg.fit(X_train, y_train)
         elif method == "pca" or method == "kpca":
-            X_train = np.concatenate((X_train1, X_train2, X_train3, X_test))
-            y_train = np.concatenate((y_train1, y_train2, y_train3, y_test))
+            X_train = pd.concat((X_train1, X_train2, X_train3, X_test))
+            y_train = pd.concat((y_train1, y_train2, y_train3, y_test))
             model = alg.fit(X_train, y_train)
 
         xV4 = model.transform(X_test)
@@ -762,8 +762,8 @@ def test_LDA_Sklearn_split_treatment_Linear(method="pca", centering=True):  # sc
     # lda = KDA(200, kernel=kern)
 
     if method == "pca":
-        X_train = np.concatenate((X_train1, X_train2, X_train3, X_test))
-        y_train = np.concatenate((y_train1, y_train2, y_train3, y_test))
+        X_train = pd.concat((X_train1, X_train2, X_train3, X_test))
+        y_train = pd.concat((y_train1, y_train2, y_train3, y_test))
         model = alg.fit(X_train, y_train)
         feature_rank_list.append(["pca", feature_importance(model.components_, X_train1.columns)])
 
@@ -775,8 +775,8 @@ def test_LDA_Sklearn_split_treatment_Linear(method="pca", centering=True):  # sc
         V = model.transform(X_train)
 
     elif method == "lda":
-        X_train = np.concatenate((X_train1, X_train2, X_train3))
-        y_train = np.concatenate((y_train1, y_train2, y_train3))
+        X_train = pd.concat((X_train1, X_train2, X_train3))
+        y_train = pd.concat((y_train1, y_train2, y_train3))
         model = alg.fit(X_train, y_train)
 
         feature_rank_list.append(["LDA", feature_importance(model.coef_, X_train1.columns)])
