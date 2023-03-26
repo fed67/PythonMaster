@@ -516,18 +516,10 @@ def test_LDA_Sklearn_split_treatment_dimension(method="kda", centering=True, bet
     df_train_V3 = compute_mean_of_group_size_on_treatment(dfc.loc[dfc["trial"].isin(['V3'])], group_size)
     df_train_V4 = compute_mean_of_group_size_on_treatment(dfc.loc[dfc["trial"].isin(['V4'])], group_size)
 
-    print(" df_train_V1 ", df_train_V1.shape)
-
     X_train1, y_train1 = pruneDF_treatment_trail_plate_well(df_train_V1, centering)
     X_train2, y_train2 = pruneDF_treatment_trail_plate_well(df_train_V2, centering)
     X_train3, y_train3 = pruneDF_treatment_trail_plate_well(df_train_V3, centering)
 
-    print("X_train1 ", X_train1.shape)
-    X_train1["treatment"]
-    X_train1["trail"]
-    X_train1["plate"]
-
-    return
 
 
     # df_test = compute_mean_of_group_size_on_treatment(dfc.loc[dfc["trial"] == 'V4'], group_size)
@@ -791,7 +783,8 @@ def test_LDA_Sklearn_split_treatment_Linear(method="pca", centering=True):  # sc
         y_train = np.concatenate((y_train1, y_train2, y_train3))
         model = alg.fit(X_train, y_train)
 
-        feature_rank_list.append(["LDA", feature_importance(model.coef_, X_train1.columns)])
+        print("LDA rank", model.scalings_.shape)
+        feature_rank_list.append(["LDA", feature_importance(model.scalings_, X_train1.columns)])
 
         xV1 = model.transform(X_train1)
         xV2 = model.transform(X_train2)
