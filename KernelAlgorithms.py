@@ -94,8 +94,7 @@ class KernelAlgorithms(KernelClass):
 
 #https://github.com/scikit-learn/scikit-learn/blob/f3f51f9b611bf873bd5836748647221480071a87/sklearn/preprocessing/_data.py#L2126
     def transform_kernelPCA(self, Xt):
-        if not isinstance(np.ndarray):
-            X_new = Xt.to_numpy().T #m features, n samples
+        X_new = Xt.to_numpy().T #m features, n samples
 
         Y = np.zeros((self.n_components, X_new.shape[1]))
         for g in range(X_new.shape[1]):
@@ -135,10 +134,7 @@ class KernelAlgorithms(KernelClass):
         return np.eye(n) - 1/n * np.outer(np.ones((n,1)), np.ones((1,n)))
 
     def fit_KernelLDA(self, Xt, y):
-        if not isinstance(np.ndarray):
-            Xt = Xt.to_numpy() #m features, n samples
-
-
+        Xt = Xt.to_numpy() #m features, n samples
 
         #print("gamma ", self.gamma)
         #print("c0 ", self.c0)
