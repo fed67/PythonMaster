@@ -785,7 +785,7 @@ def test_LDA_Sklearn_split_treatment_Linear(method="pca", centering=True):  # sc
 
         print("LDA rank", model.scalings_.shape)
         print("train shape ", X_train1.columns.shape)
-        feature_rank_list.append(["LDA", feature_importance(model.scalings_, X_train1.columns)])
+        feature_rank_list.append(["LDA", feature_importance(model.scalings_.T, X_train1.columns)])
 
         xV1 = model.transform(X_train1)
         xV2 = model.transform(X_train2)
