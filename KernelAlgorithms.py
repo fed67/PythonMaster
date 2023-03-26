@@ -265,8 +265,6 @@ class KernelAlgorithms(KernelClass):
             #warnings.simplefilter("One eigenvalues is INF", UserWarning)
             print("warning One eigenvalues is INF")
 
-        print("M shape ", M.shape)
-        print("eigenvector shape ", eigenVectors.shape)
 
         return self
 

@@ -63,21 +63,20 @@ def pruneDF_treatment_trail_plate_well(df, centerData=False):
     y = np.array(df['treatment'].copy().tolist())
     X = df.drop('treatment', axis=1).copy()
 
-    X_new = X.copy()
     for col in X:
         if X[col].dtype not in [ float, int, np.compat.long ]:
             print("error x not int float long")
             print(X[col])
 
         if X[col].dtype == int or X[col].dtype == np.compat.long:
-            X_new[col] = X_new[col].astype(float)
+            X[col] = X[col].astype(float)
 
     if centerData:
         scaler = StandardScaler(with_mean=True, with_std=False)
-        X_new = scaler.fit_transform(X_new)
-        X = pd.DataFrame(data=X_new, columns=X.columns)
+        Xnew = scaler.fit_transform(X)
+        X = pd.DataFrame(data=Xnew, columns=X.columns)
     else:
-        X = X_new
+        X = X
 
     return X, y
 
@@ -357,7 +356,6 @@ def feature_importance(coef, feature_names):
     #coef is n_components x n_features
 
     _, n_features = coef.shape
-    print("coeef.shape ", coef.shape)
 
     s = np.zeros( n_features )
     for j in range(n_features):
