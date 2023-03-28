@@ -722,6 +722,7 @@ class SCA2(KernelClass):
     def transform(self, xt: np.array):
         print("x_all.shape ", self.X_all.shape)
         print("xt.shape ", xt.shape)
+        xt = xt.to_numpy()
         km = self.kernel(self.X_all, xt)
         # print("km.shape ", km.shape)
         Lambda = np.diag(self.eigvals ** -0.5)
