@@ -630,6 +630,10 @@ class SCA2(KernelClass):
             self.name = "SCA DomainAdaption"
         else:
             self.name ="SCA DomainGeneralization"
+
+        for i in range(len(Su)):
+            Su[i] = Su[i].to_numpy()
+
         X = Su[0]
         for xi in Su[1:]:
             X = np.concatenate((X, xi), axis=0)
