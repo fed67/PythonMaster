@@ -628,7 +628,7 @@ def test_LDA_Sklearn_split_treatment_dimension(method="kda", centering=True, bet
                                           [*titles[0:9]], [inv_map] * (len(y_train_list) + 0),
                                           title_fig="{1}-{0}-Center {2}- Train V1,V2,V3 Test V4 ".format(kern, name,
                                                                                                          centering),
-                                          domainNames=["V1", "V2", "V3", "V4"], path="graphics/v1v2v3v4/")
+                                          domainNames=["V1", "V2", "V3", "V4"], path="graphics/v1v2v3v4/", figsize=(12, 12))
     plt.figtext(0.5, 0.01,
                 "UMAP Plot\nDimension of train data: rows: {0}; features: {1}\n sample: {2}".format(X_train.shape[0],
                                                                                                     X_test.shape[1],
@@ -833,7 +833,7 @@ def test_LDA_Sklearn_split_treatment_Linear(method="pca", centering=True):  # sc
     title = "{0} Center {1} - Train V1,V2,V3 Test V4".format(name, centering)
     Plotter().plotScatter_multipleDomains([x_all[0]], [y_all[0]],
                                           [titles[0]], [inv_map] * 1,
-                                          title_fig=title, domainNames=["V1", "V2", "V3", "V4"], spalten=1, path="graphics/v1v2v3v4/")
+                                          title_fig=title, domainNames=["V1", "V2", "V3", "V4"], spalten=1, path="graphics/v1v2v3v4/", figsize=(12, 12))
     plt.figtext(0.5, 0.01,
                 "UMAP Plot\nDimension of train data: rows: {0}; features: {1}\n sample: {2}".format(X_train.shape[0],
                                                                                                     X_test.shape[1],
