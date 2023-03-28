@@ -1340,7 +1340,7 @@ def testDataSets_linear(method="lda", n=10):
 
     Plotter().plotScatter_multipleDomains(X, Y, title_sca, [{0: "0", 1: "1", 2: "2"}] * len(title_sca),
                                           "All Domains - {0}".format(name), path="graphics/ToyData/",
-                                          spalten=2, domainNames=["Domain 0", "Domain 1", "Domain 2"], figsize=(4, 8) )
+                                          spalten=2, domainNames=["Domain 0", "Domain 1", "Domain 2"], figsize=(4, 4) )
 
     plt.show()
     #plt.close()
