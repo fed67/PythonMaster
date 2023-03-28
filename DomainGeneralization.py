@@ -632,6 +632,7 @@ class SCA2(KernelClass):
             self.name ="SCA DomainGeneralization"
 
         for i in range(len(Su)):
+            #print("i ", i, " shape ", Su[i].shape)
             Su[i] = Su[i].to_numpy()
 
         X = Su[0]
@@ -719,7 +720,8 @@ class SCA2(KernelClass):
         return self
 
     def transform(self, xt: np.array):
-        #print("xt.shape ", xt.shape)
+        print("x_all.shape ", self.X_all.shape)
+        print("xt.shape ", xt.shape)
         km = self.kernel(self.X_all, xt)
         # print("km.shape ", km.shape)
         Lambda = np.diag(self.eigvals ** -0.5)
