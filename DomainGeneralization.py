@@ -625,6 +625,9 @@ class SCA2(KernelClass):
         if not (isinstance(Su, list) and isinstance(Su_y, list)):
             raise Exception("error need to be list {0} {1}".format(isinstance(Su, list), isinstance(Su_y, list)))
 
+        for i in range(len(Su)):
+            Su[i] = Su[i].to_numpy()
+
         #print("lenght ", len(Su), " ", len(Su_y))
         if St != []:
             self.name = "SCA DomainAdaption"
