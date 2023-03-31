@@ -1,3 +1,4 @@
+import math
 import unittest
 
 import numpy as np
@@ -608,7 +609,8 @@ def test_LDA_Sklearn_split_treatment_dimension(method="kda", centering=True, bet
         y.append(y_test)
         # titles.append("K-LDA - Degree {1} - Train Merge {0} - Kernel {2}\n".format(group_size, degree, kern, ))
         # titles.append("K-LDA - Gamma {1} - Test Merge {0} - Kernel {2}\n ".format(group_size, gamma, kern))
-        titles.append("Gamma {1} - Test Merge {0} - Kernel {2}\n ".format(group_size, gamma, kern))
+        log10 = math.log10(gamma)
+        titles.append("$\gamma$ 10^{0}\n ".format(log10))
 
         # AC_train = model.score(X_train, y_train)
         # print(f'{AC_train=}')
