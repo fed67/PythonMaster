@@ -587,7 +587,7 @@ def test_LDA_Sklearn_split_treatment_dimension(method="kda", centering=True, bet
 
         print("contains NaN ", np.isnan(xV4).any(), " centering  ", centering)
 
-        reducer = umap.UMAP()
+        reducer = umap.UMAP(random_state=42)
         xV4 = reducer.fit_transform(xV4)
         xV1 = reducer.fit_transform(xV1)
         xV2 = reducer.fit_transform(xV2)
@@ -610,14 +610,14 @@ def test_LDA_Sklearn_split_treatment_dimension(method="kda", centering=True, bet
         # titles.append("K-LDA - Degree {1} - Train Merge {0} - Kernel {2}\n".format(group_size, degree, kern, ))
         # titles.append("K-LDA - Gamma {1} - Test Merge {0} - Kernel {2}\n ".format(group_size, gamma, kern))
         log10 = math.log10(gamma)
-        titles.append("$\gamma$ 10^{0}\n ".format(log10))
+        titles.append("$\gamma$=10^{0}\n ".format(log10))
 
         # AC_train = model.score(X_train, y_train)
         # print(f'{AC_train=}')
         # AC_test = model.score(X_test, y_test)
         # print(f'{AC_test=}')
 
-    reducer = umap.UMAP()
+    reducer = umap.UMAP(random_state=42)
     original_all = [reducer.fit_transform(X_train1)]
     original_all.append(reducer.fit_transform(X_train2))
     original_all.append(reducer.fit_transform(X_train3))
