@@ -629,11 +629,11 @@ def test_LDA_Sklearn_split_treatment_dimension(method="kda", centering=True, bet
                                           title_fig="{1}-{0}-Center {2}- Train V1,V2,V3 Test V4 ".format(kern, name,
                                                                                                          centering),
                                           domainNames=["V1", "V2", "V3", "V4"], path="graphics/v1v2v3v4/", figsize=(12, 12))
-    plt.figtext(0.5, 0.01,
-                "UMAP Plot\nDimension of train data: rows: {0}; features: {1}\n sample: {2}".format(X_train.shape[0],
-                                                                                                    X_test.shape[1],
-                                                                                                    data_name),
-                wrap=True, horizontalalignment='center', fontweight='bold')
+    #plt.figtext(0.5, 0.01,
+    #            "UMAP Plot\nDimension of train data: rows: {0}; features: {1}\n sample: {2}".format(X_train.shape[0],
+    #                                                                                                X_test.shape[1],
+    #                                                                                                data_name),
+    #            wrap=True, horizontalalignment='center', fontweight='bold')
 
     plt.show()
 
