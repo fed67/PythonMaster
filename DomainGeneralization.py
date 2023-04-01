@@ -635,10 +635,6 @@ class SCA2(KernelClass):
         else:
             self.name ="SCA DomainGeneralization"
 
-        for i in range(len(Su)):
-            #print("i ", i, " shape ", Su[i].shape)
-            Su[i] = Su[i].to_numpy()
-
         X = Su[0]
         for xi in Su[1:]:
             X = np.concatenate((X, xi), axis=0)
