@@ -626,7 +626,7 @@ class SCA2(KernelClass):
             raise Exception("error need to be list {0} {1}".format(isinstance(Su, list), isinstance(Su_y, list)))
 
         for i in range(len(Su)):
-            print("type i ",i , "  type ", type(Su[i]))
+            #print("type i ",i , "  type ", type(Su[i]))
             Su[i] = Su[i].to_numpy()
 
         #print("lenght ", len(Su), " ", len(Su_y))
@@ -638,7 +638,7 @@ class SCA2(KernelClass):
         X = Su[0]
         for xi in Su[1:]:
             X = np.concatenate((X, xi), axis=0)
-        print("kernel ", self.kernel_str, "X n: ", X.shape[0], " m: ", X.shape[1])
+        #print("kernel ", self.kernel_str, "X n: ", X.shape[0], " m: ", X.shape[1])
 
         self.X_all = X.copy()
         S_all = Su + St
@@ -720,8 +720,8 @@ class SCA2(KernelClass):
         return self
 
     def transform(self, xt: np.array):
-        print("x_all.shape ", self.X_all.shape)
-        print("xt.shape ", xt.shape)
+        #print("x_all.shape ", self.X_all.shape)
+        #print("xt.shape ", xt.shape)
         xt = xt.to_numpy()
         km = self.kernel(self.X_all, xt)
         # print("km.shape ", km.shape)

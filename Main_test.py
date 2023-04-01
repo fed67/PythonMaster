@@ -553,12 +553,15 @@ def test_LDA_Sklearn_split_treatment_dimension(method="kda", centering=True, bet
         if method == "sca-DomainAdaption" or method == "sca-DomainGeneralization":
             alg = SCA2(n_components=2, kernel=kern, gamma=gamma, beta=beta, delta=delta)
             name = method + " beta: " + str(beta) + " delta: " + str(delta)
+            print("sca gamma {0}".format(gamma))
         elif method == "kda":
             alg = MyKerneLDA(n_components=None, kernel=kern, degree=degree)
             name = "KDA"
+            print("kda gamma {0}".format(gamma))
         elif method == "kpca":
             name = "K-PCA"
             alg = MyKernelPCA(n_components=None, kernel=kern, degree=degree)
+            print("kpca gamma {0}".format(gamma))
         elif method == "pca":
             alg = PCA()
             name = "PCA"
@@ -585,7 +588,7 @@ def test_LDA_Sklearn_split_treatment_dimension(method="kda", centering=True, bet
         xV2 = model.transform(X_train2)
         xV3 = model.transform(X_train3)
 
-        print("contains NaN ", np.isnan(xV4).any(), " centering  ", centering)
+        #print("contains NaN ", np.isnan(xV4).any(), " centering  ", centering)
 
         reducer = umap.UMAP(random_state=42)
         xV4 = reducer.fit_transform(xV4)
