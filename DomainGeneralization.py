@@ -626,6 +626,7 @@ class SCA2(KernelClass):
             raise Exception("error need to be list {0} {1}".format(isinstance(Su, list), isinstance(Su_y, list)))
 
         for i in range(len(Su)):
+            print("type i ",i , "  type ", type(Su[i]))
             Su[i] = Su[i].to_numpy()
 
         #print("lenght ", len(Su), " ", len(Su_y))
