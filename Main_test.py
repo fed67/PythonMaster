@@ -1472,7 +1472,7 @@ if __name__ == '__main__':
         #    for delta in [0, 0.25, 0.5, 1.0]:
         for beta in [0.0, 1.0]:
             for delta in [0, 1.0]:
-                #print("beta ", beta, " delta ", delta, " centering ")
+                print("beta ", beta, " delta ", delta, " centering ")
                 if config["V1-V4"].getboolean("SCA-DomainGeneralization"):
                     test_LDA_Sklearn_split_treatment_dimension("sca-DomainGeneralization", beta=beta, delta=delta, centering=ce)
                 if config["V1-V4"].getboolean("SCA-DomainAdaption"):
