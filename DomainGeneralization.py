@@ -629,6 +629,11 @@ class SCA2(KernelClass):
             #print("type i ",i , "  type ", type(Su[i]))
             Su[i] = Su[i].to_numpy()
 
+        for i in range(len(St)):
+            #print("type i ",i , "  type ", type(Su[i]))
+            St[i] = St[i].to_numpy()
+
+
         #print("lenght ", len(Su), " ", len(Su_y))
         if St != []:
             self.name = "SCA DomainAdaption"
