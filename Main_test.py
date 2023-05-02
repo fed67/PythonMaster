@@ -475,8 +475,7 @@ def test_split_V3_UMAP(method="kda", centering=True, beta=1.0, delta=1.0, gamma=
     plt.show()
 
 
-def test_LDA_Sklearn_split_treatment_dimension(method="kda", centering=True, beta=1.0,
-                                               delta=1.0):  # sca-DomainAdaption, sca-DomainGeneralization, kpca
+def test_LDA_Sklearn_split_treatment_dimension(method="kda", centering=True, beta=1.0,  delta=1.0):  # sca-DomainAdaption, sca-DomainGeneralization, kpca
     matplotlib.use('Agg')
     cwd = os.getcwd()
     print("Current working directory: {0}".format(cwd))
@@ -1027,9 +1026,10 @@ from DataSets import *
 
 
 def testIris2(mode="gamma", tp="DomainGeneralization", gamma=3.0):
+    #np.random.seed(20)
     np.random.seed(20)
 
-    data = Gaussian(n=10)
+    data = Gaussian(n=50)
     # data.init_twoDomains2(n=100)
     data.twoDomains2_roate(n=50)
     # data.init_threeDomains2(n=100)
@@ -1099,12 +1099,12 @@ def testIris2(mode="gamma", tp="DomainGeneralization", gamma=3.0):
     # Plotter().plotScatter_multiple(x_lda, [data.target[1]]*len(x_lda), title_lda, [{0: "0", 1: "1", 2: "2"}] * len(x_lda), "KDA Three Domains - {0}".format(kernel))
     title_sca.append("Sample")
 
-    Plotter().plotScatter_multiple([*x_sca_train], [data.target[0]] * (len(x_sca_train)), title_sca,
-                                   [{0: "0", 1: "1", 2: "2"}] * (len(x_sca_test) + 1),
-                                   title_fig="0 - Train - {1} - {0} - {2} gamma {3}".format(kernel, sca.name, tp, gamma), markerId=0, path="graphics/ToyData/")
-    Plotter().plotScatter_multiple([*x_sca_test], [data.target[1]] * (len(x_sca_test)), title_sca,
-                                   [{0: "0", 1: "1", 2: "2"}] * (len(x_sca_test) + 1),
-                                   title_fig="0 - Test - {1} - {0} - {2} gamma {3}".format(kernel, sca.name, tp, gamma), markerId=1, path="graphics/ToyData/")
+    #Plotter().plotScatter_multiple([*x_sca_train], [data.target[0]] * (len(x_sca_train)), title_sca,
+    #                               [{0: "0", 1: "1", 2: "2"}] * (len(x_sca_test) + 1),
+    #                               title_fig="0 - Train - {1} - {0} - {2} gamma {3}".format(kernel, sca.name, tp, gamma), markerId=0, path="graphics/ToyData/")
+    #Plotter().plotScatter_multiple([*x_sca_test], [data.target[1]] * (len(x_sca_test)), title_sca,
+    #                               [{0: "0", 1: "1", 2: "2"}] * (len(x_sca_test) + 1),
+    #                               title_fig="0 - Test - {1} - {0} - {2} gamma {3}".format(kernel, sca.name, tp, gamma), markerId=1, path="graphics/ToyData/")
 
     X = []
     Y = []
@@ -1264,7 +1264,7 @@ def testDataSets(method="sca-DomainAdaption", beta=[1.0], delta=[1.0], gamma=[3.
 
     Plotter().plotScatter_multipleDomains(samples, samples_y, samples_title, [{0: "0", 1: "1", 2: "2"}] * len(samples_title),
                                           "Toy Samples", path="graphics/ToyData/",
-                                          spalten=3, domainNames=["Domain 0", "Domain 1", "Domain 2"], fileName_Append=fileName_Append, figsize=(6, 4))
+                                          spalten=2, domainNames=["Domain 0", "Domain 1", "Domain 2"], fileName_Append=fileName_Append, figsize=(6, 4))
 
     plt.show()
     #plt.close()
@@ -1425,13 +1425,14 @@ if __name__ == '__main__':
 
     #testDataSets(method="sca-DomainGeneralization", beta=1.0, delta=1.0, n=100)
     #testIris2()
-    #testIris2("beta", gamma=0.3)
+    testIris2("beta", gamma=0.3)
     #testIris2("beta", gamma=3.0)
     #testIris2("beta", gamma=5.0)
     #testIris2("beta", gamma=10.0)
+    #testIris2("beta", tp="DomainGeneralization", gamma=3.0)
 
     #testIris2(tp="DomainAdaption")
-    #testIris2("beta", tp="DomainAdaption", gamma=0.3)
+    testIris2("beta", tp="DomainAdaption", gamma=0.3)
     #testIris2("beta", tp="DomainAdaption", gamma=3.0)
     #testIris2("beta", tp="DomainAdaption", gamma=5.0)
     #testIris2("beta", tp="DomainAdaption", gamma=10.0)
@@ -1440,10 +1441,12 @@ if __name__ == '__main__':
     #    testIris2("beta", tp="DomainAdaption", gamma=gamma)
     #    testIris2("beta", tp="DomainGeneralization", gamma=gamma)
 
+    #if config["V1-V4"].getboolean("PCA"):
 
-    #testDataSets(method="kda", n=n)
+    testDataSets(method="kda", n=n)
     #testDataSets(method="kpca", n=n)
     #testDataSets_linear(method="lda", n=n)
+    #testDataSets_linear(method="pca", n=n)
     #testDataSets_linear(method="pca", n=n)
 
 
@@ -1514,7 +1517,7 @@ if __name__ == '__main__':
         test_split_V3_UMAP("kda", beta=1.0, delta=1.0, centering=False, gamma=1000, neighbours_=[2], spread_=[0.3, 0.5, 1.0, 1.5], min_dist_=[0.1])
         test_split_V3_UMAP("kda", beta=1.0, delta=1.0, centering=False, gamma=1000, neighbours_=[2], spread_=[1.0], min_dist_=[0.05, 0.1, 0.5, 0.9])
 
-    test_split_treatment()
+    #test_split_treatment()
 
     #if config["UMAP"].getboolean("SCA-DomainGeneralization"):
     #    test_split_V3_UMAP("sca-DomainGeneralization", beta=1.0, delta=1.0, centering=False, gamma=1000)

@@ -463,16 +463,16 @@ class Plotter:
                     #print("len(domains) ", len(domains))
                     if len(domains) == 1:
                         ax.scatter(x=elx, y=ely, c=cls.myColors[c], label=label, marker=cls.myMarker[i], alpha=0.4)
-                        ax.set_title(title_[dpi])
+                        ax.set_title(title_[dpi], pad=15)
                         #ax.figure.set_size_inches(10,10)
                     elif zeilen > 1:
                         ax[i0, j0].scatter(x=elx, y=ely, c=cls.myColors[c], label=label, marker=cls.myMarker[i], alpha=0.4)
-                        ax[i0, j0].set_title(title_[dpi])
+                        ax[i0, j0].set_title(title_[dpi], pad=15)
                         #ax[i0, j0].figure.set_size_inches(10, 10)
                         #lgd = ax[i0, j0].legend(bbox_to_anchor=(1.1, 1.05))
                     else:
                         ax[j0].scatter(x=elx, y=ely, c=cls.myColors[c], label=label, marker=cls.myMarker[i], alpha=0.4)
-                        ax[j0].set_title(title_[dpi])
+                        ax[j0].set_title(title_[dpi], pad=15)
                         #ax[j0].figure.set_size_inches(10, 10)
 
                 #red_patch = mpatches.Patch(color='red', label='The red data')

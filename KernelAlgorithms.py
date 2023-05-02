@@ -134,7 +134,9 @@ class KernelAlgorithms(KernelClass):
         return np.eye(n) - 1/n * np.outer(np.ones((n,1)), np.ones((1,n)))
 
     def fit_KernelLDA(self, Xt, y):
-        Xt = Xt.to_numpy() #m features, n samples
+
+        if not isinstance(Xt, np.ndarray):
+            Xt = Xt.to_numpy() #m features, n samples
 
         #print("gamma ", self.gamma)
         #print("c0 ", self.c0)
@@ -269,7 +271,10 @@ class KernelAlgorithms(KernelClass):
         return self
 
     def transform_kernelLDA(self, Xt):
-        X_new = Xt.to_numpy().T
+        if not isinstance(Xt, np.ndarray):
+            X_new = Xt.to_numpy().T
+        else:
+            X_new = Xt.T
 
         #print("transform_kernelLDA X_new ", X_new.shape)
         #print("E ", self.E.shape)

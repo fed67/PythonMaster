@@ -627,11 +627,13 @@ class SCA2(KernelClass):
 
         for i in range(len(Su)):
             #print("type i ",i , "  type ", type(Su[i]))
-            Su[i] = Su[i].to_numpy()
+            if not isinstance(Su[i], np.ndarray):
+                Su[i] = Su[i].to_numpy()
 
         for i in range(len(St)):
             #print("type i ",i , "  type ", type(Su[i]))
-            St[i] = St[i].to_numpy()
+            if not isinstance(St[i], np.ndarray):
+                St[i] = St[i].to_numpy()
 
 
         #print("lenght ", len(Su), " ", len(Su_y))
@@ -727,7 +729,8 @@ class SCA2(KernelClass):
     def transform(self, xt: np.array):
         #print("x_all.shape ", self.X_all.shape)
         #print("xt.shape ", xt.shape)
-        xt = xt.to_numpy()
+        if not isinstance(xt, np.ndarray):
+            xt = xt.to_numpy()
         km = self.kernel(self.X_all, xt)
         # print("km.shape ", km.shape)
         Lambda = np.diag(self.eigvals ** -0.5)
