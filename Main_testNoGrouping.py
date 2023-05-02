@@ -208,7 +208,7 @@ def test_LDA_Sklearn_split_treatment_dimension_no_grouping(method="kda", centeri
 
     Plotter().plotScatter_multipleDomains([*x_all[0:9]], [*y_all[0:9]],
                                           [*titles[0:9]], [inv_map] * (len(y_train_list) + 0),
-                                          title_fig="{1}-{0}-Center {2}- Train V1,V2,V3 Test V4 ".format(kern, name,
+                                          title_fig="{1}-{0}-Center {2}- Train V1,V2,V3 Test V4 - no merge".format(kern, name,
                                                                                                          centering),
                                           domainNames=["V1", "V2", "V3", "V4"], path="graphics/v1v2v3v4/", figsize=(12, 12))
     #plt.figtext(0.5, 0.01,
@@ -351,7 +351,7 @@ def test_LDA_Sklearn_split_treatment_Linear(method="pca", centering=True):  # sc
 
     original_all_y = [y_train1, y_train2, y_train3, y_test]
 
-    title = "{0} Center {1} - Train V1,V2,V3 Test V4".format(name, centering)
+    title = "{0} Center {1} - Train V1,V2,V3 Test V4 - no merge".format(name, centering)
     Plotter().plotScatter_multipleDomains([x_all[0]], [y_all[0]],
                                           [titles[0]], [inv_map] * 1,
                                           title_fig=title, domainNames=["V1", "V2", "V3", "V4"], spalten=1, path="graphics/v1v2v3v4/", figsize=(12, 12))
@@ -370,3 +370,12 @@ if __name__ == '__main__':
 
     test_LDA_Sklearn_split_treatment_Linear("pca", True)
     test_LDA_Sklearn_split_treatment_Linear("lda", True)
+
+    test_LDA_Sklearn_split_treatment_dimension_no_grouping("kda", True)
+    test_LDA_Sklearn_split_treatment_dimension_no_grouping("kpca", True)
+    for beta in [0.0, 1.0]:
+        for delta in [0, 1.0]:
+            print("beta ", beta, " delta ", delta, " centering ")
+            test_LDA_Sklearn_split_treatment_dimension_no_grouping("sca-DomainGeneralization", beta=beta, delta=delta, centering=True)
+            test_LDA_Sklearn_split_treatment_dimension_no_grouping("sca-DomainAdaption", beta=beta, delta=delta, centering=True)
+
