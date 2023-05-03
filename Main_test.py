@@ -1467,15 +1467,16 @@ if __name__ == '__main__':
 
     #V1,V2,V3,V4
     for ce in [False, True]:
+        group_size=10
     #    test_LDA_Sklearn_original(centering=ce)
         if config["V1-V4"].getboolean("PCA"):
-            test_LDA_Sklearn_split_treatment_Linear(method="pca", centering=ce)
+            test_LDA_Sklearn_split_treatment_Linear(method="pca", centering=ce, group_size=group_size)
         if config["V1-V4"].getboolean("LDA"):
-            test_LDA_Sklearn_split_treatment_Linear(method="lda", centering=ce)
+            test_LDA_Sklearn_split_treatment_Linear(method="lda", centering=ce, group_size=group_size)
         if config["V1-V4"].getboolean("KDA"):
-            test_LDA_Sklearn_split_treatment_dimension("kda", centering=ce)
+            test_LDA_Sklearn_split_treatment_dimension("kda", centering=ce, group_size=group_size)
         if config["V1-V4"].getboolean("KPCA"):
-            test_LDA_Sklearn_split_treatment_dimension("kpca", centering=ce)
+            test_LDA_Sklearn_split_treatment_dimension("kpca", centering=ce, group_size=group_size)
 
         #for beta in [0.0, 0.25, 0.5, 1.0]:
         #    for delta in [0, 0.25, 0.5, 1.0]:
@@ -1483,9 +1484,9 @@ if __name__ == '__main__':
             for delta in [0, 1.0]:
                 print("beta ", beta, " delta ", delta, " centering ")
                 if config["V1-V4"].getboolean("SCA-DomainGeneralization"):
-                    test_LDA_Sklearn_split_treatment_dimension("sca-DomainGeneralization", beta=beta, delta=delta, centering=ce)
+                    test_LDA_Sklearn_split_treatment_dimension("sca-DomainGeneralization", beta=beta, delta=delta, centering=ce, group_size=group_size)
                 if config["V1-V4"].getboolean("SCA-DomainAdaption"):
-                    test_LDA_Sklearn_split_treatment_dimension("sca-DomainAdaption", beta=beta, delta=delta, centering=ce)
+                    test_LDA_Sklearn_split_treatment_dimension("sca-DomainAdaption", beta=beta, delta=delta, centering=ce, group_size=group_size)
 
     #    test_LDA_Sklearn_split_treatment_Linear("lda", centering=centering)
     #    test_LDA_Sklearn_split_treatment_Linear("pca", centering=centering)
