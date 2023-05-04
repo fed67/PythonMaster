@@ -1431,14 +1431,14 @@ if __name__ == '__main__':
 
     #testDataSets(method="sca-DomainGeneralization", beta=1.0, delta=1.0, n=100)
     #testIris2()
-    testIris2("beta", gamma=0.3)
+    #testIris2("beta", gamma=0.3)
     #testIris2("beta", gamma=3.0)
     #testIris2("beta", gamma=5.0)
     #testIris2("beta", gamma=10.0)
     #testIris2("beta", tp="DomainGeneralization", gamma=3.0)
 
     #testIris2(tp="DomainAdaption")
-    testIris2("beta", tp="DomainAdaption", gamma=0.3)
+    #testIris2("beta", tp="DomainAdaption", gamma=0.3)
     #testIris2("beta", tp="DomainAdaption", gamma=3.0)
     #testIris2("beta", tp="DomainAdaption", gamma=5.0)
     #testIris2("beta", tp="DomainAdaption", gamma=10.0)
@@ -1449,7 +1449,7 @@ if __name__ == '__main__':
 
     #if config["V1-V4"].getboolean("PCA"):
 
-    testDataSets(method="kda", n=n)
+    #testDataSets(method="kda", n=n)
     #testDataSets(method="kpca", n=n)
     #testDataSets_linear(method="lda", n=n)
     #testDataSets_linear(method="pca", n=n)
@@ -1473,10 +1473,6 @@ if __name__ == '__main__':
             test_LDA_Sklearn_split_treatment_Linear(method="pca", centering=ce, group_size=group_size)
         if config["V1-V4"].getboolean("LDA"):
             test_LDA_Sklearn_split_treatment_Linear(method="lda", centering=ce, group_size=group_size)
-        if config["V1-V4"].getboolean("KDA"):
-            test_LDA_Sklearn_split_treatment_dimension("kda", centering=ce, group_size=group_size)
-        if config["V1-V4"].getboolean("KPCA"):
-            test_LDA_Sklearn_split_treatment_dimension("kpca", centering=ce, group_size=group_size)
 
         #for beta in [0.0, 0.25, 0.5, 1.0]:
         #    for delta in [0, 0.25, 0.5, 1.0]:
@@ -1487,10 +1483,21 @@ if __name__ == '__main__':
         #            test_LDA_Sklearn_split_treatment_dimension("sca-DomainGeneralization", beta=beta, delta=delta, centering=ce, group_size=group_size)
         #        if config["V1-V4"].getboolean("SCA-DomainAdaption"):
         #            test_LDA_Sklearn_split_treatment_dimension("sca-DomainAdaption", beta=beta, delta=delta, centering=ce, group_size=group_size)
+        import multiprocessing
         if config["V1-V4"].getboolean("SCA-DomainGeneralization"):
-            test_LDA_Sklearn_split_treatment_dimension("sca-DomainGeneralization", beta=1.0, delta=1.0, centering=ce, group_size=group_size)
+            #test_LDA_Sklearn_split_treatment_dimension("sca-DomainGeneralization", centering=ce, beta=1.0, delta=1.0, group_size=group_size)
+            args0 = ("sca-DomainGeneralization", ce, 1.0, 1.0, group_size)
+            multiprocessing.Process(test_LDA_Sklearn_split_treatment_dimension, args=args0)
         if config["V1-V4"].getboolean("SCA-DomainAdaption"):
-            test_LDA_Sklearn_split_treatment_dimension("sca-DomainAdaption", beta=0.0, delta=0.0, centering=ce, group_size=group_size)
+            #test_LDA_Sklearn_split_treatment_dimension("sca-DomainAdaption", centering=ce, beta=0.0, delta=0.0, group_size=group_size)
+            args1 = ("sca-DomainAdaption", ce, 0.0, 0.0, group_size)
+            multiprocessing.Process(test_LDA_Sklearn_split_treatment_dimension, args=args1)
+
+        if config["V1-V4"].getboolean("KDA"):
+            test_LDA_Sklearn_split_treatment_dimension("kda", centering=ce, group_size=group_size)
+        if config["V1-V4"].getboolean("KPCA"):
+            test_LDA_Sklearn_split_treatment_dimension("kpca", centering=ce, group_size=group_size)
+
 
     #    test_LDA_Sklearn_split_treatment_Linear("lda", centering=centering)
     #    test_LDA_Sklearn_split_treatment_Linear("pca", centering=centering)
