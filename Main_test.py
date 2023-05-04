@@ -475,7 +475,7 @@ def test_split_V3_UMAP(method="kda", centering=True, beta=1.0, delta=1.0, gamma=
     plt.show()
 
 
-def test_LDA_Sklearn_split_treatment_dimension(method="kda", centering=True, beta=1.0,  delta=1.0, group_size = 25):  # sca-DomainAdaption, sca-DomainGeneralization, kpca
+def test_LDA_Sklearn_split_treatment_dimension(method="kda", centering=True, beta=1.0,  delta=1.0, group_size=25):  # sca-DomainAdaption, sca-DomainGeneralization, kpca
     matplotlib.use('Agg')
     cwd = os.getcwd()
     print("Current working directory: {0}".format(cwd))
@@ -1466,7 +1466,7 @@ if __name__ == '__main__':
 
 
     #V1,V2,V3,V4
-    for ce in [False, True]:
+    for ce in [True]:
         group_size=10
     #    test_LDA_Sklearn_original(centering=ce)
         if config["V1-V4"].getboolean("PCA"):
@@ -1480,13 +1480,17 @@ if __name__ == '__main__':
 
         #for beta in [0.0, 0.25, 0.5, 1.0]:
         #    for delta in [0, 0.25, 0.5, 1.0]:
-        for beta in [0.0, 1.0]:
-            for delta in [0, 1.0]:
-                print("beta ", beta, " delta ", delta, " centering ")
-                if config["V1-V4"].getboolean("SCA-DomainGeneralization"):
-                    test_LDA_Sklearn_split_treatment_dimension("sca-DomainGeneralization", beta=beta, delta=delta, centering=ce, group_size=group_size)
-                if config["V1-V4"].getboolean("SCA-DomainAdaption"):
-                    test_LDA_Sklearn_split_treatment_dimension("sca-DomainAdaption", beta=beta, delta=delta, centering=ce, group_size=group_size)
+        #for beta in [0.0, 1.0]:
+        #    for delta in [0, 1.0]:
+        ##        print("beta ", beta, " delta ", delta, " centering ")
+        #        if config["V1-V4"].getboolean("SCA-DomainGeneralization"):
+        #            test_LDA_Sklearn_split_treatment_dimension("sca-DomainGeneralization", beta=beta, delta=delta, centering=ce, group_size=group_size)
+        #        if config["V1-V4"].getboolean("SCA-DomainAdaption"):
+        #            test_LDA_Sklearn_split_treatment_dimension("sca-DomainAdaption", beta=beta, delta=delta, centering=ce, group_size=group_size)
+        if config["V1-V4"].getboolean("SCA-DomainGeneralization"):
+            test_LDA_Sklearn_split_treatment_dimension("sca-DomainGeneralization", beta=1.0, delta=1.0, centering=ce, group_size=group_size)
+        if config["V1-V4"].getboolean("SCA-DomainAdaption"):
+            test_LDA_Sklearn_split_treatment_dimension("sca-DomainAdaption", beta=0.0, delta=0.0, centering=ce, group_size=group_size)
 
     #    test_LDA_Sklearn_split_treatment_Linear("lda", centering=centering)
     #    test_LDA_Sklearn_split_treatment_Linear("pca", centering=centering)
