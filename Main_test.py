@@ -1487,11 +1487,18 @@ if __name__ == '__main__':
         if config["V1-V4"].getboolean("SCA-DomainGeneralization"):
             #test_LDA_Sklearn_split_treatment_dimension("sca-DomainGeneralization", centering=ce, beta=1.0, delta=1.0, group_size=group_size)
             args0 = ("sca-DomainGeneralization", ce, 1.0, 1.0, group_size)
-            multiprocessing.Process(test_LDA_Sklearn_split_treatment_dimension, args=args0)
+            p0 = multiprocessing.Process(target=test_LDA_Sklearn_split_treatment_dimension, args=args0)
+            p0.start()
         if config["V1-V4"].getboolean("SCA-DomainAdaption"):
             #test_LDA_Sklearn_split_treatment_dimension("sca-DomainAdaption", centering=ce, beta=0.0, delta=0.0, group_size=group_size)
-            args1 = ("sca-DomainAdaption", ce, 0.0, 0.0, group_size)
-            multiprocessing.Process(test_LDA_Sklearn_split_treatment_dimension, args=args1)
+            p1 = args1 = ("sca-DomainAdaption", ce, 0.0, 0.0, group_size)
+            multiprocessing.Process(target=test_LDA_Sklearn_split_treatment_dimension, args=args1)
+            p1.start()
+
+        if config["V1-V4"].getboolean("SCA-DomainGeneralization"):
+            p0.join()
+        if config["V1-V4"].getboolean("SCA-DomainAdaption"):
+            p1.join()
 
         if config["V1-V4"].getboolean("KDA"):
             test_LDA_Sklearn_split_treatment_dimension("kda", centering=ce, group_size=group_size)
