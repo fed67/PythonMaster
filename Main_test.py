@@ -1491,8 +1491,8 @@ if __name__ == '__main__':
             p0.start()
         if config["V1-V4"].getboolean("SCA-DomainAdaption"):
             #test_LDA_Sklearn_split_treatment_dimension("sca-DomainAdaption", centering=ce, beta=0.0, delta=0.0, group_size=group_size)
-            p1 = args1 = ("sca-DomainAdaption", ce, 0.0, 0.0, group_size)
-            multiprocessing.Process(target=test_LDA_Sklearn_split_treatment_dimension, args=args1)
+            args1 = ("sca-DomainAdaption", ce, 0.0, 0.0, group_size)
+            p1 =  multiprocessing.Process(target=test_LDA_Sklearn_split_treatment_dimension, args=args1)
             p1.start()
 
         if config["V1-V4"].getboolean("SCA-DomainGeneralization"):
