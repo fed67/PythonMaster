@@ -1467,7 +1467,7 @@ if __name__ == '__main__':
 
     #V1,V2,V3,V4
     for ce in [True]:
-        group_size=10
+        group_size=25
     #    test_LDA_Sklearn_original(centering=ce)
         if config["V1-V4"].getboolean("PCA"):
             test_LDA_Sklearn_split_treatment_Linear(method="pca", centering=ce, group_size=group_size)
