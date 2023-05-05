@@ -761,14 +761,14 @@ def test_LDA_Sklearn_split_treatment_Linear(method="pca", centering=True, group_
         # alg = KernelPCA(kernel=kern, degree=degree)
         alg = LinearDiscriminantAnalysis(solver="svd")
     elif method == "ldaSparse":
-        name = "LDA"
+        name = "LDA-Sparse"
         alg = LinearDiscriminantAnalysis(solver="lsqr")
     elif method == "pca":
         alg = PCA()
         name = "PCA"
     elif method == "pcaSparse":
         alg = SparsePCA()
-        name = "PCA"
+        name = "PCA-Sparse"
 
 
     # lda = SCA(n_components=2, kernel=kern, gamma=gamma)
@@ -1471,8 +1471,10 @@ if __name__ == '__main__':
     #    test_LDA_Sklearn_original(centering=ce)
         if config["V1-V4"].getboolean("PCA"):
             test_LDA_Sklearn_split_treatment_Linear(method="pca", centering=ce, group_size=group_size)
+            test_LDA_Sklearn_split_treatment_Linear(method="pcaSparse", centering=ce, group_size=group_size)
         if config["V1-V4"].getboolean("LDA"):
             test_LDA_Sklearn_split_treatment_Linear(method="lda", centering=ce, group_size=group_size)
+            test_LDA_Sklearn_split_treatment_Linear(method="ldaSparse", centering=ce, group_size=group_size)
 
         #for beta in [0.0, 0.25, 0.5, 1.0]:
         #    for delta in [0, 0.25, 0.5, 1.0]:
