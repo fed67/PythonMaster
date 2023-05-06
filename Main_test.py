@@ -775,7 +775,7 @@ def test_LDA_Sklearn_split_treatment_Linear(method="pca", centering=True, group_
     # lda = MyKerneLDA(n_components=None, kernel=kern, degree=degree)
     # lda = KDA(200, kernel=kern)
 
-    if method == "pca":
+    if method == "pca" or method == "pcaSparse":
         X_train = pd.concat((X_train1, X_train2, X_train3, X_test))
         y_train = np.concatenate((y_train1, y_train2, y_train3, y_test))
         model = alg.fit(X_train, y_train)
@@ -788,7 +788,7 @@ def test_LDA_Sklearn_split_treatment_Linear(method="pca", centering=True, group_
 
         V = model.transform(X_train)
 
-    elif method == "lda":
+    elif method == "lda" or method == "ldaSparse":
         X_train = pd.concat((X_train1, X_train2, X_train3))
         y_train = np.concatenate((y_train1, y_train2, y_train3))
         model = alg.fit(X_train, y_train)
