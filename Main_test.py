@@ -848,7 +848,7 @@ def test_LDA_Sklearn_split_treatment_Linear(method="pca", centering=True, group_
                 "UMAP Plot\nDimension of train data: rows: {0}; features: {1}\n sample: {2}".format(X_train.shape[0],
                                                                                                     X_test.shape[1],
                                                                                                     data_name), wrap=True, horizontalalignment='center', fontweight='bold')
-    write_Feature_Score_ToFile(feature_rank_list, "graphics/v1v2v3v4/" + title)
+    write_Feature_Score_ToFile(feature_rank_list, "graphics/v1v2v3v4/merge-{0}/".format(group_size) + title)
 
     plt.show()
 
