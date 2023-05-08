@@ -853,6 +853,100 @@ def test_LDA_Sklearn_split_treatment_Linear(method="pca", centering=True, group_
     plt.show()
 
 
+def test_LDA_Sklearn_split_random_Linear(method="pca", centering=True, group_size = 25):  # sca-DomainAdaption, sca-DomainGeneralization, kpca
+    cwd = os.getcwd()
+    matplotlib.use('Agg')
+    print("Current working directory: {0}".format(cwd))
+    # data_name = "sample_130922_105529_n_10000_median.csv"
+    data_name = "sample_130922_105630_n_40000_median.csv"
+    treatment = "one_padded_zero_treatments.csv"
+    path = "../Data/"
+
+    df_data = pd.read_csv(path + data_name)
+
+    variant = ["in groupBy treatment", "in groupBy treatment+trial"]
+
+
+    X_list = []
+    titles = []
+    y = []
+    degree = 3
+    dim = 2
+    kern = "rbf"
+
+    _, dfc = get_table_with_class2(df_data, path + treatment)
+
+    dfc, inv_map = string_column_to_int_class(dfc, "treatment")
+
+    df_all = compute_mean_of_group_size_on_treatment(dfc.loc[dfc["trial"].isin(['V1', 'V2', 'V3', 'V4'])], group_size)
+    X_all, y_all = pruneDF_treatment_trail_plate_well(df_all)
+
+    indices = np.random.permutation(X_all.shape[0])
+    end = int(X_all.shape[0]*0.6)
+
+    X_train, X_test = X_all.to_numpy()[ indices[:end] ], X_all.to_numpy()[ indices[end:] ]
+    y_train, y_test = y_all[indices[:end]], y_all[indices[end:]]
+
+
+    x_all = []
+    y_all = []
+
+    feature_rank_list = []
+
+    # for dim in [2, 4, 5, 6, 7, 8]:
+    if method == "lda":
+        name = "LDA"
+        # alg = MyKernelPCA(n_components=None, kernel=kern, degree=degree)
+        # alg = KernelPCA(kernel=kern, degree=degree)
+        alg = LinearDiscriminantAnalysis(solver="svd")
+    elif method == "ldaSparse":
+        name = "LDA-Sparse"
+        alg = LinearDiscriminantAnalysis(solver="lsqr")
+    elif method == "pca":
+        alg = PCA()
+        name = "PCA"
+    elif method == "pcaSparse":
+        alg = SparsePCA()
+        name = "PCA-Sparse"
+
+
+    # lda = SCA(n_components=2, kernel=kern, gamma=gamma)
+    # lda = MyKerneLDA(n_components=None, kernel=kern, degree=degree)
+    # lda = KDA(200, kernel=kern)
+
+    if method == "pca" or method == "pcaSparse":
+        model = alg.fit(X_train, y_train)
+        feature_rank_list.append(["pca", feature_importance(model.components_, X_train.columns)])
+
+        xtrain = model.transform(X_train)
+        xtest = model.transform(X_test)
+
+    elif method == "lda" or method == "ldaSparse":
+        model = alg.fit(X_train, y_train)
+
+        print("LDA rank", model.scalings_.shape)
+        feature_rank_list.append(["LDA", feature_importance(model.scalings_.T, X_train.columns)])
+
+        xtrain = model.transform(X_train)
+        xtest = model.transform(X_test)
+
+    reducer = umap.UMAP()
+    xtrain = reducer.fit_transform(xtrain)
+    xtest = reducer.fit_transform(xtest)
+
+
+    title = "{0} Center {1} - Train V1,V2,V3 Test V4".format(name, centering)
+    Plotter().plotScatter_multipleDomains([[xtrain, xtest]], [[y_train, y_test]],
+                                          [titles[0]], [inv_map] * 1,
+                                          title_fig=title, domainNames=["Train", "Test"], spalten=1, path="graphics/random_split/merge-{0}/".format(group_size), figsize=(12, 12))
+    plt.figtext(0.5, 0.01,
+                "UMAP Plot\nDimension of train data: rows: {0}; features: {1}\n sample: {2}".format(X_train.shape[0],
+                                                                                                    X_test.shape[1],
+                                                                                                    data_name), wrap=True, horizontalalignment='center', fontweight='bold')
+    write_Feature_Score_ToFile(feature_rank_list, "graphics/random_split/merge-{0}/".format(group_size) + title)
+
+    plt.show()
+
 def test_LDA_Sklearn_original(method="pca",  centering=False):  # sca-DomainAdaption, sca-DomainGeneralization, kpca
     cwd = os.getcwd()
     matplotlib.use('Agg')
@@ -1471,10 +1565,10 @@ if __name__ == '__main__':
     #    test_LDA_Sklearn_original(centering=ce)
         if config["V1-V4"].getboolean("PCA"):
             test_LDA_Sklearn_split_treatment_Linear(method="pca", centering=ce, group_size=group_size)
-            test_LDA_Sklearn_split_treatment_Linear(method="pcaSparse", centering=ce, group_size=group_size)
+            #test_LDA_Sklearn_split_treatment_Linear(method="pcaSparse", centering=ce, group_size=group_size)
         if config["V1-V4"].getboolean("LDA"):
             test_LDA_Sklearn_split_treatment_Linear(method="lda", centering=ce, group_size=group_size)
-            test_LDA_Sklearn_split_treatment_Linear(method="ldaSparse", centering=ce, group_size=group_size)
+            #test_LDA_Sklearn_split_treatment_Linear(method="ldaSparse", centering=ce, group_size=group_size)
 
         #for beta in [0.0, 0.25, 0.5, 1.0]:
         #    for delta in [0, 0.25, 0.5, 1.0]:
@@ -1543,6 +1637,12 @@ if __name__ == '__main__':
         #test_split_V3_UMAP("kda", beta=1.0, delta=1.0, centering=False, gamma=1000)
         test_split_V3_UMAP("kda", beta=1.0, delta=1.0, centering=False, gamma=1000, neighbours_=[2], spread_=[0.3, 0.5, 1.0, 1.5], min_dist_=[0.1])
         test_split_V3_UMAP("kda", beta=1.0, delta=1.0, centering=False, gamma=1000, neighbours_=[2], spread_=[1.0], min_dist_=[0.05, 0.1, 0.5, 0.9])
+
+
+    if config["Random"].getboolean("LDA"):
+        for i in range(5, 15, 25):
+            print("lda groupsize ", i)
+            test_LDA_Sklearn_split_random_Linear(method="lda", centering=True, group_size=i )
 
     #test_split_treatment()
 
